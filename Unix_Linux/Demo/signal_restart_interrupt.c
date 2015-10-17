@@ -49,6 +49,7 @@ signal_restart(int signo, Sigfunc *func)
 }
 
 
+// SA_INTERRUPT MacOS不支持
 Sigfunc *
 signal_interrupt(int signo, Sigfunc *func)
 {
