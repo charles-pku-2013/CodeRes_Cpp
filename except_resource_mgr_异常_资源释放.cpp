@@ -11,8 +11,6 @@
 #include <exception>
 #include <stdexcept>
 
-#define BUFSIZE          (1024)
-
 using namespace std;
 
 struct Foo {
