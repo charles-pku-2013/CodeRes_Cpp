@@ -10,7 +10,9 @@
 
 #define err_ret( retval, ... ) do { \
                             fprintf( stderr, __VA_ARGS__ ); \
-                            fprintf( stderr, " %s\n", strerror(errno) ); \
+                            if( errno ) \
+                                fprintf( stderr, " %s", strerror(errno) ); \
+                            fputc('\n', stderr); \
                             return retval; \
                         } while(0)
 
@@ -22,7 +24,9 @@ void err_sys(const char *fmt, ...)
     va_start(ap, fmt);
     vfprintf( stderr, fmt, ap );
     va_end(ap);
-    fprintf( stderr, " %s\n", strerror(errno) );
+    if( errno )
+        fprintf( stderr, " %s", strerror(errno) );
+    fputc('\n', stderr);
     exit(1);
 }
 
