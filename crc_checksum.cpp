@@ -1,8 +1,7 @@
 
 inline
-unsigned short checksum(const char *buf)
+unsigned short checksum(const void *buf, size_t count)
 {
-    unsigned int count = strlen(buf);
     unsigned char *addr = (unsigned char*)buf;
     register unsigned int sum = 0;
 
