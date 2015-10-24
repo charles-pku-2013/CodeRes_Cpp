@@ -1,0 +1,16 @@
+# Blacklist everything
+*
+# Whitelist all directories
+!*/
+# Whitelist the file you're interested in.
+!*.h
+!*.hpp
+!*.c
+!*.cc
+!*.cpp
+!*.sh
+!*.cu
+!*.cs
+!*.cin
+!.gitignore
+!Makefile
