@@ -1,8 +1,8 @@
 // MoreThanHalfNumber.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 #include "..\Utilities\Array.h"
@@ -38,7 +38,7 @@ bool CheckMoreThanHalf(int* numbers, int length, int number)
     return isMoreThanHalf;
 }
 
-// ====================·½·¨1====================
+// ====================æ–¹æ³•1====================
 int MoreThanHalfNum_Solution1(int* numbers, int length)
 {
     if(CheckInvalidArray(numbers, length))
@@ -69,7 +69,7 @@ int MoreThanHalfNum_Solution1(int* numbers, int length)
     return result;
 }
 
-// ====================·½·¨2====================
+// ====================æ–¹æ³•2====================
 int MoreThanHalfNum_Solution2(int* numbers, int length)
 {
     if(CheckInvalidArray(numbers, length))
@@ -96,7 +96,7 @@ int MoreThanHalfNum_Solution2(int* numbers, int length)
     return result;
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(char* testName, int* numbers, int length, int expectedValue, bool expectedFlag)
 {
     if(testName != NULL)
@@ -123,42 +123,42 @@ void Test(char* testName, int* numbers, int length, int expectedValue, bool expe
     delete[] copy;
 }
 
-// ´æÔÚ³öÏÖ´ÎÊı³¬¹ıÊı×é³¤¶ÈÒ»°ëµÄÊı×Ö
+// å­˜åœ¨å‡ºç°æ¬¡æ•°è¶…è¿‡æ•°ç»„é•¿åº¦ä¸€åŠçš„æ•°å­—
 void Test1()
 {
     int numbers[] = {1, 2, 3, 2, 2, 2, 5, 4, 2};
     Test("Test1", numbers, sizeof(numbers) / sizeof(int), 2, false);
 }
 
-// ²»´æÔÚ³öÏÖ´ÎÊı³¬¹ıÊı×é³¤¶ÈÒ»°ëµÄÊı×Ö
+// ä¸å­˜åœ¨å‡ºç°æ¬¡æ•°è¶…è¿‡æ•°ç»„é•¿åº¦ä¸€åŠçš„æ•°å­—
 void Test2()
 {
     int numbers[] = {1, 2, 3, 2, 4, 2, 5, 2, 3};
     Test("Test2", numbers, sizeof(numbers) / sizeof(int), 0, true);
 }
 
-// ³öÏÖ´ÎÊı³¬¹ıÊı×é³¤¶ÈÒ»°ëµÄÊı×Ö¶¼³öÏÖÔÚÊı×éµÄÇ°°ë²¿·Ö
+// å‡ºç°æ¬¡æ•°è¶…è¿‡æ•°ç»„é•¿åº¦ä¸€åŠçš„æ•°å­—éƒ½å‡ºç°åœ¨æ•°ç»„çš„å‰åŠéƒ¨åˆ†
 void Test3()
 {
     int numbers[] = {2, 2, 2, 2, 2, 1, 3, 4, 5};
     Test("Test3", numbers, sizeof(numbers) / sizeof(int), 2, false);
 }
 
-// ³öÏÖ´ÎÊı³¬¹ıÊı×é³¤¶ÈÒ»°ëµÄÊı×Ö¶¼³öÏÖÔÚÊı×éµÄºó°ë²¿·Ö
+// å‡ºç°æ¬¡æ•°è¶…è¿‡æ•°ç»„é•¿åº¦ä¸€åŠçš„æ•°å­—éƒ½å‡ºç°åœ¨æ•°ç»„çš„ååŠéƒ¨åˆ†
 void Test4()
 {
     int numbers[] = {1, 3, 4, 5, 2, 2, 2, 2, 2};
     Test("Test4", numbers, sizeof(numbers) / sizeof(int), 2, false);
 }
 
-// ÊäÈë¿ÕÖ¸Õë
+// è¾“å…¥ç©ºæŒ‡é’ˆ
 void Test5()
 {
    int numbers[] = {1};
    Test("Test5", numbers, 1, 1, false);
 }
 
-// ÊäÈë¿ÕÖ¸Õë
+// è¾“å…¥ç©ºæŒ‡é’ˆ
 void Test6()
 {
     Test("Test6", NULL, 0, 0, true);

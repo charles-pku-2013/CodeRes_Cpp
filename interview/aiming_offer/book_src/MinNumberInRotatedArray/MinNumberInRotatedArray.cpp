@@ -1,8 +1,8 @@
 // MinNumberInRotatedArray.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 #include<exception>
@@ -19,22 +19,22 @@ int Min(int* numbers, int length)
     int indexMid = index1;
     while(numbers[index1] >= numbers[index2])
     {
-        // Èç¹ûindex1ºÍindex2Ö¸ÏòÏàÁÚµÄÁ½¸öÊı£¬
-        // Ôòindex1Ö¸ÏòµÚÒ»¸öµİÔö×ÓÊı×éµÄ×îºóÒ»¸öÊı×Ö£¬
-        // index2Ö¸ÏòµÚ¶ş¸ö×ÓÊı×éµÄµÚÒ»¸öÊı×Ö£¬Ò²¾ÍÊÇÊı×éÖĞµÄ×îĞ¡Êı×Ö
+        // å¦‚æœindex1å’Œindex2æŒ‡å‘ç›¸é‚»çš„ä¸¤ä¸ªæ•°ï¼Œ
+        // åˆ™index1æŒ‡å‘ç¬¬ä¸€ä¸ªé€’å¢å­æ•°ç»„çš„æœ€åä¸€ä¸ªæ•°å­—ï¼Œ
+        // index2æŒ‡å‘ç¬¬äºŒä¸ªå­æ•°ç»„çš„ç¬¬ä¸€ä¸ªæ•°å­—ï¼Œä¹Ÿå°±æ˜¯æ•°ç»„ä¸­çš„æœ€å°æ•°å­—
         if(index2 - index1 == 1)
         {
             indexMid = index2;
             break;
         }
  
-        // Èç¹ûÏÂ±êÎªindex1¡¢index2ºÍindexMidÖ¸ÏòµÄÈı¸öÊı×ÖÏàµÈ£¬
-        // ÔòÖ»ÄÜË³Ğò²éÕÒ
+        // å¦‚æœä¸‹æ ‡ä¸ºindex1ã€index2å’ŒindexMidæŒ‡å‘çš„ä¸‰ä¸ªæ•°å­—ç›¸ç­‰ï¼Œ
+        // åˆ™åªèƒ½é¡ºåºæŸ¥æ‰¾
         indexMid = (index1 + index2) / 2;
         if(numbers[index1] == numbers[index2] && numbers[indexMid] == numbers[index1])
             return MinInOrder(numbers, index1, index2);
 
-        // ËõĞ¡²éÕÒ·¶Î§
+        // ç¼©å°æŸ¥æ‰¾èŒƒå›´
         if(numbers[indexMid] >= numbers[index1])
             index1 = indexMid;
         else if(numbers[indexMid] <= numbers[index2])
@@ -56,7 +56,7 @@ int MinInOrder(int* numbers, int index1, int index2)
     return result;
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(int* numbers, int length, int expected)
 {
     int result = 0;
@@ -83,31 +83,31 @@ void Test(int* numbers, int length, int expected)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    // µäĞÍÊäÈë£¬µ¥µ÷ÉıĞòµÄÊı×éµÄÒ»¸öĞı×ª
+    // å…¸å‹è¾“å…¥ï¼Œå•è°ƒå‡åºçš„æ•°ç»„çš„ä¸€ä¸ªæ—‹è½¬
     int array1[] = {3, 4, 5, 1, 2};
     Test(array1, sizeof(array1) / sizeof(int), 1);
 
-    // ÓĞÖØ¸´Êı×Ö£¬²¢ÇÒÖØ¸´µÄÊı×Ö¸ÕºÃµÄ×îĞ¡µÄÊı×Ö
+    // æœ‰é‡å¤æ•°å­—ï¼Œå¹¶ä¸”é‡å¤çš„æ•°å­—åˆšå¥½çš„æœ€å°çš„æ•°å­—
     int array2[] = {3, 4, 5, 1, 1, 2};
     Test(array2, sizeof(array2) / sizeof(int), 1);
 
-    // ÓĞÖØ¸´Êı×Ö£¬µ«ÖØ¸´µÄÊı×Ö²»ÊÇµÚÒ»¸öÊı×ÖºÍ×îºóÒ»¸öÊı×Ö
+    // æœ‰é‡å¤æ•°å­—ï¼Œä½†é‡å¤çš„æ•°å­—ä¸æ˜¯ç¬¬ä¸€ä¸ªæ•°å­—å’Œæœ€åä¸€ä¸ªæ•°å­—
     int array3[] = {3, 4, 5, 1, 2, 2};
     Test(array3, sizeof(array3) / sizeof(int), 1);
 
-    // ÓĞÖØ¸´µÄÊı×Ö£¬²¢ÇÒÖØ¸´µÄÊı×Ö¸ÕºÃÊÇµÚÒ»¸öÊı×ÖºÍ×îºóÒ»¸öÊı×Ö
+    // æœ‰é‡å¤çš„æ•°å­—ï¼Œå¹¶ä¸”é‡å¤çš„æ•°å­—åˆšå¥½æ˜¯ç¬¬ä¸€ä¸ªæ•°å­—å’Œæœ€åä¸€ä¸ªæ•°å­—
     int array4[] = {1, 0, 1, 1, 1};
     Test(array4, sizeof(array4) / sizeof(int), 0);
 
-    // µ¥µ÷ÉıĞòÊı×é£¬Ğı×ª0¸öÔªËØ£¬Ò²¾ÍÊÇµ¥µ÷ÉıĞòÊı×é±¾Éí
+    // å•è°ƒå‡åºæ•°ç»„ï¼Œæ—‹è½¬0ä¸ªå…ƒç´ ï¼Œä¹Ÿå°±æ˜¯å•è°ƒå‡åºæ•°ç»„æœ¬èº«
     int array5[] = {1, 2, 3, 4, 5};
     Test(array5, sizeof(array5) / sizeof(int), 1);
 
-    // Êı×éÖĞÖ»ÓĞÒ»¸öÊı×Ö
+    // æ•°ç»„ä¸­åªæœ‰ä¸€ä¸ªæ•°å­—
     int array6[] = {2};
     Test(array6, sizeof(array6) / sizeof(int), 2);
 
-    // ÊäÈëNULL
+    // è¾“å…¥NULL
     Test(NULL, 0, 0);
 
     return 0;

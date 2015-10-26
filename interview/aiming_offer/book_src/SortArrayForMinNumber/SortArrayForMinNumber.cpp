@@ -1,8 +1,8 @@
 // SortArrayForMinNumber.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 #include <string>
@@ -10,7 +10,7 @@
 
 int compare(const void* strNumber1, const void* strNumber2);
 
-// intĞÍÕûÊıÓÃÊ®½øÖÆ±íÊ¾×î¶àÖ»ÓĞ10Î»
+// intå‹æ•´æ•°ç”¨åè¿›åˆ¶è¡¨ç¤ºæœ€å¤šåªæœ‰10ä½
 const int g_MaxNumberLength = 10;
  
 char* g_StrCombine1 = new char[g_MaxNumberLength * 2 + 1];
@@ -39,9 +39,9 @@ void PrintMinNumber(int* numbers, int length)
     delete[] strNumbers;
 }
  
-// Èç¹û[strNumber1][strNumber2] > [strNumber2][strNumber1], ·µ»ØÖµ´óÓÚ0
-// Èç¹û[strNumber1][strNumber2] = [strNumber2][strNumber1], ·µ»ØÖµµÈÓÚ0
-// Èç¹û[strNumber1][strNumber2] < [strNumber2][strNumber1], ·µ»ØÖµĞ¡ÓÚ0
+// å¦‚æœ[strNumber1][strNumber2] > [strNumber2][strNumber1], è¿”å›å€¼å¤§äº0
+// å¦‚æœ[strNumber1][strNumber2] = [strNumber2][strNumber1], è¿”å›å€¼ç­‰äº0
+// å¦‚æœ[strNumber1][strNumber2] < [strNumber2][strNumber1], è¿”å›å€¼å°äº0
 int compare(const void* strNumber1, const void* strNumber2)
 {
     // [strNumber1][strNumber2]
@@ -55,7 +55,7 @@ int compare(const void* strNumber1, const void* strNumber2)
     return strcmp(g_StrCombine1, g_StrCombine2);
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(char* testName, int* numbers, int length, char* expectedResult)
 {
     if(testName != NULL)
@@ -94,7 +94,7 @@ void Test4()
     Test("Test4", numbers, sizeof(numbers)/sizeof(int), "111111");
 }
 
-// Êı×éÖĞÖ»ÓĞÒ»¸öÊı×Ö
+// æ•°ç»„ä¸­åªæœ‰ä¸€ä¸ªæ•°å­—
 void Test5()
 {
     int numbers[] = {321};

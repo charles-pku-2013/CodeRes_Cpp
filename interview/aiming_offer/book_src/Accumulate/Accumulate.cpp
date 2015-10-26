@@ -1,12 +1,12 @@
 // Accumulate.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 
-// ====================·½·¨Ò»====================
+// ====================æ–¹æ³•ä¸€====================
 class Temp
 {
 public:
@@ -34,7 +34,7 @@ unsigned int Sum_Solution1(unsigned int n)
     return Temp::GetSum();
 }
 
-// ====================·½·¨¶ş====================
+// ====================æ–¹æ³•äºŒ====================
 class A;
 A* Array[2];
 
@@ -68,7 +68,7 @@ int Sum_Solution2(int n)
     return value;
 }
 
-// ====================·½·¨Èı====================
+// ====================æ–¹æ³•ä¸‰====================
 typedef unsigned int (*fun)(unsigned int);
 
 unsigned int Solution3_Teminator(unsigned int n) 
@@ -82,7 +82,7 @@ unsigned int Sum_Solution3(unsigned int n)
     return n + f[!!n](n - 1);
 }
 
-// ====================·½·¨ËÄ====================
+// ====================æ–¹æ³•å››====================
 template <unsigned int n> struct Sum_Solution4
 {
     enum Value { N = Sum_Solution4<n - 1>::N + n};
@@ -98,7 +98,7 @@ template <> struct Sum_Solution4<0>
     enum Value { N = 0};
 };
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(int n, int expected)
 {
     printf("Test for %d begins:\n", n);

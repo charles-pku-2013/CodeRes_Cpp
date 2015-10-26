@@ -1,8 +1,8 @@
 // StackPushPopOrder.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 #include <stack>
@@ -20,11 +20,11 @@ bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
 
         while(pNextPop - pPop < nLength)
         {
-            // µ±¸¨ÖúÕ»µÄÕ»¶¥ÔªËØ²»ÊÇÒªµ¯³öµÄÔªËØ
-            // ÏÈÑ¹ÈëÒ»Ğ©Êı×ÖÈëÕ»
+            // å½“è¾…åŠ©æ ˆçš„æ ˆé¡¶å…ƒç´ ä¸æ˜¯è¦å¼¹å‡ºçš„å…ƒç´ 
+            // å…ˆå‹å…¥ä¸€äº›æ•°å­—å…¥æ ˆ
             while(stackData.empty() || stackData.top() != *pNextPop)
             {
-                // Èç¹ûËùÓĞÊı×Ö¶¼Ñ¹Èë¸¨ÖúÕ»ÁË£¬ÍË³öÑ­»·
+                // å¦‚æœæ‰€æœ‰æ•°å­—éƒ½å‹å…¥è¾…åŠ©æ ˆäº†ï¼Œé€€å‡ºå¾ªç¯
                 if(pNextPush - pPush == nLength)
                     break;
 
@@ -47,7 +47,7 @@ bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
     return bPossible;
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(char* testName, const int* pPush, const int* pPop, int nLength, bool expected)
 {
     if(testName != NULL)
@@ -95,7 +95,7 @@ void Test4()
     Test("Test4", push, pop, nLength, false);
 }
 
-// pushºÍpopĞòÁĞÖ»ÓĞÒ»¸öÊı×Ö
+// pushå’Œpopåºåˆ—åªæœ‰ä¸€ä¸ªæ•°å­—
 void Test5()
 {
     const int nLength = 1;

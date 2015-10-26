@@ -1,8 +1,8 @@
 // GreatestSumOfSubarrays.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 
@@ -34,7 +34,7 @@ int FindGreatestSumOfSubArray(int *pData, int nLength)
     return nGreatestSum;
 } 
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(char* testName, int* pData, int nLength, int expected, bool expectedFlag)
 {
     if(testName != NULL)
@@ -54,7 +54,7 @@ void Test1()
     Test("Test1", data, sizeof(data) / sizeof(int), 18, false);
 }
 
-// ËùÓĞÊı×Ö¶¼ÊÇ¸ºÊı
+// æ‰€æœ‰æ•°å­—éƒ½æ˜¯è´Ÿæ•°
 // -2, -8, -1, -5, -9
 void Test2()
 {
@@ -62,7 +62,7 @@ void Test2()
     Test("Test2", data, sizeof(data) / sizeof(int), -1, false);
 }
 
-// ËùÓĞÊı×Ö¶¼ÊÇÕıÊı
+// æ‰€æœ‰æ•°å­—éƒ½æ˜¯æ­£æ•°
 // 2, 8, 1, 5, 9
 void Test3()
 {
@@ -70,7 +70,7 @@ void Test3()
     Test("Test3", data, sizeof(data) / sizeof(int), 25, false);
 }
 
-// ÎŞĞ§ÊäÈë
+// æ— æ•ˆè¾“å…¥
 void Test4()
 {
     Test("Test4", NULL, 0, 0, true);

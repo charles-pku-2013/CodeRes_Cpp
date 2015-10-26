@@ -1,8 +1,8 @@
 // Power.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 #include <math.h>
@@ -67,7 +67,7 @@ bool equal(double num1, double num2)
         return false;
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(double base, int exponent, double expectedResult, bool expectedFlag)
 {
     double result = Power(base, exponent);
@@ -80,31 +80,31 @@ void Test(double base, int exponent, double expectedResult, bool expectedFlag)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    // µ×Êı¡¢Ö¸Êı¶¼ÎªÕıÊı
+    // åº•æ•°ã€æŒ‡æ•°éƒ½ä¸ºæ­£æ•°
     printf("Test1 begins.\n");
     Test(2, 3, 8, false);
 
-    // µ×ÊıÎª¸ºÊı¡¢Ö¸ÊıÎªÕıÊı
+    // åº•æ•°ä¸ºè´Ÿæ•°ã€æŒ‡æ•°ä¸ºæ­£æ•°
     printf("Test2 begins.\n");
     Test(-2, 3, -8, false);
 
-    // Ö¸ÊıÎª¸ºÊı
+    // æŒ‡æ•°ä¸ºè´Ÿæ•°
     printf("Test3 begins.\n");
     Test(2, -3, 0.125, false);
 
-    // Ö¸ÊıÎª0
+    // æŒ‡æ•°ä¸º0
     printf("Test4 begins.\n");
     Test(2, 0, 1, false);
 
-    // µ×Êı¡¢Ö¸Êı¶¼Îª0
+    // åº•æ•°ã€æŒ‡æ•°éƒ½ä¸º0
     printf("Test5 begins.\n");
     Test(0, 0, 1, false);
 
-    // µ×ÊıÎª0¡¢Ö¸ÊıÎªÕıÊı
+    // åº•æ•°ä¸º0ã€æŒ‡æ•°ä¸ºæ­£æ•°
     printf("Test6 begins.\n");
     Test(0, 4, 0, false);
 
-    // µ×ÊıÎª0¡¢Ö¸ÊıÎª¸ºÊı
+    // åº•æ•°ä¸º0ã€æŒ‡æ•°ä¸ºè´Ÿæ•°
     printf("Test7 begins.\n");
     Test(0, -4, 0, true);
 

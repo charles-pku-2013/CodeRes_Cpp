@@ -9,8 +9,6 @@
 #include <vector>
 #include <bitset>
 
-#define BUFSIZE          (1024)
-
 using namespace std;
 
 struct Foo {
@@ -49,13 +47,33 @@ struct Container {
  */
 
 
+struct A {
+    A() : n2(1), n1(n2 + 2) {}
+    int     n1;
+    int     n2;
+};
+
+
 int main()
 {
-    Container *p = new Container("obj1", "obj2");
+    // test 1
+    /*
+     * {
+     *     Container *p = new Container("obj1", "obj2");
+     *     getchar();
+     *     delete p;
+     * }
+     */
 
-    getchar();
-
-    delete p;
+    // test 2 剑指Offer p244，再次证明，成员变量初始化顺序只与定义顺序有关
+    {
+        A a;
+        cout << "a.n1 = " << a.n1 << endl;
+        cout << "a.n2 = " << a.n2 << endl;
+        // test result:
+        // a.n1 = 2
+        // a.n2 = 1
+    }
 
     return 0;
 }

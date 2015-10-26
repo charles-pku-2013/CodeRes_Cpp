@@ -1,12 +1,12 @@
 // Fibonacci.cpp : Defines the entry point for the console application.
 //
 
-// ¡¶½£Ö¸Offer¡ª¡ªÃûÆóÃæÊÔ¹Ù¾«½²µäĞÍ±à³ÌÌâ¡·´úÂë
-// Öø×÷È¨ËùÓĞÕß£ººÎº£ÌÎ
+// ã€Šå‰‘æŒ‡Offerâ€”â€”åä¼é¢è¯•å®˜ç²¾è®²å…¸å‹ç¼–ç¨‹é¢˜ã€‹ä»£ç 
+// è‘—ä½œæƒæ‰€æœ‰è€…ï¼šä½•æµ·æ¶›
 
 #include "stdafx.h"
 
-// ====================·½·¨1£ºµİ¹é====================
+// ====================æ–¹æ³•1ï¼šé€’å½’====================
 long long Fibonacci_Solution1(unsigned int n)
 {
     if(n <= 0)
@@ -18,7 +18,7 @@ long long Fibonacci_Solution1(unsigned int n)
     return Fibonacci_Solution1(n - 1) + Fibonacci_Solution1(n - 2);
 }
 
-// ====================·½·¨2£ºÑ­»·====================
+// ====================æ–¹æ³•2ï¼šå¾ªç¯====================
 long long Fibonacci_Solution2(unsigned n)
 {
     int result[2] = {0, 1};
@@ -39,7 +39,7 @@ long long Fibonacci_Solution2(unsigned n)
      return fibN;
 }
 
-// ====================·½·¨3£º»ùÓÚ¾ØÕó³Ë·¨====================
+// ====================æ–¹æ³•3ï¼šåŸºäºçŸ©é˜µä¹˜æ³•====================
 #include <cassert>
 
 struct Matrix2By2
@@ -108,7 +108,7 @@ long long Fibonacci_Solution3(unsigned int n)
     return PowerNMinus2.m_00;
 }
 
-// ====================²âÊÔ´úÂë====================
+// ====================æµ‹è¯•ä»£ç ====================
 void Test(int n, int expected)
 {
     if(Fibonacci_Solution1(n) == expected)
