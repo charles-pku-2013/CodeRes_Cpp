@@ -13,10 +13,10 @@ void AllPermution( char *s, const int n, const int i )
         return;
     } // if
     
-    for( int j = i; j < n; ++j ) {
-        if( j != i ) swap( s[i], s[j] );
+    for( int j = i+1; j < n; ++j ) {
+        swap( s[i], s[j] );
         AllPermution( s, n, i+1 );
-        if( j != i ) swap( s[i], s[j] );        //!! restore 回朔必须的，否则会有重复
+        swap( s[i], s[j] );        //!! restore 回朔必须的，否则会有重复
     } // for
 }
 
