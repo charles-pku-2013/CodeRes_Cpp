@@ -10,6 +10,8 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 
+//!! 经过测试，当前实现并不能并发，一次只能服务一个client
+
 #define SERVER_PORT             8888
 
 using boost::asio::ip::tcp;
@@ -44,17 +46,19 @@ public:
         return socket_;
     }
 
-    void start()
+    void start() // tcp_server::handle_accept() 时，新客户来临，创建新连接，调用start()
     {
-        message_ = make_daytime_string();
-
-        /* 
-           we call boost::asio::async_write() to serve the data to the client. Note that we are using boost::asio::async_write(), rather than ip::tcp::socket::async_write_some(), to ensure that the entire block of data is sent.
-           */	
-        boost::asio::async_write(socket_, boost::asio::buffer(message_),
-                boost::bind(&tcp_connection::handle_write, shared_from_this(), //!! 调用本类的成员函数
-                    boost::asio::placeholders::error,
-                    boost::asio::placeholders::bytes_transferred));
+        for( int i = 0; i < 7; ++i ) {
+            message_ = make_daytime_string();
+            //!!   we call boost::asio::async_write() to serve the data to the client. Note that we are using boost::asio::async_write(), 
+            //   rather than ip::tcp::socket::async_write_some(), to ensure that the entire block of data is sent.         	
+            //!! 保证发送所有数据，相当于writen
+            boost::asio::async_write(socket_, boost::asio::buffer(message_),
+                    boost::bind(&tcp_connection::handle_write, shared_from_this(), //!! 调用本类的成员函数
+                        boost::asio::placeholders::error,
+                        boost::asio::placeholders::bytes_transferred));
+            // boost::this_thread::sleep(boost::posix_time::seconds(3));
+        } // for 
     }
 
 private:
@@ -63,16 +67,20 @@ private:
     {
     }
 
+    //!! handle_write() 执行完了才向client发送EOF, client才退出
     void handle_write(const boost::system::error_code& /*error*/,
             size_t /*bytes_transferred*/)
     {
-        cout << "tcp_connection::handle_write()" << boost::this_thread::get_id() << endl;
-        boost::this_thread::sleep(boost::posix_time::seconds(5));	//!!?? 好像是单线程工作
+        cout << "tcp_connection::handle_write() " << boost::this_thread::get_id() << endl;
+        boost::this_thread::sleep(boost::posix_time::seconds(3));
+        cout << "tcp_connection::handle_write() end " << boost::this_thread::get_id() << endl;
     }
 
+private:
     tcp::socket socket_;
     std::string message_;
 };
+
 
 
 class tcp_server
@@ -97,21 +105,23 @@ private:
                     boost::asio::placeholders::error));
     }
 
-    /* 
-       The function handle_accept() is called when the asynchronous accept operation initiated by start_accept() finishes. It services the client request, and then calls start_accept() to initiate the next accept operation.
-       */ 
+   /*
+    * The function handle_accept() is called when the asynchronous accept operation initiated by start_accept() finishes. 
+    * It services the client request, and then calls start_accept() to initiate the next accept operation.
+    */
     void handle_accept(tcp_connection::pointer new_connection,
             const boost::system::error_code& error)
     {
         if (!error)		// error = 0 OK
         {
             cout << "tcp_server::handle_accept() " << boost::this_thread::get_id() << " " << error << endl;
-            new_connection->start();	// 应该叫 sendmsg 
+            new_connection->start();	// 开启服务流程, 应该放到单独线程中执行
         }
 
         start_accept();
     }
 
+private:
     tcp::acceptor acceptor_;
 };
 
