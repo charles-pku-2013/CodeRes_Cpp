@@ -93,7 +93,7 @@ public:
     }
 
 private:
-    void start_accept()
+    void start_accept() // 为每一个client分配一个connection,每一个client对应一个socket
     {
         cout << "tcp_server::start_accept() " << boost::this_thread::get_id() << endl;
 
@@ -130,7 +130,9 @@ int main()
 {	
     try
     {
-        // The io_service object provides I/O services, such as sockets, that the server object will use.	  
+        // The io_service object provides I/O services, such as sockets, 
+        // that the server object will use.
+        // 这一个io_service要供多个socket使用，每accept一次，要生成一个新connection
         boost::asio::io_service io_service;
         tcp_server server(io_service);
         io_service.run();

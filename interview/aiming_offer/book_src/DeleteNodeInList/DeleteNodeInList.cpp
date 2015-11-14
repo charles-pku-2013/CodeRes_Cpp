@@ -1,8 +1,8 @@
 // DeleteNodeInList.cpp : Defines the entry point for the console application.
 //
 
-// 《剑指Offer——名企面试官精讲典型编程题》代码
-// 著作权所有者：何海涛
+// 隆露陆拢脰赂Offer隆陋隆陋脙没脝贸脙忙脢脭鹿脵戮芦陆虏碌盲脨脥卤脿鲁脤脤芒隆路麓煤脗毛
+// 脰酶脳梅脠篓脣霉脫脨脮脽拢潞潞脦潞拢脤脦
 
 #include "stdafx.h"
 #include "..\Utilities\List.h"
@@ -12,7 +12,7 @@ void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
     if(!pListHead || !pToBeDeleted)
         return;
 
-    // 要删除的结点不是尾结点
+    // 脪陋脡戮鲁媒碌脛陆谩碌茫虏禄脢脟脦虏陆谩碌茫
     if(pToBeDeleted->m_pNext != NULL)
     {
         ListNode* pNext = pToBeDeleted->m_pNext;
@@ -22,14 +22,14 @@ void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
         delete pNext;
         pNext = NULL;
     }
-    // 链表只有一个结点，删除头结点（也是尾结点）
+    // 脕麓卤铆脰禄脫脨脪禄赂枚陆谩碌茫拢卢脡戮鲁媒脥路陆谩碌茫拢篓脪虏脢脟脦虏陆谩碌茫拢漏
     else if(*pListHead == pToBeDeleted)
     {
         delete pToBeDeleted;
         pToBeDeleted = NULL;
         *pListHead = NULL;
     }
-    // 链表中有多个结点，删除尾结点
+    // 脕麓卤铆脰脨脫脨露脿赂枚陆谩碌茫拢卢脡戮鲁媒脦虏陆谩碌茫
     else
     {
         ListNode* pNode = *pListHead;
@@ -44,7 +44,7 @@ void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
     }
 }
 
-// ====================测试代码====================
+// ====================虏芒脢脭麓煤脗毛====================
 void Test(ListNode* pListHead, ListNode* pNode)
 {
     printf("The original list is: \n");
@@ -59,7 +59,7 @@ void Test(ListNode* pListHead, ListNode* pNode)
     PrintList(pListHead);
 }
 
-// 链表中有多个结点，删除中间的结点
+// 脕麓卤铆脰脨脫脨露脿赂枚陆谩碌茫拢卢脡戮鲁媒脰脨录盲碌脛陆谩碌茫
 void Test1()
 {
     ListNode* pNode1 = CreateListNode(1);
@@ -78,7 +78,7 @@ void Test1()
     DestroyList(pNode1);
 }
 
-// 链表中有多个结点，删除尾结点
+// 脕麓卤铆脰脨脫脨露脿赂枚陆谩碌茫拢卢脡戮鲁媒脦虏陆谩碌茫
 void Test2()
 {
     ListNode* pNode1 = CreateListNode(1);
@@ -97,7 +97,7 @@ void Test2()
     DestroyList(pNode1);
 }
 
-// 链表中有多个结点，删除头结点
+// 脕麓卤铆脰脨脫脨露脿赂枚陆谩碌茫拢卢脡戮鲁媒脥路陆谩碌茫
 void Test3()
 {
     ListNode* pNode1 = CreateListNode(1);
@@ -116,7 +116,7 @@ void Test3()
     DestroyList(pNode1);
 }
 
-// 链表中只有一个结点，删除头结点
+// 脕麓卤铆脰脨脰禄脫脨脪禄赂枚陆谩碌茫拢卢脡戮鲁媒脥路陆谩碌茫
 void Test4()
 {
     ListNode* pNode1 = CreateListNode(1);
@@ -124,7 +124,7 @@ void Test4()
     Test(pNode1, pNode1);
 }
 
-// 链表为空
+// 脕麓卤铆脦陋驴脮
 void Test5()
 {
     Test(NULL, NULL);
