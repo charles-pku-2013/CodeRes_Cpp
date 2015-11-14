@@ -11,8 +11,8 @@ int main()
         ++i;
         fwrite( &i, sizeof(i), 1, stdout );
         fprintf(stderr, "write %d\n", i);
-        /* sleep(1); */
-        usleep( 100000 );
+        sleep(1);
+        if( i == 7 ) break;
     } // while
 
     return 0;

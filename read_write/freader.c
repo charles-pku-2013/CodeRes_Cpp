@@ -7,7 +7,7 @@ int main()
 {
     char buf[BUFSIZE];
 
-    setvbuf( stdin, NULL, _IONBF, 0 );
+    /* setvbuf( stdin, NULL, _IONBF, 0 ); */
 
     size_t n;
     while( (n = fread(buf, 1, BUFSIZE, stdin)) > 0 ) {
