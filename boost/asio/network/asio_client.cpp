@@ -15,7 +15,7 @@ void read_handler(const boost::system::error_code &ec, std::size_t bytes_transfe
   if (!ec) 
   { 
     std::cout << std::string(buffer.data(), bytes_transferred) << std::endl; 
-    sock.async_read_some(boost::asio::buffer(buffer), read_handler);  //!! 一直读，知道EOF
+    sock.async_read_some(boost::asio::buffer(buffer), read_handler);  //!! 一直读，直到EOF
   } 
 } 
 
