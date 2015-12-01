@@ -10,6 +10,7 @@
 using namespace boost::interprocess;
 
 //Typedefs of allocators and containers
+//!! 每定义一种数据类型，都要定义其对应的allocator
 typedef managed_shared_memory::segment_manager                       segment_manager_t;
 typedef allocator<void, segment_manager_t>                           void_allocator;
 typedef allocator<int, segment_manager_t>                            int_allocator;
@@ -59,6 +60,7 @@ int main ()
     void_allocator alloc_inst (segment.get_segment_manager());
 
     //Construct the shared memory map and fill it
+	//!! segment.construct 相当于placement new
     typedef boost::shared_ptr<complex_map_type>   complex_map_type_ptr;
     complex_map_type_ptr mymap(segment.construct<complex_map_type>
             ("MyMap")(std::less<char_string>(), alloc_inst), 
