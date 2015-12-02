@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 #include <cstring>
-#include "LOG.h"
+// #include "LOG.h"
 
 #define SHARED_BUFSIZE              3
 #define INIT_FRAME_SIZE             (256*1024)
@@ -82,7 +82,7 @@ public:
 
     void push()
     {
-        DBG("push @%lx", (long)this);
+        // DBG("push @%lx", (long)this);
         boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lk(lock);
 
         while( _full() )
@@ -97,7 +97,7 @@ public:
 
     void pop()
     {
-        DBG("pop @%lx", (long)this);
+        // DBG("pop @%lx", (long)this);
         boost::interprocess::scoped_lock<boost::interprocess::interprocess_mutex> lk(lock);
 
         while( _empty() )
