@@ -36,5 +36,12 @@ int main()
     std::thread thr2( std::bind(&Foo::print_sum, &foo, 95, _1), 5 );
     thr2.join();
 
+    //!! The delete is replaced and this will lead to mem leak
+    // Foo *ptr = NULL;
+    // std::shared_ptr<Foo> pFoo( (ptr = new Foo), std::bind(&Foo::print_data, ptr) );
+    
+    std::shared_ptr<Foo> pFoo( &foo, std::bind(&Foo::print_data, &foo) );
+    pFoo->print_sum( 10, 20 );
+
     return 0;
 }
