@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cstdio>
 
 using namespace std;
 
@@ -28,6 +29,11 @@ int main()
 {
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
+	
+	char *p = NULL;
+	[&]{ p = new char[100]; }();
+	printf("%lx\n", (long)p);
+	
     return 0;
 }
 
