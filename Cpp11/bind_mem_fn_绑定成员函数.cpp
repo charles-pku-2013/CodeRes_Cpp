@@ -40,7 +40,9 @@ int main()
     // Foo *ptr = NULL;
     // std::shared_ptr<Foo> pFoo( (ptr = new Foo), std::bind(&Foo::print_data, ptr) );
     
-    std::shared_ptr<Foo> pFoo( &foo, std::bind(&Foo::print_data, &foo) );
+	//!! 不严谨！eleter must be callable for the type Y, i.e. d(ptr) must be well formed, 
+    // std::shared_ptr<Foo> pFoo( &foo, std::bind(&Foo::print_data, &foo) );
+	std::shared_ptr<Foo> pFoo( &foo, [](Foo *p){ p->print_data(); } );
     pFoo->print_sum( 10, 20 );
 
     return 0;
