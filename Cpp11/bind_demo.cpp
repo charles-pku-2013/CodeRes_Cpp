@@ -2,6 +2,8 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+
+// bind 原函数参数比目标函数参数多
  
 void f(int n1, int n2, int n3, const int& n4, int n5)
 {
