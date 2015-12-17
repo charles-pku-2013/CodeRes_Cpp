@@ -12,6 +12,19 @@
 
 using namespace std;
 
+/*
+  fail: 可恢复错误
+  bad: 不可恢复的严重错误
+  当用ifs.read读完文件时，good = 0, eof = 1, fail = 1, bad = 0
+  此时若想判断 fstream 状态，应该用 if(!ifs.bad()) 或
+  if( !ifs ) {
+	  if( ifs.eof() )
+		  // 当success处理
+	  else // fail
+  }
+*/
+
+
 template< typename StreamType >
 void print_stream_state( const StreamType &stream )
 {
