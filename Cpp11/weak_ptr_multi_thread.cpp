@@ -34,6 +34,15 @@ int main()
 {
     std::shared_ptr<Foo> pFoo = std::make_shared<Foo>();
     cout << "After make_shared, pFoo use_count is: " << pFoo.use_count() << endl;
+    
+    /*
+     * 下面这行用法是错误的。
+     * 要知道thread对象如同 function object 一样，
+     * 存储了传入参数的拷贝pFoo, 这样使之增加了一个引用。
+     * 同样的问题也存在于bind，用的时候要格外注意!!!
+     */
+    // std::thread t1( thread_routine, pFoo );
+    //!! This is the right way to use.
     std::thread t1( thread_routine, std::weak_ptr<Foo>(pFoo) );
     cout << "After creating thread, pFoo use_count is: " << pFoo.use_count() << endl;
 
