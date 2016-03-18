@@ -40,5 +40,10 @@ int main()
      * 循环引用不只是两方的情况，只要引用链成环都会出现问题。
      */
 
+    /* 一样的 */
+    // a.reset();
+    // b.reset();
+    // cout << "After calling reset." << endl;
+
     return 0; 
 }
