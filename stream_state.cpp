@@ -53,10 +53,28 @@ void test2()
     print_stream_state( str );
 }
 
+// 遇到非法字符的表现
+void test3()
+{
+    /*
+     * if (str) 表示还可以继续读入
+     * 如果正常读入结束，只有eof是true，注意，此时good也是false
+     * 一般情况如果读入失败因为格式问题，fail置为1，
+     * bad只有在类似系统错误的严重情况下才为1
+     */
+    int n;
+    // stringstream str("1234a");
+    stringstream str("a1234a");
+    str >> n;
+    cout << n << endl;
+    print_stream_state(str);
+}
+
 int main()
 {
-    test1();
+    // test1();
     // test2();
+    test3();
 
     return 0;
 }
