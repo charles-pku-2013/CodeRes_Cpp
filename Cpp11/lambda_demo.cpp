@@ -55,9 +55,25 @@ void test()
     exit(0);
 }
 
+void test1()
+{
+    int outVar = 10;
+
+    // 不指定capture方式默认不capture
+    auto f = [] {
+        printf( "%d\n", outVar );  
+    };
+
+    f();
+
+    exit(0);
+}
+
+
 int main()
 {
-    test();
+    // test();
+    test1();
 
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
