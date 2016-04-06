@@ -39,6 +39,8 @@ int main()
     t2.join();
     t4.join();
     std::cout << "Final value of n is " << n << '\n';
+
+    return 0;
 }
 
 
