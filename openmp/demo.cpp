@@ -26,17 +26,24 @@ void copy_pointer(  Container &c, std::vector<typename Container::value_type*> &
 
 int main()
 {
-    typedef std::map<std::string, uint32_t> StrUIntMap;
+    typedef std::map<std::string, int> StrUIntMap;
 
     auto process = [](StrUIntMap::value_type &v) {
+        // 若不用{} 则只对随后的一句起作用
+#pragma omp critical
         cout << "In thread " << std::this_thread::get_id() << " " << v.first << " = " << v.second << endl;
         v.second *= 2;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+#pragma omp critical
+        cout << "Thread " << std::this_thread::get_id() << " Done!" << endl;
     };
 
     auto processArr = [](int &v) {
         v *= 2;
+#pragma omp critical
         cout << "In thread " << std::this_thread::get_id() << " value = " << v << endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
+#pragma omp critical
         cout << "Thread " << std::this_thread::get_id() << " Done!" << endl;
     };
 
@@ -47,6 +54,10 @@ int main()
     m["sun"] = 50;
     m["Charles"] = 90;
     m["laji"] = -100;
+    m["tank"] = 25;
+    m["openmp"] = 60;
+    m["Intel"] = 85;
+    m["Baidu"] = -1000;
 
     // wrong
 // #pragma omp parallel for
@@ -90,12 +101,11 @@ int main()
     for (size_t i = 0; i < pArr.size(); ++i)
         process( *pArr[i] );
 
-/*
- *     vector<int> arr = {1,2,3,4,5,6};
- * #pragma omp parallel for
- *     for (size_t i = 0; i < arr.size(); ++i)
- *         processArr(arr[i]);
- */
+    // vector<int> arr = {1,2,3,4,5,6};
+// #pragma omp parallel for
+    // for (size_t i = 0; i < arr.size(); ++i)
+        // processArr(arr[i]);
+
     // 不可以用 i != arr.size() 判断循环结束条件 error: invalid controlling predicate
 /*
  * In thread 140565560051456 value = 6
