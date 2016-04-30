@@ -65,8 +65,9 @@ int main()
         // process(*it);
     // } // for
 
+    // wrong
     // auto it = m.begin();
-// #pragma omp parallel for
+// #pragma omp parallel for firstprivate(it)
     // for (size_t i = 0; i < m.size(); ++i) {
         // process(*it++);
     // } // for
