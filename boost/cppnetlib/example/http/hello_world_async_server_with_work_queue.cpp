@@ -90,6 +90,7 @@ struct handler {
   handler(work_queue& queue) : queue(queue) {}
 
   /**
+   * 这是处理客户请求的主逻辑，加入待处理工作队列
    * Feed the work queue
    *
    * @param req
@@ -124,14 +125,14 @@ void process_request(work_queue& queue) {
     if (request) {
 
       // some heavy work!
-      std::this_thread::sleep_for(std::chrono::seconds(10));
+      std::this_thread::sleep_for(std::chrono::seconds(5));
 
       request->conn->set_status(server::connection::ok);
       request->conn->write("Hello, world!");
-    }
+    } // if
 
-    std::this_thread::sleep_for(std::chrono::microseconds(1000));
-  }
+    std::this_thread::sleep_for(std::chrono::microseconds(1000)); // queue.get() 不是用条件变量实现的，队列空时候不会休眠
+  } // while
 }
 
 int main() {
@@ -143,7 +144,7 @@ int main() {
     auto io_service(std::make_shared<asio::io_service>());
     auto work(std::make_shared<asio::io_service::work>(std::ref(*io_service)));
 
-    // io_service threads
+    // io_service threads  创建IO线程
     {
       int n_threads = 5;
       while (0 < n_threads--) {
@@ -154,6 +155,7 @@ int main() {
     // the shared work queue
     work_queue queue;
 
+    // 工作线程
     // worker threads that will process the request; off the queue
     {
       int n_threads = 5;
@@ -168,10 +170,10 @@ int main() {
         server::options(request_handler)
         .address("0.0.0.0")
         .port("8000")
-        .io_service(io_service)
+        .io_service(io_service)   // 通过 options 设置 io_service
         .reuse_address(true)
         .thread_pool(std::make_shared<boost::network::utils::thread_pool>(
-             2, io_service, threads))));
+             2, io_service, threads))));  // threads 中有工作线程和IO处理线程
 
     // setup clean shutdown
     asio::signal_set signals(*io_service, SIGINT, SIGTERM);
