@@ -9,10 +9,10 @@ using namespace std;
 class times_two_visitor
         : public boost::static_visitor<> { // 空模板 apply_visitor 不需要返回值
 public:
-    void operator()(int & i) const
+    void operator()(int& i) const
     { i *= 2; }
 
-    void operator()(std::string & str) const
+    void operator()(std::string& str) const
     { str += str; }
 };
 
@@ -20,7 +20,7 @@ class times_two_generic
         : public boost::static_visitor<> {
 public:
     template <typename T>
-    void operator()( T & operand ) const
+    void operator()( T& operand ) const
     { operand += operand; }
 };
 
@@ -34,6 +34,13 @@ void test1()
     std::string& str = boost::get<std::string>(v);
     str += " world! ";
     std::cout << v << std::endl;
+
+    try {
+        int& n = boost::get<int>(v);
+    } catch (const std::exception &ex) {
+        cerr << ex.what() << endl;
+    } // try
+    // boost::bad_get: failed value get using boost::get
 
     // test apply_visitor
     // v = 5;
@@ -74,8 +81,8 @@ void test2()
 
 int main()
 {
-    // test1();
-    test2();
+    test1();
+    // test2();
 
     return 0;
 }
