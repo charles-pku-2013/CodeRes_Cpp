@@ -28,10 +28,35 @@ void test2()
     cout << "strArr[0]: " << strArr[0] << endl;
 }
 
+vector<string> g_arrString;
+void put( const string &s )
+{ 
+    string &s1 = const_cast<string&>(s);
+    g_arrString.push_back(std::move(s1)); // OK, after this, s1 is empty
+    // g_arrString.push_back(std::move(s)); 
+    // g_arrString.push_back(s);  // test copy on write
+}
+
+void test3()
+{
+    string s1 = "Hello";
+    put(s1);
+    cout << "After put, s1: " << s1 << endl;
+    s1[0] = 'h';   //!! copy on write
+}
+
 int main()
 {
     // test1();
-    test2();
+    // test2();
+    test3();
+    
+    /*
+     * string s1;
+     * s1.reserve(200);
+     * s1.append("Hello").append(" world!").append(" Charles").append( " in PKU." );
+     * g_arrString.push_back(std::move(s1));
+     */
 
     return 0;
 }
