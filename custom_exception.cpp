@@ -15,13 +15,22 @@
  * 线程中的异常不会被main捕捉，要自己捕捉处理。TODO demo
  */
 
-struct InvalidInputException : std::exception {
-    explicit InvalidInputException( const std::string &what )
-            : whatString(what) {}
+struct InvalidInput : std::exception {
+    explicit InvalidInput( const std::string &what )
+            : whatString("InvalidInput: ") 
+    { whatString.append(what); }
 
-    explicit InvalidInputException( const std::string &inputStr,
+    explicit InvalidInput( const std::ostream &os )
+            : whatString("InvalidInput: ") 
+    { 
+        using namespace std;
+        const stringstream &_str = dynamic_cast<const stringstream&>(os);
+        whatString.append(_str.str()); 
+    }
+
+    explicit InvalidInput( const std::string &inputStr,
                                     const std::string &desc )
-            : whatString("Input string \"")
+            : whatString("InvalidInput: input string \"")
     { whatString.append( inputStr ).append( "\" is not valid! " ).append(desc); }
 
     virtual const char* what() const throw()
