@@ -50,7 +50,7 @@ struct request_data {
 
   typedef std::shared_ptr<request_data> pointer;
 
-  request_data(server::request req, server::connection_ptr  conn)
+  request_data(const server::request &req, const server::connection_ptr &conn)
       : req(std::move(req)), conn(std::move(conn)) {}
 };
 
@@ -120,19 +120,36 @@ void shut_me_down(const std::error_code& error, int signal,
  * @param queue
  */
 void process_request(work_queue& queue) {
-  while (running) {
-    request_data::pointer request(queue.get());
-    if (request) {
+    using namespace std;
 
-      // some heavy work!
-      std::this_thread::sleep_for(std::chrono::seconds(5));
+    while (running) {
+        request_data::pointer request(queue.get());
+        if (request) {
 
-      request->conn->set_status(server::connection::ok);
-      request->conn->write("Hello, world!");
-    } // if
+            // server::request 源于 not_quite_pod_request_base 在 boost/network/protocol/http/impl/request.hpp
+            cout << "Received client request from " << request->req.source << endl; // source 已经包含port
+            cout << "destination = " << request->req.destination << endl;  // 去除了URL port
+            cout << "method = " << request->req.method << endl;
+            cout << "http version = " << (uint32_t)(request->req.http_version_major) 
+                 << "." << (uint32_t)(request->req.http_version_minor) << endl;
+            cout << "headers:" << endl;
+            for (const auto &header : request->req.headers)
+                cout << header.name << " = " << header.value << endl;
+            //!! body always empty, how to read, see doc, http server : connection object read
+            // cout << "body = " << request->req.body << endl;
+            // cout << request->req.body.length() << " " << request->req.body.size() << endl;
 
-    std::this_thread::sleep_for(std::chrono::microseconds(1000)); // queue.get() 不是用条件变量实现的，队列空时候不会休眠
-  } // while
+            // boost::network::uri::uri url(request->req);
+
+            // some heavy work!
+            // std::this_thread::sleep_for(std::chrono::seconds(5));
+
+            request->conn->set_status(server::connection::ok); // 枚举值见文档 http_server  Connection Object
+            request->conn->write("Hello, world!");
+        } // if
+
+        std::this_thread::sleep_for(std::chrono::microseconds(1000)); // queue.get() 不是用条件变量实现的，队列空时候不会休眠
+    } // while
 }
 
 int main() {
