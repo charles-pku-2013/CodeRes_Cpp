@@ -50,6 +50,14 @@ struct request_data {
 
   typedef std::shared_ptr<request_data> pointer;
 
+  /*
+   * !! connection: server/async_connection.hpp  所有状态定义
+   * read 已经用了 strand
+   *  /// Type required for ``read`` callbacks. Takes an input range, an error
+   * /// code, the number of bytes read, and a connection pointer.
+   * typedef std::function<void(input_range, std::error_code, std::size_t,
+   *                          connection_ptr)> read_callback_function;
+   */
   request_data(const server::request &req, const server::connection_ptr &conn)
       : req(std::move(req)), conn(std::move(conn)) {}
 };
