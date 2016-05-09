@@ -168,6 +168,13 @@ int main() {
     // setup asio::io_service
     auto io_service(std::make_shared<asio::io_service>());
     auto work(std::make_shared<asio::io_service::work>(std::ref(*io_service)));
+ /*
+  * * Some applications may need to prevent an io_service object's run() call from
+  * * returning when there is no more work to do. For example, the io_service may
+  * * be being run in a background thread that is launched prior to the
+  * * application's asynchronous operations. The run() call may be kept running by
+  * * creating an object of type asio::io_service::work:
+  */
 
     // io_service threads  创建IO线程
     {
@@ -208,6 +215,10 @@ int main() {
 
     // run the async server
     server->run();
+
+    // 最后是12个线程，在本文件中创建了10个，在thread_pool构造中创建了2个
+    // 本例有些问题
+    std::cout << "n_threads in threadgroup: " << threads->size() << std::endl;
 
     work.reset();
     io_service->stop();
