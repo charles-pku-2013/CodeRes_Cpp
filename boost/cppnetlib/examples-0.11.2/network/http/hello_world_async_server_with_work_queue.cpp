@@ -13,8 +13,11 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <list>
+#include <memory>
+#include <functional>
 #include <signal.h>
 
 #define Log(line) \
@@ -110,14 +113,91 @@ void shut_me_down(
  *
  * @param queue
  */
+struct WorkItem : std::enable_shared_from_this<WorkItem> {
+    WorkItem(const std::string &_Src, const std::string &_Dest, std::size_t nRead) 
+            : source(_Src)
+            , dest(_Dest)
+            , left2Read(nRead) 
+    { body.reserve(nRead); }
+
+    void readBody( const server::connection_ptr &conn );
+
+    void handleRead(server::connection::input_range range, 
+            boost::system::error_code error, std::size_t size, 
+            server::connection_ptr conn);
+
+    std::string     source;
+    std::string     dest;
+    std::string     body;
+    std::size_t     left2Read;
+};
+
+typedef std::shared_ptr<WorkItem>   WorkItemPtr;
+
+void WorkItem::readBody( const server::connection_ptr &conn )
+{
+    using namespace std;
+
+    if (left2Read)
+        conn->read( std::bind(&WorkItem::handleRead, shared_from_this(),
+               placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4) );
+        // conn->read( callback );
+}
+
+void WorkItem::handleRead(server::connection::input_range range, 
+        boost::system::error_code error, std::size_t size, 
+        server::connection_ptr conn)
+{
+    if (error) {
+        std::cout << "Read connection from " << source << " error: " << error << std::endl;
+        return;
+    } // if
+
+    if (size > left2Read) {
+        std::cout << "Invalid size " << size << " left2Read = " << left2Read << std::endl;
+        return;
+    } // if
+
+    std::cout << "Received data len: " << size << std::endl;
+
+    body.append(boost::begin(range), size);
+    left2Read -= size;
+    
+    if (0 == left2Read) {
+        std::cout << "body: " << body << std::endl;
+    } else {
+        readBody( conn );
+    } // if
+}
+
 void process_request(work_queue& queue)
 {
+    using namespace std;
+
     while(!boost::this_thread::interruption_requested()) {
         request_data::pointer p_req(queue.get());
         if (p_req) {
+            cout << "Received client p_req from " << p_req->req.source << endl; // source 已经包含port
+            cout << "destination = " << p_req->req.destination << endl;  // 去除了URL port
+            cout << "method = " << p_req->req.method << endl;
+            cout << "http version = " << (uint32_t)(p_req->req.http_version_major) 
+                 << "." << (uint32_t)(p_req->req.http_version_minor) << endl;
+            cout << "headers:" << endl;
+            for (const auto &header : p_req->req.headers)
+                cout << header.name << " = " << header.value << endl;
+
+            size_t nRead;
+            for (const auto &v : p_req->req.headers) {
+                if (boost::iequals(v.name, "Content-Length")) {
+                    nRead = boost::lexical_cast<size_t>(v.value);
+                } // if
+            } // for
+
+            WorkItemPtr pWork( new WorkItem(p_req->req.source, p_req->req.destination, nRead) );
+            pWork->readBody(p_req->conn);
 
             // some heavy work!
-            boost::this_thread::sleep(boost::posix_time::seconds(10));
+            boost::this_thread::sleep(boost::posix_time::seconds(3));
 
             p_req->conn->set_status(server::connection::ok);
             p_req->conn->write("Hello, world!");
