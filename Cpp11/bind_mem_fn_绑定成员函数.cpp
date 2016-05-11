@@ -30,6 +30,10 @@ int main()
     // auto f = std::bind(&Foo::print_data, &foo);
     // f();
     
+    // 仅和对象绑定，不改变参数
+    auto f = std::bind(&Foo::print_sum, &foo, _1, _2);
+    f(20, 30);
+    
     std::thread thr1( std::bind(&Foo::print_data, &foo) );
     thr1.join();
  

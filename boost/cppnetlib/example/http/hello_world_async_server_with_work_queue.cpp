@@ -7,14 +7,14 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <memory>
-#include <mutex>
-#include <chrono>
-#include <functional>
-#include <boost/network/utils/thread_group.hpp>
+// #include <boost/network/utils/thread_group.hpp>
 #include <boost/network/include/http/server.hpp>
 #include <boost/network/uri.hpp>
-#include <asio.hpp>
+
+#include <boost/bind.hpp>
+#include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 #include <iostream>
 #include <list>
 #include <signal.h>
@@ -23,10 +23,10 @@
 bool running = true;
 
 struct handler;
-typedef boost::network::http::server<handler> server;
+typedef boost::network::http::async_server<handler> server;
 
 struct server_data {
-  boost::network::http::server<handler> server;
+  boost::network::http::async_server<handler> server;
 
   server_data(const server::options &options)
     : server(options) {}
@@ -159,6 +159,32 @@ void process_request(work_queue& queue) {
         std::this_thread::sleep_for(std::chrono::microseconds(1000)); // queue.get() 不是用条件变量实现的，队列空时候不会休眠
     } // while
 }
+
+  /**
+   * Listens to the correct port and runs the server's event loop. This can be
+   * run on multiple threads, as in the example below:
+   *
+   * Example:
+   *    handler_type handler;
+   *    http_server::options options(handler);
+   *    options.thread_pool(
+   *        std::make_shared<boost::network::utils::thread_pool>());
+   *    http_server server(options.address("localhost").port("8000"));
+   *
+   *    // Run in three threads including the current thread.
+   *    std::thread t1([&server] { server.run() });
+   *    std::thread t2([&server] { server.run() });
+   *    server.run();
+   *    t1.join();
+   *    t2.join();
+   */
+
+// 正确的结束方式: gracefully cleanly terminate
+/*
+ * 1. server->stop();
+ * 2. io_service->stop();       g_pWork.reset(); g_pIoService->stop();
+ * 3. threadgroup->join_all()
+ */
 
 int main() {
   try {

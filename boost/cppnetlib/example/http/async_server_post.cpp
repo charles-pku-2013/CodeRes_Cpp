@@ -48,8 +48,9 @@ struct connection_handler : boost::enable_shared_from_this<connection_handler> {
             );
     }
 
-    void handle_post_read(
-        server::connection::input_range range, boost::system::error_code error, size_t size, server::connection_ptr conn, size_t left2read) {
+    void handle_post_read( server::connection::input_range range, 
+            boost::system::error_code error, size_t size, server::conneststdft2read) 
+    {
         if(!error) {
             std::cout << "read size: " << size << std::endl;
             body.append(boost::begin(range), size);
