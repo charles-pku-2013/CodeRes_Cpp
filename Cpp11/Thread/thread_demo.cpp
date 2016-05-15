@@ -5,6 +5,10 @@
 #include <functional>
 #include <atomic>
 
+#define THIS_THREAD_ID        std::this_thread::get_id()
+#define SLEEP_SECONDS(x)      std::this_thread::sleep_for(std::chrono::seconds(x))
+#define SLEEP_MILLISECONDS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
+
 /* 
 template< class Function, class... Args > 
 explicit thread( Function&& f, Args&&... args );
