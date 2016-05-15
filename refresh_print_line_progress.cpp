@@ -14,8 +14,12 @@ int main()
 
     SLEEP_SECONDS(1);
 
+    printf("\r                                                                                                ");
+    fflush(stdout);
     printf("\rCharles");
     fflush(stdout);
+
+    getchar();
     putchar('\n');
 
     return 0;
