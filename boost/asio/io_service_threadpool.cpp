@@ -1,3 +1,7 @@
+/*
+ * c++ -o /tmp/test asio_demo.cpp -lglog -lboost_thread -lboost_system -std=c++11 -g
+ * GLOG_logtostderr=1 /tmp/test
+ */
 #include <iostream>
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
