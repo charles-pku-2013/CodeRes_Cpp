@@ -1,4 +1,8 @@
 /*
+ * c++ -o /tmp/test variadic_template_demo.cpp -lglog -std=c++11 -g
+ * GLOG_logtostderr=1 /tmp/test
+ */
+/*
  * This file contains code from "C++ Primer, Fifth Edition", by Stanley B.
  * Lippman, Josee Lajoie, and Barbara E. Moo, and is covered under the
  * copyright and warranty notices given in that book:
@@ -20,13 +24,14 @@
  * what code you would like to use, and in what specific way, to the following
  * address: 
  * 
- * 	Pearson Education, Inc.
- * 	Rights and Permissions Department
- * 	One Lake Street
- * 	Upper Saddle River, NJ  07458
- * 	Fax: (201) 236-3290
+ *  Pearson Education, Inc.
+ *  Rights and Permissions Department
+ *  One Lake Street
+ *  Upper Saddle River, NJ  07458
+ *  Fax: (201) 236-3290
 */ 
 
+#include <glog/logging.h>
 #include <iostream>
 using std::cerr;
 using std::ostream; using std::cout; using std::endl;
@@ -46,35 +51,41 @@ using std::is_same;
 
 // function to end the recursion and print the last element
 template<typename T>
-void print(const T &t)	// for the last arg in rest
+void print(const T &t)  // for the last arg in rest
 {
-	if( is_same< T, int>() ) {
-		cerr << "print int" << endl;
-	} else if( is_same< T, char>() ) {
-		cerr << "print char" << endl;
-	} else if( is_same< T, char*>() ) {
-		cerr << "print string" << endl;
-	} else {
-		cerr << "print unknown" << endl;
-	} // if
+    LOG(INFO) << "print single value version...";
+
+    // std::is_same 判断类型是否一样
+    // if( is_same< T, int>() ) {
+        // cerr << "print int" << endl;
+    // } else if( is_same< T, char>() ) {
+        // cerr << "print char" << endl;
+    // } else if( is_same< T, char*>() ) {
+        // cerr << "print string" << endl;
+    // } else {
+        // cerr << "print unknown" << endl;
+    // } // if
     cerr << t; // no separator after the last element in the pack
 }
 
 template <typename T, typename... Args>                 
 void print(const T &t, const Args&... rest)//expand Args
 {
-    cerr << t << ", ";				//!! for the first arg
+    LOG(INFO) << "print variadic version...";
+    cerr << t << ", ";              //!! for the first arg
     print(rest...);                     //expand rest
 }
 
 
 
-int main()
+int main(int argc, char **argv)
 {
-	print(10, "Hello", 'a', 12);
-	cerr << endl;
-	
-	return 0;
+    google::InitGoogleLogging(argv[0]);
+
+    print(10, "Hello", 'a', 12);
+    cerr << endl;
+    
+    return 0;
 }
 
 
