@@ -12,12 +12,15 @@ int getN()
 }
 
 struct Test {
-    Test() : n(getN()) { cout << "Test constructor " << n << endl; }
+    Test() : n(getN()) 
+    { cout << "Test constructor " << n << endl; }
+
     int n;
 };
 
 
 Test gTest;
+static const int n_dummy = getN();
 
 int main()
 {

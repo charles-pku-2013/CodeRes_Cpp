@@ -1,4 +1,5 @@
 /*
+ * Tutorial: https://gflags.github.io/gflags/#validate
  * gflags_demo.cpp
  * /tmp/test -nobig_menu --languages="Chinese,English,Japanese"
  */
@@ -30,6 +31,7 @@ bool ValidatePort(const char* flagname, gflags::int32 value)
     printf("Invalid value for --%s: %d\n", flagname, (int)value);
     return false;
 }
+// 定义port_dummy为了保证RegisterFlagValidator先于main函数执行
 static const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &ValidatePort);
 
 
