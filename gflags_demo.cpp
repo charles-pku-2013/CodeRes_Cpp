@@ -6,6 +6,7 @@
 
 /*
  * Usage:
+ * 不可以出现未定义的选项参数
  * app_containing_foo --nobig_menu -languages="chinese,japanese,korean" ...
  * app_containing_foo --languages="chinese,japanese,korean"
  * app_containing_foo -languages="chinese,japanese,korean"
