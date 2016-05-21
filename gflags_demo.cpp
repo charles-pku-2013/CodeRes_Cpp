@@ -1,7 +1,7 @@
 /*
  * Tutorial: https://gflags.github.io/gflags/#validate
  * gflags_demo.cpp
- * /tmp/test -nobig_menu --languages="Chinese,English,Japanese"
+ * /tmp/test -nobig_menu --languages=Chinese,English,Japanese
  */
 
 /*
@@ -45,6 +45,8 @@ DEFINE_string(languages, "english,french,german",
              "comma-separated list of languages to offer in the 'lang' menu");
 DEFINE_int32(port, 8888, "What port to listen on");
 
+namespace {
+
 // 验证函数，看来至少要每种类型一个验证
 static 
 bool ValidatePort(const char* flagname, gflags::int32 value) 
@@ -57,6 +59,8 @@ bool ValidatePort(const char* flagname, gflags::int32 value)
 }
 // 定义port_dummy为了保证RegisterFlagValidator先于main函数执行
 static const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &ValidatePort);
+
+} // namespace
 
 
 int main( int argc, char **argv )

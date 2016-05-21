@@ -5,6 +5,30 @@
 
 using namespace std;
 
+/*
+ * About this
+ * If a lambda-capture includes a capture-default that is &, 
+ * the identifiers in the lambda-capture shall not be preceded by &. 
+ * If a lambda-capture includes a capture-default that is =, 
+ * the lambda-capture shall not contain  this and each identifier it 
+ * contains shall be preceded by &. An identifier or this shall not 
+ * appear more than once in a lambda-capture.
+ *
+ * So you can use [this], [&], [=] or [&,this] as a lambda-introducer 
+ * to capture the this pointer by value.
+ */
+void S2::f(int i)
+{
+    [&]{}; //ok: by-reference capture default
+    [=]{}; //ok: by-copy capture default
+    [&, i]{}; // ok: by-reference capture, except i is captured by copy
+    [=, &i]{}; // ok: by-copy capture, except i is captured by reference
+    [&, &i] {}; // error: by-reference capture when by-reference is the default
+    [=, this] {}; // error: this when = is the default
+    [=, *this]{}; // ok: captures the enclosing S2 by copy (C++17)
+    [i, i] {}; // error: i repeated
+    [this, *this] {}; // error: "this" repeated (C++17)
+}
 //!! 一般形式: [capture list](param list)->return type {impl}
 // param list and return type are optional, not mandatory
 // capture list 只能使用 local non-static 变量，可以使用定义在函数之外的 static 变量

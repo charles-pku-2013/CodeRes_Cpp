@@ -13,9 +13,12 @@ iends_with
 (all( text1, is_lower() )
 is_from_range('a','z')
 is_digit()
+trim_left
+trim_right
 trim_left_copy
 trim_right_copy
 trim_left_if(phone,is_any_of("0"));
+nRead = boost::lexical_cast<size_t>(v.value);
 boost::conversion::try_lexical_convert(v.value, nRead)
 
 void find()

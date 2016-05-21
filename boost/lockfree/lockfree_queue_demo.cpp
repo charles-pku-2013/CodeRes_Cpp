@@ -6,9 +6,15 @@
 #include <iostream>
 #include <boost/atomic.hpp>
 
+/*
+ * 只能存放基本类型数据
+ * error: static assertion failed: (boost::has_trivial_destructor<T>::value)
+ *      BOOST_STATIC_ASSERT((boost::has_trivial_destructor<T>::value));
+ */
 boost::atomic_int producer_count(0);
 boost::atomic_int consumer_count(0);
 
+// 初始size参数不是必须的
 boost::lockfree::queue<int> queue(128);
 
 const int iterations = 10000000;
