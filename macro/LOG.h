@@ -42,6 +42,9 @@
         } while(0)
 
 
+// from glog
+#define LOG_IF(severity, condition) \
+  !(condition) ? (void) 0 : google::LogMessageVoidify() & LOG(severity)
 
 
 
