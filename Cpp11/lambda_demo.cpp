@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <cstdio>
 
@@ -17,18 +18,20 @@ using namespace std;
  * So you can use [this], [&], [=] or [&,this] as a lambda-introducer 
  * to capture the this pointer by value.
  */
-void S2::f(int i)
-{
-    [&]{}; //ok: by-reference capture default
-    [=]{}; //ok: by-copy capture default
-    [&, i]{}; // ok: by-reference capture, except i is captured by copy
-    [=, &i]{}; // ok: by-copy capture, except i is captured by reference
-    [&, &i] {}; // error: by-reference capture when by-reference is the default
-    [=, this] {}; // error: this when = is the default
-    [=, *this]{}; // ok: captures the enclosing S2 by copy (C++17)
-    [i, i] {}; // error: i repeated
-    [this, *this] {}; // error: "this" repeated (C++17)
-}
+/*
+ * void S2::f(int i)
+ * {
+ *     [&]{}; //ok: by-reference capture default
+ *     [=]{}; //ok: by-copy capture default
+ *     [&, i]{}; // ok: by-reference capture, except i is captured by copy
+ *     [=, &i]{}; // ok: by-copy capture, except i is captured by reference
+ *     [&, &i] {}; // error: by-reference capture when by-reference is the default
+ *     [=, this] {}; // error: this when = is the default
+ *     [=, *this]{}; // ok: captures the enclosing S2 by copy (C++17)
+ *     [i, i] {}; // error: i repeated
+ *     [this, *this] {}; // error: "this" repeated (C++17)
+ * }
+ */
 //!! 一般形式: [capture list](param list)->return type {impl}
 // param list and return type are optional, not mandatory
 // capture list 只能使用 local non-static 变量，可以使用定义在函数之外的 static 变量
@@ -84,7 +87,7 @@ void test1()
     int outVar = 10;
 
     // 不指定capture方式默认不capture
-    auto f = [] {
+    auto f = [&] {
         printf( "%d\n", outVar );  
     };
 
@@ -93,11 +96,41 @@ void test1()
     exit(0);
 }
 
+// capture this
+struct Foo {
+    Foo( const std::string &_Name, int _i, int _j )
+        : name(_Name), i(_i), j(_j) {}
+
+    void work()
+    {
+        auto do_sum = [this]()->int {
+            // 在lambda内部可以向用本地变量引用成员变量, 可以直接修改他们
+            // 相当于是 [&]
+            i *= 2; j *= 2;
+            return i + j + name.length();
+        };
+
+        cout << do_sum() << endl;
+    }
+
+    int i, j;
+    std::string name;
+};
+
+void test2()
+{
+    Foo foo("charles", 3, 2);
+    foo.work();
+    cout << foo.i << " " << foo.j << endl;
+
+    exit(0);
+}
 
 int main()
 {
     // test();
-    test1();
+    // test1();
+    test2();
 
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
