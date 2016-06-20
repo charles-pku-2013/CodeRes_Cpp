@@ -1,6 +1,3 @@
-/*
- * c++ -o /tmp/reader reader.cpp -lrt -std=c++11 -pthread -g
- */
 #include "stream_buf.h"
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/streams/bufferstream.hpp>
@@ -16,6 +13,17 @@
 
 using namespace boost::interprocess;
 using namespace std;
+
+uint32_t get_number(const string &s)
+{
+    uint32_t ret = 0;
+    string::size_type pos = s.find_last_of(" ");
+    if (pos == string::npos)
+        return 0;
+    sscanf( s.c_str()+pos, "%u", &ret );
+    return ret;
+}
+
 
 int main()
 try {
@@ -40,18 +48,28 @@ try {
 
     string line;
     while (true) {
-        scoped_lock<interprocess_mutex> lk(pBuf->lock);
-        pBuf->cond.wait( lk, [&]{return pBuf->hasData;} );
-        if (getline(stream, line))
-            cout << "Reader reads line: " << line << endl;
-        else
-            cout << "Reader reads line fail!" << endl;
-        pBuf->hasData = false;
-        lk.unlock();
         // Clear errors and rewind
-        // 每次从头开始读, 注意 reader seekg (get) writer seekp (put)
+        // 每次从头开始写，否则缓存很快用光
         stream.clear();
         stream.seekg(0, std::ios::beg);
+
+        scoped_lock<interprocess_mutex> lk(pBuf->mtx);
+
+        // read msg from client
+        pBuf->condReq.wait( lk, [&]{return pBuf->reqReady;} );
+        if (getline(stream, line))
+            cout << "Server reads line: " << line << endl;
+        else
+            cout << "Server reads line fail!" << endl;
+        pBuf->reqReady = false;
+
+        // response client
+        stream.clear();
+        stream.seekp(0, std::ios::beg);
+        stream << "Server response msg " << get_number(line) << endl << flush; // 必须加endl 因为都是getline，否则会一直读到0
+        pBuf->respReady = true;
+        lk.unlock();
+        pBuf->condResp.notify_all();
     } // while
 
     cout << "Reader done!" << endl;

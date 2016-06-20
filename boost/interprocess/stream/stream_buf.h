@@ -11,13 +11,13 @@
 // 不是stdin那样阻塞，应该看做是文件stream
 // 同步是必须的
 struct StreamBuf {
-    StreamBuf() : hasData(false)
+    StreamBuf() : reqReady(false), respReady(false)
     { memset(buf, 0, sizeof(buf)); }
 
     char buf[STREAM_BUF_SIZE];
-    bool hasData;
-    boost::interprocess::interprocess_mutex      lock;
-    boost::interprocess::interprocess_condition  cond;
+    bool reqReady, respReady;
+    boost::interprocess::interprocess_mutex      mtx;
+    boost::interprocess::interprocess_condition  condReq, condResp;
 };
 
 

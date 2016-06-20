@@ -9,6 +9,34 @@
 
 using namespace std;
 
+// 读取json的标准流程
+void readJson()
+{
+    Json::Value  response;
+    Json::Reader reader;
+    if (!reader.parse(respString(), response)) {
+        m_strErrMsg = "Parse response json error.";
+        return INVALID_JSON;
+    } // if
+
+    try {
+        int status = response["status"].asInt();
+        if (status) {
+            m_strErrMsg = response["errmsg"].asString();
+            return status;
+        } // if
+        Json::Value &itemArray = response["result"][0]["most_like"];
+        result.reserve(itemArray.size());
+        for (Json::Value::iterator it = itemArray.begin(); it != itemArray.end(); ++it)
+            result.emplace_back(it->asString());
+        return 0;
+    } catch (const std::exception &ex) {
+        m_strErrMsg = "Parse response json error: ";
+        m_strErrMsg.append( ex.what() );
+        return INVALID_JSON;
+    } // try
+}
+
 void WriteJsonData(const char* filename)
 {
     Json::Reader reader;  
