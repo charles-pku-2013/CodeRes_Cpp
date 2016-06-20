@@ -1,6 +1,7 @@
 #include "stream_buf.h"
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/streams/bufferstream.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <iostream>
 #include <string>
 #include <memory>
@@ -8,6 +9,7 @@
 #include <chrono>
 
 #define SLEEP_MILLISECONDS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
+#define TIMEOUT         5000
 
 using namespace boost::interprocess;
 using namespace std;
@@ -42,7 +44,14 @@ try {
         // waiting for server response
         stream.clear();
         stream.seekg(0, std::ios::beg);
-        pBuf->condResp.wait(lk, [&]{ return pBuf->respReady; });
+        // pBuf->condResp.wait(lk, [&]{ return pBuf->respReady; });
+        //!! 不能用local_time
+        auto deadline = boost::posix_time::microsec_clock::universal_time() + boost::posix_time::milliseconds(TIMEOUT);
+        if (!pBuf->condResp.timed_wait(lk, deadline, [&]{ return pBuf->respReady; })) {
+            cerr << "Wait server response timeout!" << endl;
+            return 0;
+        } // if timeout
+        // pBuf->condResp.wait(lk, [&]{ return pBuf->respReady; });
         getline(stream, strResp);
         pBuf->respReady = false;
         lk.unlock();
