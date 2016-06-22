@@ -52,10 +52,10 @@ try {
             return 0;
         } // if timeout
         // pBuf->condResp.wait(lk, [&]{ return pBuf->respReady; });
-        getline(stream, strResp);
+        while (getline(stream, strResp))
+            cout << strResp << endl;
         pBuf->respReady = false;
         lk.unlock();
-        cout << strResp << endl;
     } // while
 
     return 0;

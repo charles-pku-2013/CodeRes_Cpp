@@ -28,8 +28,8 @@ uint32_t get_number(const string &s)
 int main()
 try {
     struct shm_remove {
-        shm_remove() { while (shared_memory_object::remove("MySharedMemory")); }
-        ~shm_remove(){ cout << "shm_remove destructor" << endl; while (shared_memory_object::remove("MySharedMemory")); }
+        shm_remove() { shared_memory_object::remove("MySharedMemory"); }
+        ~shm_remove(){ shared_memory_object::remove("MySharedMemory"); }
     } remover;
 
     managed_shared_memory segment(create_only,
@@ -67,6 +67,7 @@ try {
         stream.clear();
         stream.seekp(0, std::ios::beg);
         stream << "Server response msg " << get_number(line) << endl << flush; // 必须加endl 因为都是getline，否则会一直读到0
+        stream << "Server new line" << endl << flush;
         pBuf->respReady = true;
         lk.unlock();
         pBuf->condResp.notify_all();
