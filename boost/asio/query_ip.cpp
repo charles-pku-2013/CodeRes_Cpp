@@ -55,7 +55,6 @@ private:
         LOG(ERROR) << "handle_connect() caught exception: " << ex.what();
     }
 
-
 private:
     tcp::socket     socket_;
 };

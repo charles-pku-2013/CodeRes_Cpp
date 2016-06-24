@@ -40,6 +40,7 @@ void replace()
 {
     string str1="Hello  Dolly,   Hello World!";
     replace_first(str1, "Dolly", "Jane");      // str1 == "Hello  Jane,   Hello World!"
+    string newS = replace_first_copy(...);
     replace_last(str1, "Hello", "Goodbye");    // str1 == "Hello  Jane,   Goodbye World!"
     erase_all(str1, " ");                      // str1 == "HelloJane,GoodbyeWorld!"
     erase_head(str1, 6);                       // str1 == "Jane,GoodbyeWorld!"
