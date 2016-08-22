@@ -7,6 +7,10 @@
     std::unique_ptr<void, std::function<void(void*)> > \
         name((void*)-1, [&](void*) deleter )
 
+#define ON_FINISH_CLASS(name, deleter) \
+    std::unique_ptr<void, std::function<void(void*)> > \
+        name((void*)-1, [&, this](void*) deleter )
+
 #define ON_FINISH_TYPE(type, name, ptr, deleter) \
     std::unique_ptr<type, std::function<void(type*)> > \
         name((ptr), [&](type* pArg) deleter )
@@ -68,8 +72,8 @@ int main()
 {
     // test1();
     // test2();
-    // test3();
-    test4();
+    test3();
+    // test4();
 
     return 0;
 }
