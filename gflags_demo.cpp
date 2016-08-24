@@ -30,7 +30,12 @@
 
 #include <iostream>
 #include <cstdio>
+#include <vector>
+#include <string>
+#include <cstring>
 #include <gflags/gflags.h>
+
+#define SPACES " \t\f\r\v\n"
 
 using namespace std;
 
@@ -63,13 +68,35 @@ static const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &Valid
 } // namespace
 
 
+void test1( int argc, char **argv )
+{
+    /*
+     * error: ‘namespace’ definition is not allowed here
+     * 看来不能在函数中定义
+     */
+    DEFINE_int32(port, 0, "port arg in a function.");
+    cout << FLAGS_port << endl;
+}
+
+
 int main( int argc, char **argv )
 {
-    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    int idx = gflags::ParseCommandLineFlags(&argc, &argv, true);
+
+    for (; idx < argc; ++idx)
+        cout << argv[idx] << endl;
 
     cout << FLAGS_big_menu << endl;
     cout << FLAGS_languages << endl;
     cout << FLAGS_port << endl;
+
+    // string cmd = "test -port 1234";
+    // vector<char*> opts;
+    // char *p = const_cast<char*>(cmd.c_str());
+    // for (p = strtok(p, SPACES); p; p = strtok(NULL, SPACES))
+        // opts.push_back(p);
+
+    // test1(opts.size(), &opts[0]);
 
     return 0;
 }
