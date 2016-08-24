@@ -12,5 +12,7 @@
 !*.cu
 !*.cs
 !*.cin
+!*.cfg
+!*.rsp
 !.gitignore
 !Makefile
