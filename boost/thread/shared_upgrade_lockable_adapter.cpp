@@ -1,6 +1,15 @@
 /*
  * c++ -o /tmp/test shared_lockable.cpp -lboost_thread -lboost_system -lglog -std=c++11 -g
  * GLOG_logtostderr=1 /tmp/test
+ *
+ * lockable_adapter 继承关系
+ * basic_lockable_adapter <-
+ * lockable_adapter <-
+ * timed_lockable_adapter <- (Only support try_lock_for and try_lock_until)
+ * shared_lockable_adapter <-
+ * upgrade_lockable_adapter
+ *
+ *
  */
 #include <boost/thread.hpp>
 #include <boost/thread/lockable_adapter.hpp>
@@ -77,3 +86,29 @@ int main( int argc, char **argv )
 
     return 0;
 }
+
+
+#if 0
+// timed lock example:
+bool setValue(const std::string &id, const double &v)
+{
+    auto &table = m_mapTable[id[0]][id[1]];
+    boost::unique_lock<DbMap> lockTable(table, boost::defer_lock);
+    lockTable.try_lock_for(boost::chrono::seconds(LOCK_TIMEOUT));
+    if (lockTable.owns_lock()) {
+        auto it = table.find(id);
+        if (it == table.end())
+            return false;
+        boost::unique_lock<ValueArray> lockArr(m_arrHasValue, boost::defer_lock);
+        lockArr.try_lock_for(boost::chrono::seconds(LOCK_TIMEOUT));
+        if (lockArr.owns_lock()) {
+            Item::pointer pItem = it->second;
+            table.erase(it);
+            pItem->setValue(v);
+            m_arrHasValue.push_back(pItem);
+            return true;
+        } // if
+    } // if
+    return false;
+}
+#endif
