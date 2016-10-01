@@ -3,6 +3,7 @@
 #include <functional>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
+#include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 
 using namespace boost;
@@ -27,7 +28,7 @@ struct Employee{
 // boost::multi_index::multi_index_container
 // You can also choose hashed_non_unique
 typedef multi_index_container <
-Employee,
+    Employee,
     indexed_by <
         ordered_unique<member<Employee, int, &Employee::id> >,
         ordered_non_unique<member<Employee, string, &Employee::name>, std::greater<std::string> >,
