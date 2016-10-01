@@ -89,7 +89,7 @@ int main( int argc, char **argv )
 
 
 #if 0
-// timed lock example:
+// timed lock example: try_lock_for
 bool setValue(const std::string &id, const double &v)
 {
     auto &table = m_mapTable[id[0]][id[1]];
@@ -104,6 +104,31 @@ bool setValue(const std::string &id, const double &v)
         if (lockArr.owns_lock()) {
             Item::pointer pItem = it->second;
             table.erase(it);
+            pItem->setValue(v);
+            m_arrHasValue.push_back(pItem);
+            return true;
+        } // if
+    } // if
+    return false;
+}
+#endif
+
+#if 0
+// timed lock example: try_lock_until
+bool setValue(const std::string &id, const double &v)
+{
+    auto &table = m_mapTable[id[0]][id[1]];
+    auto deadline = boost::chrono::steady_clock::now() + boost::chrono::seconds(LOCK_TIMEOUT);
+    boost::unique_lock<DbMap> lockTable(table, boost::defer_lock);
+    if (lockTable.try_lock_until(deadline)) {
+        auto it = table.find(id);
+        if (it == table.end())
+            return false;
+        boost::unique_lock<ValueArray> lockArr(m_arrHasValue, boost::defer_lock);
+        if (lockArr.try_lock_until(deadline)) {
+            Item::pointer pItem = it->second;
+            table.erase(it);
+            --m_nSize;
             pItem->setValue(v);
             m_arrHasValue.push_back(pItem);
             return true;
