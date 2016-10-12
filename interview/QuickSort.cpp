@@ -30,8 +30,8 @@ Iter Partition( Iter beg, Iter end, Predicate pred )
         if (beg < end) // 再检查
             std::iter_swap(beg, end);
     } // while
-    
-    return beg;
+
+    return beg;     //!! NOTE
 }
 
 template <typename Iter, typename Predicate>
