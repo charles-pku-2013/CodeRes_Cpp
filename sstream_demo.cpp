@@ -33,10 +33,32 @@ void test1()
     cout << stream.tellg() << endl;
 }
 
+void test2()
+{
+    // sstream 类似队列，后面写入，前面读取
+    // 要么指定初始字符串，要么全程用 << >>
+    stringstream stream;
+    stream << 100;
+    stream << ' ' << 200;
+    cout << stream.str() << endl;
+
+    int n;
+    stream >> n;
+    cout << "n = " << n << endl;;
+    stream << ' ' << 300;
+    cout << stream.str() << endl;
+    
+    stream >> n;
+    cout << "n = " << n << endl;;
+}
+
 int main()
 {
     // test1();
     // return 0;
+    
+    test2();
+    return 0;
 
     string s("100 200 300");
 
