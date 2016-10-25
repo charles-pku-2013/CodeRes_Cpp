@@ -18,12 +18,11 @@ public:
 
     bool push(const T& value, int timeout = INT_MAX)
     {
-        auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+        int count = 0;
 
         while (!m_Queue.bounded_push(value)) {
-            std::this_thread::yield();
-            auto now = std::chrono::steady_clock::now();
-            if (now >= deadline)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            if (++count >= timeout)
                 return false;
         } // while
 
@@ -32,12 +31,11 @@ public:
 
     bool pop(T& value, int timeout = INT_MAX)
     {
-        auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+        int count = 0;
         
         while (!m_Queue.pop(value)) {
-            std::this_thread::yield();
-            auto now = std::chrono::steady_clock::now();
-            if (now >= deadline)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            if (++count >= timeout)
                 return false;
         } // while
 

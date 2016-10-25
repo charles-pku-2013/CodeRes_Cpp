@@ -12,10 +12,21 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/format.hpp>
 #include <cstdio>
 #include <iostream>
 #include <algorithm>
+#include <set>
 #include <boost/detail/lightweight_test.hpp>
+
+typedef boost::uuids::uuid	uuid_t;
+
+inline
+std::ostream& operator << (std::ostream &os, const uuid_t &uuid)
+{
+	os << boost::uuids::to_string(uuid);
+	return os;
+}
 
 class object
 {
@@ -86,8 +97,11 @@ int main(int, char*[])
  *     return boost::report_errors();
  */
 
-    boost::uuids::uuid u((boost::uuids::random_generator())());
-    cout << boost::uuids::to_string(u) << endl;
+	// NOTE!!! uuid 16字节，每个字节占两位16进制数，打印出来是32个字符
+
+
+    uuid_t u((boost::uuids::random_generator())());
+    cout << u << endl;
     cout << u.size() << endl;
     char buf[16];
     std::copy( u.begin(), u.end(), buf );
@@ -95,6 +109,19 @@ int main(int, char*[])
     for( int i = 0; i < u.size(); ++i )
         printf("%02x ", (uint8_t)buf[i]);
     putchar('\n');
+
+	for (auto it = u.begin(); it != u.end(); ++it)
+		cout << boost::format("%02x ") % (uint16_t)(*it);	// uint8_t 会被认作char
+		//printf("%02x ", (uint8_t)*it);
+	cout << endl;
+
+	std::set<uuid_t>	idSet;
+	for (int i = 0; i < 10; ++i)
+		idSet.insert(boost::uuids::random_generator()());
+
+	cout << idSet.size() << endl;
+	for (auto &v : idSet)
+		cout << boost::uuids::to_string(v) << endl;
 
     return 0;
 }
