@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <typeinfo>
 
 
 using namespace std;
@@ -32,6 +33,10 @@ int main()
     cout << nanoseconds.count() << endl;
 	snprintf(buf, 17, "%016ld", microseconds.count());
 	cout << buf << endl;
+
+    cout << typeid(now).name() << endl;
+    cout << typeid(d).name() << endl;
+    cout << typeid(seconds).name() << endl;
 
     return 0;
 }

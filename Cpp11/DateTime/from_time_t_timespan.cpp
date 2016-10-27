@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <ctime>
+#include <typeinfo>
 
 #define THIS_THREAD_ID        std::this_thread::get_id()
 #define SLEEP_SECONDS(x)      std::this_thread::sleep_for(std::chrono::seconds(x))
@@ -27,6 +28,7 @@ int main()
     auto elapsed = tp2 - tp1;
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
     cout << seconds.count() << endl;
+    cout << typeid(elapsed).name() << endl;
 
     return 0;
 }

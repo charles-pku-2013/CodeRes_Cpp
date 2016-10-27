@@ -9,11 +9,11 @@ public:
         my_context(boost::context::make_fcontext(
             stack.data() + stack.size(),
             stack.size(),
-            Coroutine::dispatch))
+            Coroutine::dispatch)) // 指定跳转(context switch)回调函数
     {}
     virtual ~Coroutine() {}
 
-    void operator()() {
+    void operator()() { // 最后一个参数相当于附带参数指针，类似于 pthread 线程函数参数
         boost::context::jump_fcontext(&yield_context, my_context, reinterpret_cast<intptr_t>(this));
     }
 
@@ -33,7 +33,7 @@ private:
 
 private:
     boost::context::fcontext_t    *my_context;
-    boost::context::fcontext_t    yield_context;
+    boost::context::fcontext_t    yield_context; // 跳转到的context，鬼知道是什么，相当于临时变量，由系统决定
     std::array<intptr_t, 64*1024> stack;
 };
 
