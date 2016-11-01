@@ -6,6 +6,7 @@
 #include <vector>
 #include <deque>
 #include <iostream>
+#include <cassert>
 
 
 template< typename T, typename ElemCmp = std::less<T> >
