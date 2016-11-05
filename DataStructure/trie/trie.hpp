@@ -229,6 +229,9 @@ public:
 
 protected:
     typename Node::pointer    m_pRoot;
+
+    // NOTE!!! 以下方法为了减少重复元素占用内存，但只适合于元素插入后就不改变的情况
+    // 若元素中还有其他filed需要插入后改变则不可以使用
     ElemSet                   m_setElems; // check when remove node
 };
 
