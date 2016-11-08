@@ -1,6 +1,10 @@
+/*
+ * c++ -o /tmp/test equal_range_is_binary_search.cpp -lglog -std=c++11 -g
+ */
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <set>
 #include <glog/logging.h>
 
 using namespace std;
@@ -17,7 +21,7 @@ struct Foo {
 };
 
 
-int main()
+void test_vec()
 {
     vector<Foo> vec;
     vec.reserve(100);
@@ -37,10 +41,6 @@ int main()
         }
     } cmp;
 
-    // auto ret = std::equal_range(vec.begin(), vec.end(), 5, cmp);
-    // for (auto it = ret.first; it != ret.second; ++it)
-        // cout << *it << endl;
-    
     int n;
     while (cin >> n) {
         cout << "Looking up with binary_search:" << endl;
@@ -61,6 +61,36 @@ int main()
         else
             cout << *ret.first << endl;
     } // while
+}
+
+
+#if 0
+// WRONG!!!
+void test_set()
+{
+    struct Cmp {
+        bool operator()(const Foo &f, int n) const
+        { 
+            LOG(INFO) << "Cmp1 " << f.n << " and " << n;
+            return f.n < n; 
+        }
+        bool operator()(int n, const Foo &f) const
+        { 
+            LOG(INFO) << "Cmp2 " << n << " and " << f.n;
+            return n < f.n; 
+        }
+    } cmp;
+
+    set<Foo, Cmp> set;
+    for (int i = 1; i <= 100; ++i)
+        set.emplace(Foo{i, (char)(('A' + i) % ('Z' + 1))});
+}
+#endif
+
+
+int main()
+{
+    test_vec();
 
     return 0;
 }
