@@ -1,5 +1,5 @@
 /*
- * c++ -o /tmp/test test.cpp -lglog -lboost_thread -lboost_system -std=c++11 -g
+ * c++ -o /tmp/test post_vs_dispatch.cpp -lglog -lboost_thread -lboost_system -std=c++11 -g
  * GLOG_logtostderr=1 /tmp/test
  */
 #include <iostream>
@@ -66,7 +66,7 @@ int main( int argc, char **argv )
 
     boost::thread_group thrgrp;
 
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < 5; ++i)
         thrgrp.create_thread( run_io_service );
 
     SLEEP_SECONDS(1);
@@ -84,3 +84,30 @@ int main( int argc, char **argv )
     return 0;
 }
 
+// dispatch with 5 io thread
+// 只在一个线程中工作
+/*
+ * I1216 12:51:20.269004  3469 post_vs_dispatch.cpp:62] main thread 7f43a1ad0780 running...
+ * I1216 12:51:20.269707  3470 post_vs_dispatch.cpp:39] IO thread 7f43a005e700 running...
+ * I1216 12:51:20.269909  3472 post_vs_dispatch.cpp:39] IO thread 7f439f05c700 running...
+ * I1216 12:51:20.269927  3471 post_vs_dispatch.cpp:39] IO thread 7f439f85d700 running...
+ * I1216 12:51:20.269950  3473 post_vs_dispatch.cpp:39] IO thread 7f439e85b700 running...
+ * I1216 12:51:20.269980  3474 post_vs_dispatch.cpp:39] IO thread 7f439e05a700 running...
+ * I1216 12:51:21.270568  3470 post_vs_dispatch.cpp:51] Job 1 started in thread 7f43a005e700
+ * I1216 12:51:23.271471  3470 post_vs_dispatch.cpp:51] Job 2 started in thread 7f43a005e700
+ * I1216 12:51:25.272882  3470 post_vs_dispatch.cpp:51] Job 3 started in thread 7f43a005e700
+ * I1216 12:51:27.274181  3470 post_vs_dispatch.cpp:51] Job 4 started in thread 7f43a005e700
+ * I1216 12:51:29.275575  3470 post_vs_dispatch.cpp:51] Job 5 started in thread 7f43a005e700
+ * I1216 12:51:31.277009  3470 post_vs_dispatch.cpp:51] Job 6 started in thread 7f43a005e700
+ * I1216 12:51:33.278439  3470 post_vs_dispatch.cpp:51] Job 7 started in thread 7f43a005e700
+ * I1216 12:51:35.279350  3470 post_vs_dispatch.cpp:51] Job 8 started in thread 7f43a005e700
+ * 
+ * I1216 12:51:35.669036  3469 post_vs_dispatch.cpp:77] Trying to stop io_service...
+ * I1216 12:51:35.669183  3472 post_vs_dispatch.cpp:41] IO thread 7f439f05c700 terminating...
+ * I1216 12:51:35.669240  3471 post_vs_dispatch.cpp:41] IO thread 7f439f85d700 terminating...
+ * I1216 12:51:35.669294  3473 post_vs_dispatch.cpp:41] IO thread 7f439e85b700 terminating...
+ * I1216 12:51:35.669348  3474 post_vs_dispatch.cpp:41] IO thread 7f439e05a700 terminating...
+ * I1216 12:51:37.280418  3470 post_vs_dispatch.cpp:51] Job 9 started in thread 7f43a005e700
+ * I1216 12:51:39.281849  3470 post_vs_dispatch.cpp:51] Job 10 started in thread 7f43a005e700
+ * I1216 12:51:41.283244  3470 post_vs_dispatch.cpp:51] Job 11 started in thread 7f43a005e700
+ */
