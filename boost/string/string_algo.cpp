@@ -3,8 +3,10 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string_regex.hpp>       // optional
 
+#include <boost/lexical_cast.hpp>
 boost::lexical_cast<type>(str)          // 错误跑出异常 bad_lexical_cast : std::bad_cast
 boost::conversion::try_lexical_convert(str, dstVal)  // return true on success false on fail
+
 to_upper
 trim
 to_lower_copy
