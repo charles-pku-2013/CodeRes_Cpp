@@ -22,6 +22,7 @@ void test1()
     cout << ret << endl;
 }
 
+
 void test2()
 {
     Foo obj;
