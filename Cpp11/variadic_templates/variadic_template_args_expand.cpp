@@ -33,7 +33,7 @@
 
 #include <glog/logging.h>
 #include <iostream>
-using std::cerr;
+using std::cout;
 using std::ostream; using std::cout; using std::endl;
 
 #include <string>
@@ -57,22 +57,22 @@ void print(const T &t)  // for the last arg in rest
 
     // std::is_same 判断类型是否一样
     // if( is_same< T, int>() ) {
-        // cerr << "print int" << endl;
+        // cout << "print int" << endl;
     // } else if( is_same< T, char>() ) {
-        // cerr << "print char" << endl;
+        // cout << "print char" << endl;
     // } else if( is_same< T, char*>() ) {
-        // cerr << "print string" << endl;
+        // cout << "print string" << endl;
     // } else {
-        // cerr << "print unknown" << endl;
+        // cout << "print unknown" << endl;
     // } // if
-    cerr << t; // no separator after the last element in the pack
+    cout << t; // no separator after the last element in the pack
 }
 
 template <typename T, typename... Args>                 
-void print(const T &t, const Args&... rest)//expand Args
+void print(const T &t, Args&&... rest)//expand Args
 {
     LOG(INFO) << "print variadic version...";
-    cerr << t << ", ";              //!! for the first arg
+    cout << t << ", ";              //!! for the first arg
     print(rest...);                     //expand rest
 }
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     google::InitGoogleLogging(argv[0]);
 
     print(10, "Hello", 'a', 12);
-    cerr << endl;
+    cout << endl;
     
     return 0;
 }
