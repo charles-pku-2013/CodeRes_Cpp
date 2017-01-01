@@ -68,11 +68,11 @@ int main()
 {
     using namespace std;
 
-    // Action<int,int> add([](int x, int y){std::cout << (x+y) << std::endl;}, 3, 4);
-    // add.act();
+    Action<int,int> add([](int x, int y){std::cout << (x+y) << std::endl;}, 3, 4);
+    add.act();
 
-    // Action<const char*> printstr([](const char *str){ cout << str << endl; }, "Hello");
-    // printstr.act();
+    Action<const char*> printstr([](const char *str){ cout << str << endl; }, "Hello");
+    printstr.act();
 
     const char *str = "Hello";
     Action<int, char, const char*, double> act1(test, 1, 'a', "Hello", 3.14); // 不可以传str
