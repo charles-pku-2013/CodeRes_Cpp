@@ -44,6 +44,7 @@ int main()
 
     serve((SharedBuffer*)ptr);
 
+    // 删除共享内存
     shmctl(id, IPC_RMID, 0);  
 
     return 0;
