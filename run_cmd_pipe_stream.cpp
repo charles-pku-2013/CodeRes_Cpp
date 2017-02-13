@@ -1,5 +1,5 @@
 /*
- * c++ -o /tmp/test run_cmd.cpp -lboost_iostreams -std=c++11 -pthread -g
+ * c++ -o /tmp/test run_cmd_pipe_stream.cpp -lboost_iostreams -std=c++11 -pthread -g
  */
 #include <iostream>
 #include <string>
@@ -14,10 +14,6 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
-
-#define ON_FINISH(name, deleter) \
-    std::unique_ptr<void, std::function<void(void*)> > \
-        name((void*)-1, [&](void*) deleter )
 
 // static std::string *pstrOutput = NULL;
 // static pid_t        g_chldPid;
@@ -91,15 +87,12 @@ int run_cmd(const std::string &cmd, const std::string &input, std::string &outpu
 	close(fd1[0]);
 	close(fd2[1]);
 
-    ON_FINISH(_pClose0, {close(fd2[0]);});
-    ON_FINISH(_pClose1, {close(fd1[1]);});
-
     typedef boost::iostreams::stream< boost::iostreams::file_descriptor_source >
                     FDRdStream;
     typedef boost::iostreams::stream< boost::iostreams::file_descriptor_sink >
                     FDWrStream;
-    FDRdStream pipeRdStream( fd2[0], boost::iostreams::never_close_handle );
-    FDWrStream pipeWrStream( fd1[1], boost::iostreams::never_close_handle );
+    FDRdStream pipeRdStream( fd2[0], boost::iostreams::close_handle );
+    FDWrStream pipeWrStream( fd1[1], boost::iostreams::close_handle );
 
     // send input
     if (!input.empty()) {
