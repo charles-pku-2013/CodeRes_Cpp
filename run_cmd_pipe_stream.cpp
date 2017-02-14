@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <csignal>
-#include <memory>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
