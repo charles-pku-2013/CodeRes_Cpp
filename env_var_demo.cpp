@@ -9,7 +9,7 @@
 using namespace std;
 
 
-// #if 0
+#if 0
 extern char **environ;
 int main(int argc, char **argv)
 {
@@ -28,17 +28,18 @@ int main(int argc, char **argv)
 
     return 0;
 }
-// #endif
+#endif
 
 
-#if 0
+// #if 0
 int main()
 {
     setenv("TestKey", "TestValue", 1);  // NOTE!!! 子进程继承了父进程的环境变量
     system("nohup /tmp/test > /tmp/out.txt &");
+    // system("GLOG_log_dir=\".\" nohup /tmp/test > /tmp/out.txt &");  // OK
     unsetenv("TestKey");
 
     return 0;
 }
-#endif
+// #endif
 

@@ -6,6 +6,10 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  */
 
+/*
+ * c++ -o /tmp/svr hello_world_async_server_with_work_queue.cpp -lcppnetlib-uri -lcppnetlib-client-connections -lcppnetlib-server-parsers -lssl -lcrypto -lboost_thread -lboost_system -std=c++11 -pthread -g
+ */
+
 #include <boost/network/include/http/server.hpp>
 #include <boost/network/uri.hpp>
 
