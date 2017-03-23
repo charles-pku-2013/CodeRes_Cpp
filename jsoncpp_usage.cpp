@@ -23,14 +23,19 @@ void test(const std::string &inFile)
         return;
     } // if
 
-    Json::Value &jv = root["encoding1"];
+    Json::Value &jv = root["encoding"];
     if (!jv) {
         cerr << "No attr \"encoding\" found!" << endl;
     } else {
         encoding = jv.asString();
+        cout << encoding << endl;
+        try {
+            int n = jv.asInt();
+            cout << n << endl;
+        } catch (const Json::LogicError &err) {
+            cerr << err.what() << endl;
+        } // try
     } // if
-
-    cout << encoding << endl;
 }
 
 
@@ -39,6 +44,35 @@ int main(int argc, char **argv)
     test(argv[1]);
 
     return 0;
+}
+
+
+// example
+void gen_json(const std::string &filename, const std::vector<FeatureInfo::pointer> &fields)
+{
+    using namespace std;
+
+    Json::Value root;
+    root["nfeatures"] = (Json::UInt)(fields.size());
+    root["sep"] = "," SPACES;
+
+    for (const auto &pf : fields) {
+        Json::Value fItem;
+        fItem["name"] = pf->name;
+        fItem["type"] = pf->type;
+        for (const string &v : pf->values)
+            fItem["values"].append(v);
+        // 这样插入新数组元素 insert new array elem
+        auto &back = root["features"].append(Json::Value());
+        back.swap(fItem);
+    } // for
+
+    Json::StyledWriter writer; // human readable 
+    string outStr = writer.write(root);
+
+    ofstream ofs(filename, ios::out);
+    THROW_RUNTIME_ERROR_IF(!ofs, "Cannot open " << filename << " for writting!");
+    ofs << outStr << flush;
 }
 
 

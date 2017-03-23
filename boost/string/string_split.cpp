@@ -16,7 +16,7 @@ int main()
     vector<string> words;
     boost::split(words, s, boost::is_any_of(SPACES));
 
-    copy(words.begin(), words.end(), ostream_iterator<string>(cout, "\n"));
+    copy(words.begin(), words.end(), ostream_iterator<string>(cout, "\n"), boost::token_compress_on);
 
     return 0;
 }

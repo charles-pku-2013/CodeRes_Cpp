@@ -97,6 +97,11 @@ void split()
     // SplitVec == { "hello abc","ABC","aBc goodbye" }
 }
 
+// boost::split
+//!! NOTE!!! 检查结果中有没有空串
+boost::split(targetStrVec, origStr, boost::is_any_of("," SPACES), boost::token_compress_on);
+// 不加最后的标记会产生空字符串
+// origStr最好先trim一下
 
 
 
