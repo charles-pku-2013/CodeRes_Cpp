@@ -1,7 +1,7 @@
 /*
  * c++ -o /tmp/test jsoncpp_demo.cpp -ljsoncpp -std=c++11 -g
  */
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,6 +9,7 @@
 
 using namespace std;
 
+#if 0
 // 读取json的标准流程
 void readJson()
 {
@@ -104,11 +105,24 @@ void test1()
     if (val.isNull())
         cout << "no property named MyName" << endl;
 }
+#endif
+
+void test2()
+{
+    Json::Value root;
+    root["multi"] = false;
+    root["sep"] = ":";
+
+    Json::StyledWriter writer;  
+    string outStr = writer.write(root);
+    cout << outStr << endl;
+}
 
 int main()
 {
     // test();
-    test1();
+    // test1();
+    test2();
 
     return 0;
 }
