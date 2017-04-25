@@ -136,13 +136,24 @@ void test2()
     cout << ctime(&t) << endl;
 }
 
+static
+void test6()
+{
+    const char *str = "20160518";   // 紧凑型
+    std::time_t tm = 0;
+    bool ret = str2time(str, tm, "%Y%m%d");
+    cout << ret << endl;
+    cout << time2str(tm) << endl;
+}
+
 int main()
 {
     // test1();
     // test2();
     // test3();
-    test4();
-    test5();
+    // test4();
+    // test5();
+    test6();
 
     return 0;
 }

@@ -64,7 +64,6 @@ void test_vec()
 }
 
 
-#if 0
 // WRONG!!!
 void test_set()
 {
@@ -81,16 +80,42 @@ void test_set()
         }
     } cmp;
 
-    set<Foo, Cmp> set;
+    struct FooCmp {
+        bool operator() (const Foo &lhs, const Foo &rhs) const
+        { return lhs.n < rhs.n; }  
+    };
+
+    set<Foo, FooCmp> set;
     for (int i = 1; i <= 100; ++i)
         set.emplace(Foo{i, (char)(('A' + i) % ('Z' + 1))});
+
+    int n;
+    while (cin >> n) {
+        cout << "Looking up with binary_search:" << endl;
+        bool found = std::binary_search(set.begin(), set.end(), n, cmp);
+        cout << (found ? "Found!" : "Not found!") << endl;
+
+        cout << "Looking up with lower_bound:" << endl;
+        auto it = std::lower_bound(set.begin(), set.end(), n, cmp);
+        if (it == set.end())
+            cout << "Not found!" << endl;
+        else
+            cout << *it << endl;
+
+        cout << "Looking up with equal_range:" << endl;
+        auto ret = std::equal_range(set.begin(), set.end(), n, cmp);
+        if (ret.first == ret.second)
+            cout << "Not found!" << endl;
+        else
+            cout << *ret.first << endl;
+    } // while
 }
-#endif
 
 
 int main()
 {
-    test_vec();
+    // test_vec();
+    test_set();
 
     return 0;
 }
