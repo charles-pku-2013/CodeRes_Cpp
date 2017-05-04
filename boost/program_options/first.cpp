@@ -19,13 +19,13 @@ int main(int ac, char* av[])
 
         po::options_description desc("Allowed options");
         desc.add_options()
-            ("help", "produce help message")
-            ("compression", po::value<double>(), "set compression level")
-        ;
+            ("help,h", "produce help message")
+            ("compression,c", po::value<double>(), "set compression level")
+            ("debug", po::value<bool>(), "debug mode");
 
-        po::variables_map vm;        
+        po::variables_map vm;
         po::store(po::parse_command_line(ac, av, desc), vm);
-        po::notify(vm);    
+        po::notify(vm);
 
         if (vm.count("help")) {
             cout << desc << "\n";
@@ -33,11 +33,19 @@ int main(int ac, char* av[])
         }
 
         if (vm.count("compression")) {
-            cout << "Compression level was set to " 
+            cout << "Compression level was set to "
                  << vm["compression"].as<double>() << ".\n";
         } else {
             cout << "Compression level was not set.\n";
         }
+
+        // cout << vm["test"].as<int>() << endl;
+        auto it = vm.find("compression");
+        if (it == vm.end()) cout << "compression not set!" << endl;
+        else cout << "compression set to " << it->second.as<double>() << endl;
+
+        cout << vm["debug"].as<bool>() << endl;
+
     }
     catch(exception& e) {
         cerr << "error: " << e.what() << "\n";
