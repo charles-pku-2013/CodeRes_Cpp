@@ -6,6 +6,14 @@
 
 using namespace std;
 
+/*
+ * jsoncpp 不存在的元素用默认构造函数 
+ * jv["non_exist"].asString() == ""
+ * jv["non_exist"].asInt() == 0
+ * 用下标访问数组
+ *     for (Json::ArrayIndex i = 0; i < jsTaskArr.size(); ++i)
+ */
+
 static
 void test(const std::string &inFile)
 {
