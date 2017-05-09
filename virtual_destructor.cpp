@@ -27,7 +27,7 @@ struct Base {
 
 struct Derived : Base {
     // Derived 中可以不必显示声明析构函数, B也会析构
-    // virtual ~Derived()
+    // ~Derived()
     // { cout << "Derived destructor" << endl; }
 
     B b;  
