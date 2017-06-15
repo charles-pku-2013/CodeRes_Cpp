@@ -8,9 +8,8 @@
 
 
 // NOTE!!! 用指针实现的
-#if 0
 template <class T>
-class reference_wrapper {
+class my_reference_wrapper {
 public:
   // types
   typedef T type;
@@ -36,7 +35,6 @@ public:
 private:
   T* _ptr;
 };
-#endif
 
 struct Employee {
     std::string     name;
