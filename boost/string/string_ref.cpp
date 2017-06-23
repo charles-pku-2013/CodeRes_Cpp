@@ -29,7 +29,7 @@ int main()
 }
 
 
-#if 0
+// #if 0
 
 // constructor
 BOOST_CONSTEXPR basic_string_ref ();    // Constructs an empty string_ref
@@ -59,4 +59,4 @@ bool starts_with(basic_string_ref x) const ;
 bool ends_with(charT c) const ;
 bool ends_with(basic_string_ref x) const ;
 
-#endif
+// #endif
