@@ -105,35 +105,76 @@ int main()
 
 #if 0
 
-// constructor
-BOOST_CONSTEXPR basic_string_ref ();    // Constructs an empty string_ref
-BOOST_CONSTEXPR basic_string_ref(const charT* str); // Constructs from a NULL-terminated string
-BOOST_CONSTEXPR basic_string_ref(const charT* str, size_type len); // Constructs from a pointer, length pair
+Construction and copying:
 
-// Constructs from a std::string
-template<typename Allocator>
-basic_string_ref(const std::basic_string<charT, traits, Allocator>& str);
+    basic_string_ref ();    // Constructs an empty string_ref
+    basic_string_ref(const charT* str); // Constructs from a NULL-terminated string
+    basic_string_ref(const charT* str, size_type len); // Constructs from a pointer, length pair
 
-basic_string_ref (const basic_string_ref &rhs);
-basic_string_ref& operator=(const basic_string_ref &rhs);
+    // Constructs from a std::string
+    template<typename Allocator>
+    basic_string_ref(const std::basic_string<charT, traits, Allocator>& str); 
 
-All iterators are const_iterators
+    basic_string_ref (const basic_string_ref &rhs);
+    basic_string_ref& operator=(const basic_string_ref &rhs);
 
-BOOST_CONSTEXPR const charT& operator[](size_type pos) const ;
-const charT& at(size_t pos) const ;
-BOOST_CONSTEXPR const charT& front() const ;
-BOOST_CONSTEXPR const charT& back()  const ;
-BOOST_CONSTEXPR const charT* data()  const ;
+string_ref does not define a move constructor nor a move-assignment operator 
+because copying a string_ref is just a cheap as moving one.
+
+Basic container-like functions:
+
+    size_type size()     const ;
+    size_type length()   const ;
+    size_type max_size() const ;
+    bool empty()         const ;
+
+    // All iterators are const_iterators
+    const_iterator  begin() const ;
+    const_iterator cbegin() const ;
+    const_iterator    end() const ;
+    const_iterator   cend() const ;
+    const_reverse_iterator         rbegin() const ;
+    const_reverse_iterator        crbegin() const ;
+    const_reverse_iterator           rend() const ;
+    const_reverse_iterator          crend() const ;
+
+Access to the individual elements (all of which are const):
+
+    const charT& operator[](size_type pos) const ;
+    const charT& at(size_t pos) const ;
+    const charT& front() const ;
+    const charT& back()  const ;
+    const charT* data()  const ;
 
 Modifying the string_ref (but not the underlying data):
-void clear();
-void remove_prefix(size_type n);
-void remove_suffix(size_type n);
 
-BOOST_CONSTEXPR basic_string_ref substr(size_type pos, size_type n=npos) const ; // Creates a new string_ref
-bool starts_with(charT c) const ;
-bool starts_with(basic_string_ref x) const ;
-bool ends_with(charT c) const ;
-bool ends_with(basic_string_ref x) const ;
+    void clear();
+    void remove_prefix(size_type n);
+    void remove_suffix(size_type n);
+
+Searching:
+
+    size_type find(basic_string_ref s) const ;
+    size_type find(charT c) const ;
+    size_type rfind(basic_string_ref s) const ;
+    size_type rfind(charT c) const ;
+    size_type find_first_of(charT c) const ;
+    size_type find_last_of (charT c) const ;
+
+    size_type find_first_of(basic_string_ref s) const ;
+    size_type find_last_of(basic_string_ref s) const ;
+    size_type find_first_not_of(basic_string_ref s) const ;
+    size_type find_first_not_of(charT c) const ;
+    size_type find_last_not_of(basic_string_ref s) const ;
+    size_type find_last_not_of(charT c) const ;
+
+
+String-like operations:
+
+    basic_string_ref substr(size_type pos, size_type n=npos) const ; // Creates a new string_ref
+    bool starts_with(charT c) const ;
+    bool starts_with(basic_string_ref x) const ;
+    bool ends_with(charT c) const ;
+    bool ends_with(basic_string_ref x) const ;
 
 #endif
