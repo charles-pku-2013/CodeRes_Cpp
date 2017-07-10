@@ -10,7 +10,7 @@ struct ListNode {
 };
 
 
-void create_list(ListNode *&p)
+void create_list(ListNode *&p) // 🔴
 {
     int data;
     cin >> data;
@@ -55,12 +55,27 @@ ListNode* reverse_list(ListNode *p)
 }
 
 
+ListNode* reverse_list_norecur(ListNode *p)
+{
+    ListNode *prev = NULL;
+
+    while (p) {
+        ListNode *q = p->next;
+        p->next = prev;
+        prev = p;
+        p = q;
+    } // while
+
+    return prev;
+}
+
 int main()
 {
     ListNode *pl = NULL;
     create_list(pl);
     print_list(pl);
-    pl = reverse_list(pl);
+    // pl = reverse_list(pl);
+    pl = reverse_list_norecur(pl);
     print_list(pl);
 
     return 0;
