@@ -77,6 +77,7 @@ void map_key_test()
     cout << endl;
 
     // string_ref 可以接受 const char* 也可以接受 std::string
+    // 形参 string_ref_type 也可以是 const string&
     auto lookup = [&](string_ref_type name) {
         auto it = table.find(name);
         if (it == table.end()) {
