@@ -31,6 +31,88 @@
  */
 
 
+
+
+#if 0
+template <typename Handler>
+void task_io_service::dispatch(Handler& handler)
+{
+  if (thread_call_stack::contains(this))    // within io_service
+  {
+    fenced_block b(fenced_block::full);
+    boost_asio_handler_invoke_helpers::invoke(handler, handler);    // call directly
+  }
+  else
+  {
+    // Allocate and construct an operation to wrap the handler.
+    typedef completion_handler<Handler> op;
+    typename op::ptr p = { boost::asio::detail::addressof(handler),
+      boost_asio_handler_alloc_helpers::allocate(
+        sizeof(op), handler), 0 };
+    p.p = new (p.v) op(handler);
+
+    BOOST_ASIO_HANDLER_CREATION((p.p, "io_service", this, "dispatch"));
+
+    do_dispatch(p.p);   // insert to queue
+    p.v = p.p = 0;
+  }
+}
+
+void task_io_service::do_dispatch(
+    task_io_service::operation* op)
+{
+  work_started();
+  mutex::scoped_lock lock(mutex_);
+  op_queue_.push(op);
+  wake_one_thread_and_unlock(lock);
+}
+
+template <typename Handler>
+void task_io_service::post(Handler& handler)
+{
+  bool is_continuation =
+    boost_asio_handler_cont_helpers::is_continuation(handler);
+
+  // Allocate and construct an operation to wrap the handler.
+  typedef completion_handler<Handler> op;
+  typename op::ptr p = { boost::asio::detail::addressof(handler),
+    boost_asio_handler_alloc_helpers::allocate(
+      sizeof(op), handler), 0 };
+  p.p = new (p.v) op(handler);
+
+  BOOST_ASIO_HANDLER_CREATION((p.p, "io_service", this, "post"));
+
+  post_immediate_completion(p.p, is_continuation); // 总是插入队列，除非单线程
+  p.v = p.p = 0;
+}
+
+
+void task_io_service::post_immediate_completion(
+    task_io_service::operation* op, bool is_continuation)
+{
+#if defined(BOOST_ASIO_HAS_THREADS)
+  if (one_thread_ || is_continuation)
+  {
+    if (thread_info* this_thread = thread_call_stack::contains(this))
+    {
+      ++this_thread->private_outstanding_work;
+      this_thread->private_op_queue.push(op);
+      return;
+    }
+  }
+#else // defined(BOOST_ASIO_HAS_THREADS)
+  (void)is_continuation;
+#endif // defined(BOOST_ASIO_HAS_THREADS)
+
+  work_started();
+  mutex::scoped_lock lock(mutex_);
+  op_queue_.push(op);
+  wake_one_thread_and_unlock(lock);
+}
+#endif
+
+
+
 boost::asio::io_service     g_io_service;
 
 static
