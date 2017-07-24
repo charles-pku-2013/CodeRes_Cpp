@@ -56,9 +56,11 @@ struct Employee {
     }
 };
 
+typedef std::shared_ptr<Employee>   EmployeePtr;
+
+
 void map_key_test()
 {
-    typedef std::shared_ptr<Employee>   EmployeePtr;
     typedef std::map<string_ref_type, EmployeePtr>  EmployeeTable;
 
     EmployeeTable table;
@@ -91,6 +93,35 @@ void map_key_test()
     lookup("Lily");
 }
 
+/*
+ * 0x7ff0c8c03379	0x7ff0c8c03379
+ * Lucy	[Employee: Lucy, age = 25, salary = 100.500000]
+ * 0x7ff0c8c03379	0x7ff0c8c03449      // 🔴🔴 NOTE!!! 不一样了！
+ * Lucy	[Employee: Lucy, age = 30, salary = 100.500000]
+ */
+void string_ref_as_map_key_NOTE()
+{
+    std::map<string_ref_type, EmployeePtr>  map;
+
+    auto print_map = [&] {
+        for (const auto &kv : map) {
+            cout << boost::format("%lx\t%lx") 
+                    % (void*)(kv.first.data()) % (void*)(kv.second->name.data()) << endl;
+            cout << kv.first << "\t" << *kv.second << endl;
+        } // for
+    };
+
+    // 🔴🔴map存储key depends on value都存在更新的问题，不可以直接更新，
+    // 应该先删除旧的，再连同新key一块插入新的。
+    EmployeePt;
+    p = std::make_shared<Employee>(Employee{"Lucy", 25, 100.5});
+    map[p->name] = p;
+    print_map();
+    p = std::make_shared<Employee>(Employee{"Lucy", 30, 100.5});
+    map[p->name] = p;   // 按照当前比较规则，key已经存在，就只更新value，不符合要求
+    print_map();
+}
+
 
 int main()
 {
@@ -98,7 +129,8 @@ int main()
         // cout << "Found!" << endl;
 
     // substr_test();
-    map_key_test();
+    // map_key_test();
+    string_ref_as_map_key_NOTE();
 
     return 0;
 }
