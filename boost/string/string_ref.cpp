@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <map>
+#include <set>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/utility/string_ref.hpp>
@@ -113,7 +114,7 @@ void string_ref_as_map_key_NOTE()
 
     // 🔴🔴map存储key depends on value都存在更新的问题，不可以直接更新，
     // 应该先删除旧的，再连同新key一块插入新的。
-    EmployeePt;
+    EmployeePtr p;
     p = std::make_shared<Employee>(Employee{"Lucy", 25, 100.5});
     map[p->name] = p;
     print_map();
