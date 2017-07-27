@@ -49,7 +49,7 @@ private:
   void handle_write(const boost::system::error_code& e);
 
   /// Strand to ensure the connection's handlers are not called concurrently.
-  boost::asio::io_service::strand strand_;
+  boost::asio::io_service::strand strand_; // NOTE!!! 🔴🔴 每一个connection有自己的strand，但共享io_service
 
   /// Socket for the connection.
   boost::asio::ip::tcp::socket socket_;

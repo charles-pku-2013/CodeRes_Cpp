@@ -71,7 +71,7 @@ void connection::handle_read(const boost::system::error_code& e,
               boost::asio::placeholders::error,
               boost::asio::placeholders::bytes_transferred)));
     }
-  }
+  } // !e
 
   // If an error occurs then no new asynchronous operations are started. This
   // means that all shared_ptr references to the connection object will
@@ -83,7 +83,7 @@ void connection::handle_write(const boost::system::error_code& e)
 {
   if (!e)
   {
-    // Initiate graceful connection closure.
+    // Initiate graceful connection closure.    // NOTE!!! 🔴🔴如何关闭连接
     boost::system::error_code ignored_ec;
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
   }

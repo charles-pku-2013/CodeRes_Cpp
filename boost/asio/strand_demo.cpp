@@ -82,6 +82,7 @@ int main()
     p->work();
 
     pIoServiceWork.reset();
+    io_service.stop();
     thrgroup.join_all();
 
     return 0;
