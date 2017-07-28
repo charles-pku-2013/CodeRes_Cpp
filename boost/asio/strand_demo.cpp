@@ -69,8 +69,7 @@ int main()
     srand(time(0));
 
     boost::asio::io_service     io_service;
-    std::unique_ptr<boost::asio::io_service::work> 
-            pIoServiceWork(new boost::asio::io_service::work(std::ref(io_service)));
+    boost::asio::io_service::work work(io_service);
 
     const int N_WORKERS = 5;
 
@@ -81,7 +80,6 @@ int main()
     auto p = std::make_shared<Test>(io_service);
     p->work();
 
-    pIoServiceWork.reset();
     io_service.stop();
     thrgroup.join_all();
 
