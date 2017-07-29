@@ -34,9 +34,14 @@ struct Foo {
         THROW_RUNTIME_ERROR_IF(flag, "Exception in constructor!");
     }
 
-    ~Foo() { cout << "Foo destructor" << endl; }
+    ~Foo() 
+    { 
+        cout << "Foo destructor" << endl; 
+        // delete pBar;
+    }
 
-    std::shared_ptr<Bar>    pBar;
+    std::unique_ptr<Bar>    pBar;
+    // Bar         *pBar;
     double x, y, z;
 };
 
