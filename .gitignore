@@ -16,3 +16,4 @@
 !*.rsp
 !.gitignore
 !Makefile
+!CmakeLists.txt
