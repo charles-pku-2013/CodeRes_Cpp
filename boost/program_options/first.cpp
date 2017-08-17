@@ -22,6 +22,19 @@ using namespace std;
  * required 必须提供的参数
  */
 
+// 参数检查参考 validate
+#if 0
+template<typename T>
+void check_range(const T& value, const T& min, const T& max)
+{
+   if (value < min || value > max)
+       // throw exception
+}
+
+opt::value<unsigned short>()->default_value(5)->notifier
+        (boost::bind(&check_range<unsigned short>, _1, 0, 10));
+#endif
+
 int main(int ac, char* av[])
 {
     try {
