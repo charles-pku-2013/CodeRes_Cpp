@@ -68,7 +68,7 @@ int main(int ac, char* av[])
  * The class specifies how many positional options are allowed, and for each allowed option, 
  * specifies the name. For example:
  * 
- * positional_options_description pd; pd.add("input-file", 1);
+ * 🍑🍑positional_options_description pd; pd.add("input-file", 1);
  * specifies that for exactly one, first, positional option the name will be "input-file".
  * 
  * It's possible to specify that a number, or even all positional options, be given the same name.

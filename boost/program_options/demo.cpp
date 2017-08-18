@@ -1,5 +1,8 @@
 /*
  * c++ -o /tmp/test demo.cpp -lboost_program_options -lglog -std=c++11 -g
+ * 
+ * Test:
+ * /tmp/test -agoogle.com -p1575 --online -b -t100 abc def
  */
 #include <iostream>
 #include <string>
@@ -38,6 +41,7 @@ static uint32_t         g_nTrees = 0;
 static uint32_t         g_nWorkThreads = 0;
 static RunMode          g_eRunMode = STANDALONE;
 static bool             g_bBackground = false;
+static std::string      g_strInputFile, g_strOutputFile;
 
 
 template<typename T>
@@ -82,10 +86,18 @@ void parse_args(int argc, char **argv)
                             check_range<uint32_t>("nworkers", val, 1, 100000);
                     }), "Number of work threads")
         ("background,b", po::value<bool>(&g_bBackground)->default_value(false)->implicit_value(true),
-                 "Run as a background service");
+                 "Run as a background service")
+        // 🍑🍑position options 要先定义然后声明为positional
+        ("input-file", po::value<string>(&g_strInputFile), "Input file")
+        ("output-file", po::value<string>(&g_strOutputFile), "Output file");
+
+    po::positional_options_description      pDesc;
+    pDesc.add("input-file", 1).add("output-file", 1);
 
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+    // po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::store(po::command_line_parser(argc, argv).
+            options(desc).positional(pDesc).run(), vm);
 
     // ⭐⭐这两个参数单独处理，因为正常情况下有些参数必须提供 required
     if (vm.count("help")) {
@@ -109,6 +121,8 @@ void print_args()
     LOG(INFO) << "ntrees = " << g_nTrees;
     LOG(INFO) << "nWorkThreads = " << g_nWorkThreads;
     LOG(INFO) << "background = " << g_bBackground;
+    LOG(INFO) << "InputFile = " << g_strInputFile;
+    LOG(INFO) << "OutputFile = " << g_strOutputFile;
 }
 
 

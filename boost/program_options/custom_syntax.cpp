@@ -41,8 +41,7 @@ int main(int ac, char* av[])
         options_description desc("Allowed options");
         desc.add_options()
         ("help", "produce a help message")
-        ("foo", value<string>(), "just an option")
-        ;
+        ("foo", value<string>(), "just an option");
 
         variables_map vm;
         store(command_line_parser(ac, av).options(desc).extra_parser(reg_foo)
