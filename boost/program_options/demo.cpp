@@ -2,7 +2,7 @@
  * c++ -o /tmp/test demo.cpp -lboost_program_options -lglog -std=c++11 -g
  * 
  * Test:
- * /tmp/test -agoogle.com -p1575 --online -b -t100 abc def
+ * /tmp/test -agoogle.com -p1575 -t100 --online -b abc def
  */
 #include <iostream>
 #include <string>
@@ -44,6 +44,22 @@ static bool             g_bBackground = false;
 static std::string      g_strInputFile, g_strOutputFile;
 
 
+// About bool_switch
+/** Works the same way as the 'value<bool>' function, but the created
+  value_semantic won't accept any explicit value. So, if the option 
+  is present on the command line, the value will be 'true'.
+  */
+/*
+ * typed_value<bool>*
+ * bool_switch(bool* v)
+ * {
+ *     typed_value<bool>* r = new typed_value<bool>(v);
+ *     r->default_value(0);
+ *     r->zero_tokens();        // 用它实现的
+ *     return r;
+ * }
+ */
+
 template<typename T>
 void check_range(const std::string &name, const T &val, const T &min, const T &max)
 {
@@ -76,7 +92,7 @@ void parse_args(int argc, char **argv)
         ("ntrees,t", po::value<uint32_t>(&g_nTrees)->default_value(10)->
                 notifier(std::bind(&check_range<uint32_t>, "ntrees", placeholders::_1, 1, UINT_MAX)),
                     "Number of trees")
-        ("online", po::value<bool>()->implicit_value(true)->
+        ("online", po::bool_switch()->          // 返回value<bool>*
                 notifier([&](bool flag){
                     if (flag) g_eRunMode = ONLINE;
                 }), "RunMode of the program")
@@ -85,7 +101,7 @@ void parse_args(int argc, char **argv)
                         if (g_eRunMode == ONLINE)
                             check_range<uint32_t>("nworkers", val, 1, 100000);
                     }), "Number of work threads")
-        ("background,b", po::value<bool>(&g_bBackground)->default_value(false)->implicit_value(true),
+        ("background,b", po::bool_switch(&g_bBackground),
                  "Run as a background service")
         // 🍑🍑position options 要先定义然后声明为positional
         ("input-file", po::value<string>(&g_strInputFile), "Input file")
