@@ -15,6 +15,7 @@ void print_reverse(int *a, size_t n)
     while (n--)
         cout << a[n] << " ";
     cout << endl;
+    cout << n << endl; // Here n is npos
 }
 
 
@@ -25,3 +26,10 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+
+/*
+ * 10 9 8 7 6 5 4 3 2 1
+ * 18446744073709551615
+ */
+

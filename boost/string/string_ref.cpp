@@ -62,7 +62,7 @@ typedef std::shared_ptr<Employee>   EmployeePtr;
 
 void map_key_test()
 {
-    typedef std::map<string_ref_type, EmployeePtr>  EmployeeTable;
+    typedef std::map<string_ref_type, EmployeePtr>  EmployeeTable; // NOTE!!! 引用不可以做key
 
     EmployeeTable table;
     EmployeePtr  p;

@@ -31,10 +31,16 @@ int main()
     cout << endl << endl;
 
     //!! 或者在split之后做以下操作
-    auto newEnd = std::remove_if(values.begin(), values.end(), [](const string &s){
-        return s.empty();
-    });
-    values.erase(newEnd, values.end());
+    values.erase(
+        std::remove_if(values.begin(), values.end(), [](const string &s){
+            return s.empty();
+        }),
+        values.end()
+    );
+    // auto newEnd = std::remove_if(values.begin(), values.end(), [](const string &s){
+        // return s.empty();
+    // });
+    // values.erase(newEnd, values.end());
     cout << values.size() << endl;
 
     return 0;
