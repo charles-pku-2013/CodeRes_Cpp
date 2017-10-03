@@ -49,7 +49,7 @@ void sizeof_test(Args&&... args)
 int main()
 {
     call_func(add, 3, 5);
-    call_func(print_time);
+    call_func(print_time);  // zero arg
     call_func(print_string, "Hello, world!");
     test(3, 5);
     sizeof_test(3, 5, 'a', "hello", 3.14);

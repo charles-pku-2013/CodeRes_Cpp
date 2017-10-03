@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#if 0
+// #if 0
 // 读取json的标准流程
 void readJson()
 {
@@ -105,7 +105,7 @@ void test1()
     if (val.isNull())
         cout << "no property named MyName" << endl;
 }
-#endif
+// #endif
 
 void test2()
 {
