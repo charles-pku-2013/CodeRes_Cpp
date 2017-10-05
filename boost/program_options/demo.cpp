@@ -13,6 +13,24 @@
 #include <boost/program_options.hpp>
 #include <glog/logging.h>
 
+#if 0
+NOTE!!! 这样是不对的，notifier不是设置为true了才执行
+    desc.add_options()
+        ("log2req,Q", po::bool_switch()->
+                notifier([&](bool){
+                    cerr << "log2req" << endl;
+                    g_eJobType = LOG2REQ;
+                }), "Convert log to online request (json)")
+        ("gen-rules,R", po::bool_switch()->
+                notifier([&](bool){
+                    cerr << "gen-rules" << endl;
+                    g_eJobType = GEN_RULES;
+                }), "generate rules that can classify log")
+        ("classify,C", po::bool_switch()->
+                notifier([&](bool){
+                    g_eJobType = CLASSIFY;
+                }), "classify log based on rules")
+#endif
 
 #define THROW_RUNTIME_ERROR(args) \
     do { \
