@@ -7,10 +7,10 @@ using namespace std;
     struct __type_##name {                                                         \
         __type_##name() : bReleased_(false) {}                                     \
         ~__type_##name() { release(); }                                            \
-        void release() { if (!bReleased_) { _doRelease(); bReleased_ = true; } }   \
+        void release() { if (!bReleased_) {_doRelease(); bReleased_ = true;} }     \
         void _doRelease() codeBlock                                                \
         bool bReleased_;                                                           \
-    } __##name;
+    } __##name
 
 
 void test()

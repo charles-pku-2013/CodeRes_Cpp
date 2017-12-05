@@ -6,7 +6,7 @@ using namespace std;
 #define AUTO_CLEANUP(name, codeBlock) \
     struct __type_##name { \
         ~__type_##name() codeBlock \
-    } __##name;
+    } __##name
 
 
 void test()
