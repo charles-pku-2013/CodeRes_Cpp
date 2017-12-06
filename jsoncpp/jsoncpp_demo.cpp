@@ -11,6 +11,7 @@ using namespace std;
 
 // #if 0
 // 读取json的标准流程
+#if 0
 void readJson()
 {
     Json::Value  response;
@@ -37,6 +38,7 @@ void readJson()
         return INVALID_JSON;
     } // try
 }
+#endif
 
 void WriteJsonData(const char* filename)
 {
@@ -77,11 +79,14 @@ void test()
     Json::Value root;  
     if (reader.parse(str, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素  
     {  
-        std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"  
-        cout << "uploadid = " << upload_id << endl;
-        int code = root["code"].asInt();    // 访问节点，code = 100 
-        cout << "code = " << code << endl;
+        // std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"  
+        // cout << "uploadid = " << upload_id << endl;
+        // int code = root["code"].asInt();    // 访问节点，code = 100 
+        // cout << "code = " << code << endl;
     }  
+
+    for (auto it = root.begin(); it != root.end(); ++it)
+        cout << it.key().asString() << " : " << (*it).asString() << endl;
 }
 
 void test1()
@@ -120,9 +125,9 @@ void test2()
 
 int main()
 {
-    // test();
+    test();
     // test1();
-    test2();
+    // test2();
 
     return 0;
 }
