@@ -38,6 +38,11 @@ void readJson()
         return INVALID_JSON;
     } // try
 }
+        /*
+         * 判断成员是否存在
+         * if (root.isMember("LogNO"))
+         *     pReq->setNO(root["LogNO"].asUInt64());
+         */
 #endif
 
 void WriteJsonData(const char* filename)
@@ -91,12 +96,9 @@ void test()
 
 void test1()
 {
-    ifstream ifs("/tmp/test.json");
-    assert(ifs);
-
     Json::Reader    reader;
     Json::Value     root;
-    if (!reader.parse(ifs, root, false))
+    if (!reader.parse(cin, root, false))
         return;
 
     string    name;
@@ -125,9 +127,9 @@ void test2()
 
 int main()
 {
-    test();
+    // test();
     // test1();
-    // test2();
+    test2();
 
     return 0;
 }

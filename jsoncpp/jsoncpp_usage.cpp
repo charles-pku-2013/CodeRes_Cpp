@@ -13,6 +13,7 @@ using namespace std;
  * jv["non_exist"].asInt() == 0
  * 用下标访问数组
  *     for (Json::ArrayIndex i = 0; i < jsTaskArr.size(); ++i)
+        Json::Value &item = jsTaskArr[i];
  */
 
 void iterate_json(const Json::Value &root)
