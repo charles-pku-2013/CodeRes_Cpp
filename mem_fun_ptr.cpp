@@ -73,3 +73,167 @@ int main()
 
     return 0;
 }
+
+
+// example 1
+#if 0
+void do_request(const std::vector<LogReq::pointer> &vecReq,
+                std::vector<QsRes::pointer> &vecRes)
+{
+    typedef void (MTSearchClient::*QsApi)(SearchMultiRes&, const SearchQueryReq&);
+    static std::unordered_map<std::string, QsApi> dictApi = {
+        {"MTSearchDeal", &MTSearchClient::MTSearchDeal},
+        {"MTSearchPoi", &MTSearchClient::MTSearchPoi},
+        {"MTMultiSearch", &MTSearchClient::MTMultiSearch},
+        {"MTMultiSearchDealPoi", &MTSearchClient::MTMultiSearchDealPoi},
+        {"AttributeFilter", &MTSearchClient::AttributeFilter}
+    };
+
+    cerr << "Requesting " << g_strHost << ":" << g_nPort << endl;
+
+    vecRes.clear();
+
+    ThriftClient<MTSearchClient>    thriftCli(g_strHost, (uint16_t)g_nPort);
+    THROW_RUNTIME_ERROR_IF(!thriftCli.start(10), "Connect to remote server fail!");
+
+    auto pClient = thriftCli.client().get();
+    for (auto it = vecReq.begin(); it != vecReq.end(); ++it) {
+        auto apiIt = dictApi.find((*it)->ifName());
+        if (apiIt == dictApi.end()) {
+            LOG(ERROR) << (*it)->ifName() << " is not a valid ifname! LogNO = " << (*it)->logNO();
+            continue;
+        } // if
+        auto pRes = std::make_shared<QsRes>();
+        try {
+            (pClient->*(apiIt->second))(pRes->res(), (*it)->query()); // NOTE!!! call with memfun ptr
+        } catch (const std::exception &ex) {
+            LOG(ERROR) << "RPC request error: " << ex.what();
+            continue;
+        } catch (...) {
+            LOG(ERROR) << "RPC request error!";
+            continue;
+        } // try
+        pRes->setNO((*it)->logNO());
+        vecRes.push_back(pRes);
+    } // for it
+}
+#endif
+
+// example 2
+#if 0
+class LogReq {
+public:
+    typedef std::shared_ptr<LogReq>     pointer;
+
+public:
+    typedef void (SearchQueryReq::*StringSetter)(const std::string&);
+    typedef void (SearchQueryReq::*IntSetter)(const int32_t);
+    typedef void (SearchQueryReq::*DictSetter)(const std::map<std::string, std::string>&);
+
+public:
+    static bool init()
+    {
+        m_setValidIfName = {"", "MTSearchDeal", "MTSearchPoi", "MTMultiSearch", "MTMultiSearchDealPoi", "AttributeFilter"};
+
+        m_mapSearchReqSetterString["query"] = &SearchQueryReq::__set_key_words;
+        m_mapSearchReqSetterString["key_words"] = &SearchQueryReq::__set_key_words; // for read json
+        m_mapSearchReqSetterString["city"] = &SearchQueryReq::__set_city;
+        m_mapSearchReqSetterString["category"] = &SearchQueryReq::__set_category;
+        m_mapSearchReqSetterString["location"] = &SearchQueryReq::__set_location;
+        m_mapSearchReqSetterString["orderby"] = &SearchQueryReq::__set_orderby;
+
+        m_mapSearchReqSetterInt["cityid"] = &SearchQueryReq::__set_cityid;
+        m_mapSearchReqSetterInt["reqid"] = &SearchQueryReq::__set_id;
+        m_mapSearchReqSetterInt["id"] = &SearchQueryReq::__set_id; // for read json
+        m_mapSearchReqSetterInt["offset"] = &SearchQueryReq::__set_offset;
+        m_mapSearchReqSetterInt["limit"] = &SearchQueryReq::__set_limit;
+        m_mapSearchReqSetterInt["opt"] = &SearchQueryReq::__set_opt;
+
+        m_mapSearchReqSetterDict["filter"] = &SearchQueryReq::__set_filter;
+        m_mapSearchReqSetterDict["counter"] = &SearchQueryReq::__set_counter;
+        m_mapSearchReqSetterDict["control"] = &SearchQueryReq::__set_control;
+        m_mapSearchReqSetterDict["ext_data"] = &SearchQueryReq::__set_exdata;
+        m_mapSearchReqSetterDict["exdata"] = &SearchQueryReq::__set_exdata; // for read json
+
+        return true;
+    }
+
+    LogReq() : m_nNO(0) {}
+
+    template<typename T>
+    void setAttr(const std::string &key, const T &val)
+    {
+        if (!setSearchQueryReq(key, val))
+            setAttrHelper(key, val);
+    }
+
+    void toJson(std::string &out, bool concise = false) const;
+    std::string toJson(bool concise = false) const;
+    void toJson(Json::Value &root) const;
+
+    void fromJson(const Json::Value &js);
+
+    static void SearchQueryReq2Json(Json::Value &root, const SearchQueryReq &req);
+
+public:
+    bool setSearchQueryReq(const std::string &key, const std::string &val)
+    {
+        auto it = m_mapSearchReqSetterString.find(key);
+        if (it == m_mapSearchReqSetterString.end())
+            return false;
+        (m_SearchQueryReq.*(it->second))(val);
+        return true;
+    }
+
+    bool setSearchQueryReq(const std::string &key, const int32_t val)
+    {
+        auto it = m_mapSearchReqSetterInt.find(key);
+        if (it == m_mapSearchReqSetterInt.end())
+            return false;
+        (m_SearchQueryReq.*(it->second))(val);
+        return true;
+    }
+
+    bool setSearchQueryReq(const std::string &key, const std::map<std::string, std::string> &val)
+    {
+        auto it = m_mapSearchReqSetterDict.find(key);
+        if (it == m_mapSearchReqSetterDict.end())
+            return false;
+        (m_SearchQueryReq.*(it->second))(val);
+        return true;
+    }
+
+    // 除了string之外，都是空实现
+    template<typename T>
+    void setAttrHelper(const std::string &key, const T &val) {}
+
+    // 特化模板，string类型特殊处理
+    void setAttrHelper(const std::string &key, const std::string &val)
+    {
+        if ("if_name" == key) {
+            THROW_RUNTIME_ERROR_IF(!m_setValidIfName.count(val), val << "is not a valid if_name");
+            m_strIfName = val;
+        } // if
+    }
+
+    SearchQueryReq& query() { return m_SearchQueryReq; }
+    const SearchQueryReq& query() const { return m_SearchQueryReq; }
+
+    const std::string& ifName() const { return m_strIfName; }
+
+    void setNO(std::size_t no) {m_nNO = no;}
+    std::size_t logNO() const { return m_nNO; }
+
+private:
+    std::size_t              m_nNO;
+    // 独有的成员
+    std::string              m_strIfName;
+    SearchQueryReq           m_SearchQueryReq;
+
+    static std::set<std::string>    m_setValidIfName;
+    // 随SearchQueryReq而变
+    static std::map<std::string, StringSetter> m_mapSearchReqSetterString;
+    static std::map<std::string, IntSetter>    m_mapSearchReqSetterInt;
+    static std::map<std::string, DictSetter>   m_mapSearchReqSetterDict;
+};
+#endif

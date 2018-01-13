@@ -98,7 +98,7 @@ try {
 }
 
 
-#if 0
+// #if 0
 // example
 void gen_json(const std::string &filename, const std::vector<FeatureInfo::pointer> &fields)
 {
@@ -126,7 +126,7 @@ void gen_json(const std::string &filename, const std::vector<FeatureInfo::pointe
     THROW_RUNTIME_ERROR_IF(!ofs, "Cannot open " << filename << " for writting!");
     ofs << outStr << flush;
 }
-#endif
+// #endif
 
 
 
