@@ -73,7 +73,7 @@ int IntentionHandler::work(std::shared_ptr<EventResult> &result, Event* pevent)
                         MTEVLOG(ERROR, pe) << "Intention unserialize error!";
                         needRpc = true;
                     } // try
-                    // ❌❌❌❌ Hey!!! this not return, just set value!!!
+                    // ❌❌❌❌ Hey!!! this not return, just set value!!!   NOTE!!!
                     // leaf read trunk qa success
                     MTEVLOG_REQRES(DEBUG, pe, "QaReq from trunk ", trunk_intention_req);
                     MTEVLOG_REQRES(DEBUG, pe, "QaRes from trunk ", pe->m_query_analysis_res);
