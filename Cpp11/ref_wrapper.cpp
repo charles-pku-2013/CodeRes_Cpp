@@ -6,6 +6,9 @@
 #include <random>
 #include <functional>
 
+std::bind(std::ref(xxx) )
+
+std::reference_wrapper<T>
 
 // NOTE!!! 用指针实现的
 template <class T>
