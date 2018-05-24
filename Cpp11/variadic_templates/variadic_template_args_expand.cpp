@@ -31,29 +31,20 @@
  *  Fax: (201) 236-3290
 */ 
 
-#include <glog/logging.h>
+// #include <glog/logging.h>
 #include <iostream>
-using std::cout;
-using std::ostream; using std::cout; using std::endl;
-
 #include <string>
-using std::string;
-
 #include <map>
-using std::map;
-
 #include <cstddef>
-using std::size_t;
-
 #include <utility>
-using std::is_same;
 
+using namespace std;
 
 // function to end the recursion and print the last element
 template<typename T>
 void print(const T &t)  // for the last arg in rest
 {
-    LOG(INFO) << "print single value version...";
+    cerr << "print single value version..." << endl;
 
     // std::is_same 判断类型是否一样
     // if( is_same< T, int>() ) {
@@ -69,20 +60,22 @@ void print(const T &t)  // for the last arg in rest
 }
 
 template <typename T, typename... Args>                 
-void print(const T &t, Args&&... rest)//expand Args
+void print(const T &t, Args&&... rest)//expand Args  要求至少有一个参数
 {
-    LOG(INFO) << "print variadic version...";
+    cerr << "print variadic version..." << endl;
     cout << t << ", ";              //!! for the first arg
-    print(rest...);                     //expand rest
+    // print(rest...);                     // expand rest 如果没有单值版，会编译出错
+    print(std::forward<Args>(rest)...);
 }
 
 
 
 int main(int argc, char **argv)
 {
-    google::InitGoogleLogging(argv[0]);
+    // google::InitGoogleLogging(argv[0]);
 
-    print(10, "Hello", 'a', 12);
+    // print(10, "Hello", 'a', 12);
+    print(10);
     cout << endl;
     
     return 0;
