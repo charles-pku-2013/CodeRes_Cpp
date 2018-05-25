@@ -4,7 +4,7 @@
 using namespace std;
 
 
-/* 
+/*
 void func2( int &&j )
 {
 	cout << j << endl;
@@ -16,9 +16,9 @@ void func1( int &&i )
 	func2(i);	// error: cannot bind ‘int’ lvalue to ‘int&&’
 }
  */
- 
- 
-/*  
+
+
+/*
 // std::forward implement
 template<typename T>                // For lvalues (T is T&),
 T&& std::forward(T&& param)         // take/return lvalue refs.
@@ -61,22 +61,22 @@ void flip3( F fp, T1 &&t1, T2 &&t2 )
 
 int main()
 {
-/* 	
+/*
 	int i = 5;
 	func1(i);
- */	
- 
+ */
+
 	int i = 5;
 	f(42, i);
 	cout << "In main(): i = " << i << endl;
-	
+
 	int j = 10;
 	//!! Even through f() v2 is ref, j passed to flip by value, change in f cannot reflect back.
 	// flip( f, j, 42 );
 	// flip2( g, j, 42 );	// error: cannot bind ‘int’ lvalue to ‘int&&’
 	flip3( g, j, 42 );
 	cout << "In main(): j = " << j << endl;
- 	
+
 	return 0;
 }
 
