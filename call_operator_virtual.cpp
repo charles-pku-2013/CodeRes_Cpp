@@ -12,7 +12,7 @@ struct Base {
 
 struct Derived : Base {
     virtual void operator()()
-    { cout << "This is Derived." << endl; }
+    { cout << "This is Derived." << endl; }  // call this
 };
 
 int main()

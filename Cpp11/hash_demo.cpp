@@ -26,8 +26,8 @@ struct MyHash
 // custom specialization of std::hash can be injected in namespace std
 namespace std
 {
-    template<> struct hash<S>
-    {
+    template<> 
+    struct hash<S> {
         typedef S argument_type;
         typedef std::size_t result_type;
         result_type operator()(argument_type const& s) const noexcept
