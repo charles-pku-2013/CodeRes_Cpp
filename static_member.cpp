@@ -24,18 +24,31 @@ struct Demo {
     Demo() { cout << "Demo construct" << endl; }
     ~Demo() { cout << "Demo destruct" << endl; }
 
+    // static bool init() { return true; }
+
     static Foo foo_;
+
+    static T* getInstance() {
+        static T obj;
+        cout << "getInstance" << endl;
+        // m_creater.do_nothing();
+        return &obj;
+    }
 };
 
 template<typename T>
 Foo Demo<T>::foo_;      // 必须引用才能初始化, 也是先于main初始化
+
+// static bool _init_dummy = Demo<int>::init(); // 必须指定具体类型
 
 int main()
 {
     cout << "main start" << endl;
 
     do {
-        Demo<int>::foo_.greet();    // 必须引用才会构建模板类的static成员
+        Demo<int> d; // 不会导致静态成员的构造
+        // Demo<int>::getInstance();   // 不会导致静态成员的构造
+        // Demo<int>::foo_.greet();    // 必须引用才会构建模板类的static成员
     } while (0);
 
     // do {
