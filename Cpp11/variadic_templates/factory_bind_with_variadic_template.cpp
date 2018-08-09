@@ -42,7 +42,7 @@ struct Derived : Base {
 
 template<typename T, typename... Args>
 std::shared_ptr<T> create_obj(Args... args)
-{ return std::make_shared<T>(args...); }
+{ return std::make_shared<T>(std::forward<Args>(args)...); }
 
 int main()
 {
