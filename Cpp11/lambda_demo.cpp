@@ -8,14 +8,14 @@ using namespace std;
 
 /*
  * About this
- * If a lambda-capture includes a capture-default that is &, 
- * the identifiers in the lambda-capture shall not be preceded by &. 
- * If a lambda-capture includes a capture-default that is =, 
- * the lambda-capture shall not contain  this and each identifier it 
- * contains shall be preceded by &. An identifier or this shall not 
+ * If a lambda-capture includes a capture-default that is &,
+ * the identifiers in the lambda-capture shall not be preceded by &.
+ * If a lambda-capture includes a capture-default that is =,
+ * the lambda-capture shall not contain  this and each identifier it
+ * contains shall be preceded by &. An identifier or this shall not
  * appear more than once in a lambda-capture.
  *
- * So you can use [this], [&], [=] or [&,this] as a lambda-introducer 
+ * So you can use [this], [&], [=] or [&,this] as a lambda-introducer
  * to capture the this pointer by value.
  */
 /*
@@ -23,6 +23,7 @@ using namespace std;
  * {
  *     [&]{}; //ok: by-reference capture default
  *     [=]{}; //ok: by-copy capture default
+ *     [&m, n] //ok: m by ref and n by value
  *     [&, i]{}; // ok: by-reference capture, except i is captured by copy
  *     [=, &i]{}; // ok: by-copy capture, except i is captured by reference
  *     [&, &i] {}; // error: by-reference capture when by-reference is the default
@@ -32,7 +33,7 @@ using namespace std;
  *     [this, *this] {}; // error: "this" repeated (C++17)
  * }
  */
-//!! 一般形式: [capture list](param list)->return type {impl}
+//!! 一般形式: [capture list](param list)->return_type {impl}
 // param list and return type are optional, not mandatory
 // capture list 只能使用 local non-static 变量，可以使用定义在函数之外的 static 变量
 // [&] implicitly capture all by ref; [=] implicitly capture all by value.
@@ -88,7 +89,7 @@ void test1()
 
     // 不指定capture方式默认不capture
     auto f = [&] {
-        printf( "%d\n", outVar );  
+        printf( "%d\n", outVar );
     };
 
     f();
@@ -134,16 +135,16 @@ int main()
 
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
-	
-	char *p = NULL;
-	[&]{ p = new char[100]; }();
-	printf("%lx\n", (long)p);
-	
+
+    char *p = NULL;
+    [&]{ p = new char[100]; }();
+    printf("%lx\n", (long)p);
+
     return 0;
 }
 
 
-/* 
+/*
 void algo(vector<int>& v)
 {
     sort(v.begin(),v.end()); // sor t values
@@ -153,7 +154,7 @@ void algo(vector<int>& v)
 }
  */
 
-/* 
+/*
 void f(vector<int>& v)
 {
     bool sensitive = true;
@@ -162,7 +163,7 @@ void f(vector<int>& v)
         [](int x, int y) { return sensitive ? x<y : abs(x)<abs(y); } //!! error : can’t access sensitive
     );
 }
- 
+
 void f(vector<int>& v)
 {
     bool sensitive = true;
@@ -178,17 +179,17 @@ void f(vector<int>& v)
 
 
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
