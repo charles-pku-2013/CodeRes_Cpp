@@ -106,7 +106,7 @@ void string_ref_as_map_key_NOTE()
 
     auto print_map = [&] {
         for (const auto &kv : map) {
-            cout << boost::format("%lx\t%lx") 
+            cout << boost::format("%lx\t%lx")
                     % (void*)(kv.first.data()) % (void*)(kv.second->name.data()) << endl;
             cout << kv.first << "\t" << *kv.second << endl;
         } // for
@@ -147,12 +147,12 @@ Construction and copying:
 
     // Constructs from a std::string
     template<typename Allocator>
-    basic_string_ref(const std::basic_string<charT, traits, Allocator>& str); 
+    basic_string_ref(const std::basic_string<charT, traits, Allocator>& str);
 
     basic_string_ref (const basic_string_ref &rhs);
     basic_string_ref& operator=(const basic_string_ref &rhs);
 
-string_ref does not define a move constructor nor a move-assignment operator 
+string_ref does not define a move constructor nor a move-assignment operator
 because copying a string_ref is just a cheap as moving one.
 
 Basic container-like functions:

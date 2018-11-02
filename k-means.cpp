@@ -10,7 +10,7 @@
 #include <cmath>
 // #include "LOG.h"
 
-using namespace std; 
+using namespace std;
 
 // #define DBG(...)
 
@@ -35,8 +35,8 @@ struct DistanceSample {
     double      distance;
     Sample      *other;
 
-    bool operator < ( const DistanceSample &rhs ) const 
-    { return distance < rhs.distance; }  
+    bool operator < ( const DistanceSample &rhs ) const
+    { return distance < rhs.distance; }
 };
 
 
@@ -58,10 +58,10 @@ double get_distance( const Sample &lhs, const Sample &rhs )
 {
     double sum = 0.0;
     size_t len = ( lhs.len < rhs.len ? lhs.len : rhs.len );
-    
+
     for( size_t i = 0; i < len; ++i ) {
         sum += (lhs.data[i] - rhs.data[i]) * (lhs.data[i] - rhs.data[i]);
-    } // for 
+    } // for
 
     return sqrt( sum );
 }
@@ -73,23 +73,23 @@ void KNN( Sample &sp )
 
     vector<DistanceSample>      distances;
     distances.resize( len );
-    
+
     for( size_t i = 0; i < len; ++i ) {
         distances[i].other = &trainSet[i];
         distances[i].distance = get_distance( sp, trainSet[i] );
-    } // for 
+    } // for
 
     sort( distances.begin(), distances.end() );
-    
+
     size_t n = ( k < len ? k : len );
     map< string, int >      idCount;
     for( int i = 0; i < n; ++i ) {
         ++idCount[ distances[i].other->classID ];
-    } // for 
+    } // for
 
     vector<string> candidateID;
     int max = 0;
-    for( map<string,int>::iterator it = idCount.begin(); 
+    for( map<string,int>::iterator it = idCount.begin();
                 it != idCount.end(); ++it ) {
         if( it->second >= max ) {
             if( it->second == max ) {
@@ -97,18 +97,18 @@ void KNN( Sample &sp )
             } else {
                 candidateID.clear();
                 candidateID.push_back( it->first );
-            } // if 
+            } // if
             max = it->second;
-        } // if 
-    } // for 
+        } // if
+    } // for
 
     sort( candidateID.begin(), candidateID.end() );
 
     string finalID;
-    for( vector<string>::iterator it = candidateID.begin(); 
+    for( vector<string>::iterator it = candidateID.begin();
             it != candidateID.end(); ++it ) {
         finalID.append( *it );
-    } // for 
+    } // for
 
     sp.classID = finalID;
 }
@@ -122,13 +122,13 @@ int main( int argc, char **argv )
     getline( cin, line );
     // cout << line << endl;
     // cout << k << l << m << n << endl;
-    
+
     while( m-- ) {
         getline( cin, line );
         Sample s(l, line);
         trainSet.push_back( s );
-    } // while 
-    
+    } // while
+
     while( n-- ) {
         getline( cin, line );
         Sample s(l, line);
@@ -138,7 +138,7 @@ int main( int argc, char **argv )
     for( size_t i = 0; i < testSet.size(); ++i ) {
         KNN( testSet[i] );
         cout << testSet[i].classID << endl;
-    } // for 
+    } // for
 
 
 
