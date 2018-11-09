@@ -5,8 +5,8 @@
 
 set -x
 
-rm -f *.so
+# rm -f *.so
 
 TF_CFLAGS=( $(python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_compile_flags()))') )
 TF_LFLAGS=( $(python -c 'import tensorflow as tf; print(" ".join(tf.sysconfig.get_link_flags()))') )
-g++ -std=c++11 -shared `ls *.cc` -o tokenizer.so -fPIC ${TF_CFLAGS[@]} ${TF_LFLAGS[@]} -lboost_regex -Wall -O3
+g++ -std=c++11 -shared tokenizer.cc level_dnn_utils.cc -o tokenizer.so -fPIC ${TF_CFLAGS[@]} ${TF_LFLAGS[@]} -Wall -O3

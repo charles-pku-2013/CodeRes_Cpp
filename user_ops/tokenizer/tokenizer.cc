@@ -54,14 +54,14 @@ public:
             // for (int i = 0; i < input.size(); ++i)
                 // std::cout << boost::format("input[%d] = %s") % i % input(i) << std::endl;
             if (input.size())
-                jd_search_level::tokenize(input(0), &out);
+                search_level::tokenize(input(0), &out);
         }
 
         Tensor* output_tensor = NULL;
         OP_REQUIRES_OK(context, context->allocate_output(
                 0, TensorShape{static_cast<int64>(out.size())}, &output_tensor));
         auto output_flat = output_tensor->flat<string>();
-        for (auto i = 0; i < out.size(); ++i) {
+        for (int i = 0; i < out.size(); ++i) {
             output_flat(i) = std::move(out[i]);
         }
     }
@@ -84,8 +84,8 @@ public:
         std::vector<int64> shapes;
         for (int i = 0; i < N; i++) {
             std::vector<string> out;
-            jd_search_level::tokenize(input(i), &out);
-            for (auto j = 0; j < out.size(); ++j) {
+            search_level::tokenize(input(i), &out);
+            for (int j = 0; j < out.size(); ++j) {
                 indices.emplace_back(i, j);
                 values.push_back(out[j]);
             }
@@ -100,13 +100,13 @@ public:
         auto output_indices = indices_tensor->matrix<int64>();
         auto output_values = values_tensor->flat<string>();
         auto output_shapes = shapes_tensor->flat<int64>();
-        for (auto i = 0; i < indices.size(); ++i) {
+        for (int i = 0; i < indices.size(); ++i) {
             const std::pair<int, int>& index_pair = indices[i];
             // output_indices(i, 0) = index_pair.first;
             // output_indices(i, 1) = index_pair.second;
             output_indices(i, 0) = i;
         }
-        for (auto i = 0; i < values.size(); ++i) {
+        for (int i = 0; i < values.size(); ++i) {
             output_values(i) = values[i];
         }
         // for (int i = 0; i < shapes.size(); ++i) {
@@ -133,14 +133,14 @@ public:
             for (int i = 0; i < input.size(); ++i) {
                 tokens.emplace_back(std::move(input(i)));
             }
-            jd_search_level::getBigrams(tokens, &out);
+            search_level::getBigrams(tokens, &out);
         }
 
         Tensor* output_tensor = NULL;
         OP_REQUIRES_OK(context, context->allocate_output(
                 0, TensorShape{static_cast<int64>(out.size())}, &output_tensor));
         auto output_flat = output_tensor->flat<string>();
-        for (auto i = 0; i < out.size(); ++i) {
+        for (int i = 0; i < out.size(); ++i) {
             output_flat(i) = std::move(out[i]);
         }
     }
@@ -163,14 +163,14 @@ public:
             // for (int i = 0; i < input.size(); ++i)
                 // std::cout << boost::format("input[%d] = %s") % i % input(i) << std::endl;
             if (input.size())
-                jd_search_level::getUnigramsAndBigrams(input(0), &out);
+                search_level::getUnigramsAndBigrams(input(0), &out);
         }
 
         Tensor* output_tensor = NULL;
         OP_REQUIRES_OK(context, context->allocate_output(
                 0, TensorShape{static_cast<int64>(out.size())}, &output_tensor));
         auto output_flat = output_tensor->flat<string>();
-        for (auto i = 0; i < out.size(); ++i) {
+        for (int i = 0; i < out.size(); ++i) {
             output_flat(i) = std::move(out[i]);
         }
     }

@@ -93,6 +93,9 @@ wchar_t to_wchar(const char *_src, int len)
 }
 #endif
 
+/*
+ * https://en.cppreference.com/w/cpp/string/multibyte
+ */
 wchar_t to_wchar(const char *src, int len)
 {
     wchar_t wch = L'\0';
