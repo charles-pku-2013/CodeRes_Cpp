@@ -55,188 +55,188 @@ aioSigHandler(int sig, siginfo_t *si, void *ucontext)
 int
 main(int argc, char *argv[])
 {
-   struct ioRequest *ioList;
-   struct aiocb *aiocbList;
-   struct sigaction sa;
-   int s, j;
-   int numReqs;        /* Total number of queued I/O requests */
-   int openReqs;       /* Number of I/O requests still in progress */
+    struct ioRequest *ioList;
+    struct aiocb *aiocbList;
+    struct sigaction sa;
+    int s, j;
+    int numReqs;        /* Total number of queued I/O requests */
+    int openReqs;       /* Number of I/O requests still in progress */
 
-   if (argc < 2) {
-       fprintf(stderr, "Usage: %s <pathname> <pathname>...\n",
-               argv[0]);
-       exit(EXIT_FAILURE);
-   }
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <pathname> <pathname>...\n",
+                argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
-   numReqs = argc - 1;
+    numReqs = argc - 1;
 
-   /* Allocate our arrays */
+    /* Allocate our arrays */
 
-   ioList = calloc(numReqs, sizeof(struct ioRequest));
-   if (ioList == NULL)
-       errExit("calloc");
+    ioList = calloc(numReqs, sizeof(struct ioRequest));
+    if (ioList == NULL)
+        errExit("calloc");
 
-   aiocbList = calloc(numReqs, sizeof(struct aiocb));
-   if (aiocbList == NULL)
-       errExit("calloc");
+    aiocbList = calloc(numReqs, sizeof(struct aiocb));
+    if (aiocbList == NULL)
+        errExit("calloc");
 
-   /* Establish handlers for SIGQUIT and the I/O completion signal */
+    /* Establish handlers for SIGQUIT and the I/O completion signal */
 
-   sa.sa_flags = SA_RESTART;
-   sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigemptyset(&sa.sa_mask);
 
-   sa.sa_handler = quitHandler;
-   if (sigaction(SIGQUIT, &sa, NULL) == -1)
-       errExit("sigaction");
+    sa.sa_handler = quitHandler;
+    if (sigaction(SIGQUIT, &sa, NULL) == -1)
+        errExit("sigaction");
 
-   sa.sa_flags = SA_RESTART | SA_SIGINFO;
-   sa.sa_sigaction = aioSigHandler;
-   if (sigaction(IO_SIGNAL, &sa, NULL) == -1)
-       errExit("sigaction");
+    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sa.sa_sigaction = aioSigHandler;
+    if (sigaction(IO_SIGNAL, &sa, NULL) == -1)
+        errExit("sigaction");
 
-   /* Open each file specified on the command line, and queue
-      a read request on the resulting file descriptor */
+    /* Open each file specified on the command line, and queue
+       a read request on the resulting file descriptor */
 
-   for (j = 0; j < numReqs; j++) {
-       ioList[j].reqNum = j;
-       ioList[j].status = EINPROGRESS;
-       ioList[j].aiocbp = &aiocbList[j];
+    for (j = 0; j < numReqs; j++) {
+        ioList[j].reqNum = j;
+        ioList[j].status = EINPROGRESS;
+        ioList[j].aiocbp = &aiocbList[j];
 
-       ioList[j].aiocbp->aio_fildes = open(argv[j + 1], O_RDONLY);
-       if (ioList[j].aiocbp->aio_fildes == -1)
-           errExit("open");
-       printf("opened %s on descriptor %d\n", argv[j + 1],
-               ioList[j].aiocbp->aio_fildes);
+        ioList[j].aiocbp->aio_fildes = open(argv[j + 1], O_RDONLY);
+        if (ioList[j].aiocbp->aio_fildes == -1)
+            errExit("open");
+        printf("opened %s on descriptor %d\n", argv[j + 1],
+                ioList[j].aiocbp->aio_fildes);
 
-       ioList[j].aiocbp->aio_buf = malloc(BUF_SIZE);
-       if (ioList[j].aiocbp->aio_buf == NULL)
-           errExit("malloc");
+        ioList[j].aiocbp->aio_buf = malloc(BUF_SIZE);
+        if (ioList[j].aiocbp->aio_buf == NULL)
+            errExit("malloc");
 
-       ioList[j].aiocbp->aio_nbytes = BUF_SIZE;
-       ioList[j].aiocbp->aio_reqprio = 0;
-       ioList[j].aiocbp->aio_offset = 0;
-       ioList[j].aiocbp->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
-       ioList[j].aiocbp->aio_sigevent.sigev_signo = IO_SIGNAL;
-       ioList[j].aiocbp->aio_sigevent.sigev_value.sival_ptr =
-                               &ioList[j];
+        ioList[j].aiocbp->aio_nbytes = BUF_SIZE;
+        ioList[j].aiocbp->aio_reqprio = 0;
+        ioList[j].aiocbp->aio_offset = 0;
+        ioList[j].aiocbp->aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+        ioList[j].aiocbp->aio_sigevent.sigev_signo = IO_SIGNAL;
+        ioList[j].aiocbp->aio_sigevent.sigev_value.sival_ptr =
+            &ioList[j];
 
-       s = aio_read(ioList[j].aiocbp);
-       if (s == -1)
-           errExit("aio_read");
-   }
+        s = aio_read(ioList[j].aiocbp);
+        if (s == -1)
+            errExit("aio_read");
+    }
 
-   openReqs = numReqs;
+    openReqs = numReqs;
 
-   /* Loop, monitoring status of I/O requests */
+    /* Loop, monitoring status of I/O requests */
 
-   while (openReqs > 0) {
-       sleep(3);       /* Delay between each monitoring step */
+    while (openReqs > 0) {
+        sleep(3);       /* Delay between each monitoring step */
 
-       if (gotSIGQUIT) {
+        if (gotSIGQUIT) {
 
-           /* On receipt of SIGQUIT, attempt to cancel each of the
-              outstanding I/O requests, and display status returned
-              from the cancellation requests */
+            /* On receipt of SIGQUIT, attempt to cancel each of the
+               outstanding I/O requests, and display status returned
+               from the cancellation requests */
 
-           printf("got SIGQUIT; canceling I/O requests: \n");
+            printf("got SIGQUIT; canceling I/O requests: \n");
 
-           for (j = 0; j < numReqs; j++) {
-               if (ioList[j].status == EINPROGRESS) {
-                   printf("    Request %d on descriptor %d:", j,
-                           ioList[j].aiocbp->aio_fildes);
-                   s = aio_cancel(ioList[j].aiocbp->aio_fildes,
-                           ioList[j].aiocbp);
-                   if (s == AIO_CANCELED)
-                       printf("I/O canceled\n");
-                   else if (s == AIO_NOTCANCELED)
-                           printf("I/O not canceled\n");
-                   else if (s == AIO_ALLDONE)
-                       printf("I/O all done\n");
-                   else
-                       errMsg("aio_cancel");
-               }
-           }
+            for (j = 0; j < numReqs; j++) {
+                if (ioList[j].status == EINPROGRESS) {
+                    printf("    Request %d on descriptor %d:", j,
+                            ioList[j].aiocbp->aio_fildes);
+                    s = aio_cancel(ioList[j].aiocbp->aio_fildes,
+                            ioList[j].aiocbp);
+                    if (s == AIO_CANCELED)
+                        printf("I/O canceled\n");
+                    else if (s == AIO_NOTCANCELED)
+                        printf("I/O not canceled\n");
+                    else if (s == AIO_ALLDONE)
+                        printf("I/O all done\n");
+                    else
+                        errMsg("aio_cancel");
+                }
+            }
 
-           gotSIGQUIT = 0;
-       }
+            gotSIGQUIT = 0;
+        }
 
-       /* Check the status of each I/O request that is still
-          in progress */
+        /* Check the status of each I/O request that is still
+           in progress */
 
-       printf("aio_error():\n");
-       for (j = 0; j < numReqs; j++) {
-           if (ioList[j].status == EINPROGRESS) {
-               printf("    for request %d (descriptor %d): ",
-                       j, ioList[j].aiocbp->aio_fildes);
-               ioList[j].status = aio_error(ioList[j].aiocbp);
+        printf("aio_error():\n");
+        for (j = 0; j < numReqs; j++) {
+            if (ioList[j].status == EINPROGRESS) {
+                printf("    for request %d (descriptor %d): ",
+                        j, ioList[j].aiocbp->aio_fildes);
+                ioList[j].status = aio_error(ioList[j].aiocbp);
 
-               switch (ioList[j].status) {
-               case 0:
-                   printf("I/O succeeded\n");
-                   break;
-               case EINPROGRESS:
-                   printf("In progress\n");
-                   break;
-               case ECANCELED:
-                   printf("Canceled\n");
-                   break;
-               default:
-                   errMsg("aio_error");
-                   break;
-               }
+                switch (ioList[j].status) {
+                    case 0:
+                        printf("I/O succeeded\n");
+                        break;
+                    case EINPROGRESS:
+                        printf("In progress\n");
+                        break;
+                    case ECANCELED:
+                        printf("Canceled\n");
+                        break;
+                    default:
+                        errMsg("aio_error");
+                        break;
+                }
 
-               if (ioList[j].status != EINPROGRESS)
-                   openReqs--;
-           }
-       }
-   }
+                if (ioList[j].status != EINPROGRESS)
+                    openReqs--;
+            }
+        }
+    }
 
-   printf("All I/O requests completed\n");
+    printf("All I/O requests completed\n");
 
-   /* Check status return of all I/O requests */
+    /* Check status return of all I/O requests */
 
-   printf("aio_return():\n");
-   for (j = 0; j < numReqs; j++) {
-       ssize_t s;
+    printf("aio_return():\n");
+    for (j = 0; j < numReqs; j++) {
+        ssize_t s;
 
-       s = aio_return(ioList[j].aiocbp);
-       printf("    for request %d (descriptor %d): %zd\n",
-               j, ioList[j].aiocbp->aio_fildes, s);
-   }
+        s = aio_return(ioList[j].aiocbp);
+        printf("    for request %d (descriptor %d): %zd\n",
+                j, ioList[j].aiocbp->aio_fildes, s);
+    }
 
-   exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
 
 
 
 
 
-#include <aio.h> 
+#include <aio.h>
 ...
-int fd, ret; 
-struct aiocb my_aiocb; 
-fd = open( "file.txt", O_RDONLY ); 
-if (fd < 0) 
-    perror("open"); 
+int fd, ret;
+struct aiocb my_aiocb;
+fd = open( "file.txt", O_RDONLY );
+if (fd < 0)
+    perror("open");
 
-bzero( (char *)&my_aiocb, sizeof(struct aiocb) ); 
+bzero( (char *)&my_aiocb, sizeof(struct aiocb) );
 
 
-my_aiocb.aio_buf = malloc(BUFSIZE+1); 
-if (!my_aiocb.aio_buf) 
+my_aiocb.aio_buf = malloc(BUFSIZE+1);
+if (!my_aiocb.aio_buf)
     perror("malloc");
 
 
-my_aiocb.aio_fildes = fd; 
-my_aiocb.aio_nbytes = BUFSIZE; 
-my_aiocb.aio_offset = 0; 
-ret = aio_read( &my_aiocb ); 
-if (ret < 0) 
-    perror("aio_read"); 
-while ( aio_error( &my_aiocb ) == EINPROGRESS ) ; 
+my_aiocb.aio_fildes = fd;
+my_aiocb.aio_nbytes = BUFSIZE;
+my_aiocb.aio_offset = 0;
+ret = aio_read( &my_aiocb );
+if (ret < 0)
+    perror("aio_read");
+while ( aio_error( &my_aiocb ) == EINPROGRESS ) ;
 
-if ((ret = aio_return( &my_iocb )) > 0) { 
-    
- } else { 
-    
+if ((ret = aio_return( &my_iocb )) > 0) {
+
+ } else {
+
 }

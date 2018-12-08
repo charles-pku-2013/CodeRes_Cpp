@@ -5,7 +5,7 @@
 
 using namespace std;
 
-uint32_t GetCrc32(const string& my_string) 
+uint32_t GetCrc32(const string& my_string)
 {
     boost::crc_32_type result;
     result.process_bytes(my_string.data(), my_string.length());
@@ -32,7 +32,7 @@ int main()
     // while (getline(cin, str)) {
         // cout << boost::format("%08x") % GetCrc32(str) << endl;
     // } // while
-    
+
     cout << boost::format("%08x") % GetCrc32("烤鸭") << endl;
     cout << boost::format("%016x") % get_id(1, 3, "烤鸭") << endl;
 

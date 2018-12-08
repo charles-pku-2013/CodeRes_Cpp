@@ -10,7 +10,7 @@ int main( int argc, char **argv )
     if( (fp = fopen(argv[1], "rb")) == NULL ) {
         fprintf( stderr, "Cannot open file!\n" );
         exit(-1);
-    } // if 
+    } // if
 
     char buf[BUFSIZE];
     size_t nread;

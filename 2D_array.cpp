@@ -38,18 +38,18 @@ void Print2DContainer( const T &c )
 int main()
 {
     const int n = 5;
-    
+
     IntMatrix m(n, IntArray(n, 0));
     Print2DContainer(m);
-    
+
     srand( time(0) );
     for( int i = 0; i < n; ++i ) {
         for( int j = 0; j < n; ++j )
             m[i][j] = rand()%10;
     } // for
-    
+
     Print2DContainer(m);
-    
+
     return 0;
 }
 

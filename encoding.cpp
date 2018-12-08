@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <ctime>
 
-int main()
+int main(int argc, char **argv)
 {
     using namespace boost::locale;
     using namespace std;

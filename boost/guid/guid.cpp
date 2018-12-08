@@ -19,13 +19,13 @@
 #include <set>
 #include <boost/detail/lightweight_test.hpp>
 
-typedef boost::uuids::uuid	uuid_t;
+typedef boost::uuids::uuid  uuid_t;
 
 inline
 std::ostream& operator << (std::ostream &os, const uuid_t &uuid)
 {
-	os << boost::uuids::to_string(uuid);
-	return os;
+    os << boost::uuids::to_string(uuid);
+    return os;
 }
 
 class object
@@ -97,7 +97,7 @@ int main(int, char*[])
  *     return boost::report_errors();
  */
 
-	// NOTE!!! uuid 16字节，每个字节占两位16进制数，打印出来是32个字符
+    // NOTE!!! uuid 16字节，每个字节占两位16进制数，打印出来是32个字符
 
 
     uuid_t u((boost::uuids::random_generator())());
@@ -110,18 +110,18 @@ int main(int, char*[])
         printf("%02x ", (uint8_t)buf[i]);
     putchar('\n');
 
-	for (auto it = u.begin(); it != u.end(); ++it)
-		cout << boost::format("%02x ") % (uint16_t)(*it);	// uint8_t 会被认作char
-		//printf("%02x ", (uint8_t)*it);
-	cout << endl;
+    for (auto it = u.begin(); it != u.end(); ++it)
+        cout << boost::format("%02x ") % (uint16_t)(*it);   // uint8_t 会被认作char
+        //printf("%02x ", (uint8_t)*it);
+    cout << endl;
 
-	std::set<uuid_t>	idSet;
-	for (int i = 0; i < 10; ++i)
-		idSet.insert(boost::uuids::random_generator()());
+    std::set<uuid_t>    idSet;
+    for (int i = 0; i < 10; ++i)
+        idSet.insert(boost::uuids::random_generator()());
 
-	cout << idSet.size() << endl;
-	for (auto &v : idSet)
-		cout << boost::uuids::to_string(v) << endl;
+    cout << idSet.size() << endl;
+    for (auto &v : idSet)
+        cout << boost::uuids::to_string(v) << endl;
 
     return 0;
 }
