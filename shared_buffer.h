@@ -52,7 +52,7 @@ struct SharedBufferFail : boost::circular_buffer< char, FixedSizeAllocator<char,
     SharedBufferFail( size_t _Capacity ) : BaseType(_Capacity)
     {
         pthread_mutexattr_t mattr;
-        pthread_condattr_t  cattr;		   
+        pthread_condattr_t  cattr;
 
         Pthread_mutexattr_init(&mattr);
         Pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
@@ -64,7 +64,7 @@ struct SharedBufferFail : boost::circular_buffer< char, FixedSizeAllocator<char,
         pthread_cond_init(&readCond, &cattr);
         pthread_cond_init(&writeCond, &cattr);
         Pthread_condattr_destroy(&cattr);   /* be sure to destroy */
-    } 
+    }
 
     ~SharedBufferFail()
     {
@@ -101,7 +101,7 @@ struct SharedBufferFail : boost::circular_buffer< char, FixedSizeAllocator<char,
         while( this->full() ) {
             DBG("Buffer is full.");
             Pthread_cond_wait( &writeCond, &lock );
-        } // while 
+        } // while
 
         n = ( n > this->reserve() ? this->reserve() : n );
         std::copy( ptr, ptr + n, std::back_inserter(*this) );
@@ -122,7 +122,7 @@ struct SharedBuffer {
     SharedBuffer( size_t _Capacity ) : capacity(_Capacity), curPos(0)
     {
         pthread_mutexattr_t mattr;
-        pthread_condattr_t  cattr;		   
+        pthread_condattr_t  cattr;
 
         Pthread_mutexattr_init(&mattr);
         Pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
@@ -172,7 +172,7 @@ struct SharedBuffer {
         while( this->full() ) {
             DBG("Buffer is full.");
             Pthread_cond_wait( &writeCond, &lock );
-        } // while 
+        } // while
 
         size_t nFree = capacity - curPos;
         n = (n > nFree ? nFree : n);
@@ -189,7 +189,7 @@ struct SharedBuffer {
     pthread_cond_t          readCond;
     pthread_cond_t          writeCond;
     const size_t            capacity;
-    size_t                  curPos;    
+    size_t                  curPos;
 };
 
 

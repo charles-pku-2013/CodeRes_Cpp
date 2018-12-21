@@ -4,7 +4,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <boost/thread.hpp>
+#include <atomic>
+#include <vector>
+// #include <boost/thread.hpp>
 #include <unistd.h>
 
 #define SLEEP_SECONDS(x)      std::this_thread::sleep_for(std::chrono::seconds(x))
@@ -22,7 +24,6 @@ void thread_routine1()
         ++i;    // ❗❗也是全速运行，与具体执行什么运算无关
         // i *= i;
 }
-
 
 // SLEEP_MICROSECONDS(1):half; 100:70% 10:200%
 static
@@ -43,10 +44,10 @@ int main()
 
     cout << sysconf(_SC_NPROCESSORS_ONLN) << endl;
 
-    boost::thread_group thrgroup;
-    for( int i = 1; i <= n; ++i )
-        thrgroup.create_thread(thread_routine1);
-    thrgroup.join_all();
+    // boost::thread_group thrgroup;
+    // for( int i = 1; i <= n; ++i )
+        // thrgroup.create_thread(thread_routine1);
+    // thrgroup.join_all();
 
     return 0;
 }
