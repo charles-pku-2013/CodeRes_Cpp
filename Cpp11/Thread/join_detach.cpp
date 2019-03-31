@@ -6,15 +6,15 @@
 using namespace std;
 
 struct Foo {
-	Foo()
-	{
-		cout << "Foo constructor." << endl;
-	}
+    Foo()
+    {
+        cout << "Foo constructor." << endl;
+    }
 
-	~Foo()
-	{
-		cout << "Foo destructor." << endl;
-	}
+    ~Foo()
+    {
+        cout << "Foo destructor." << endl;
+    }
 };
 
 
@@ -22,7 +22,7 @@ bool active;
 
 void thread_routine()
 {
-	std::unique_ptr<Foo> ptr(new Foo);
+    std::unique_ptr<Foo> ptr(new Foo);
 
     static uint32_t count = 0;
     while( active ) {
@@ -36,21 +36,28 @@ void thread_routine()
 int main()
 {
     active = true;
-    std::thread thr( thread_routine );
-	thr.detach();
+    // do {
+        // std::thread thr( thread_routine );
+        // thr.detach();
+    // } while (0);
+    do {
+        auto pThread = std::make_shared<std::thread>(thread_routine);
+        pThread->detach();
+        pThread.reset();
+    } while (0);
     std::this_thread::sleep_for(std::chrono::seconds(5));
-	active = false;
+    active = false;
     //active = false;
 
     /*
      * thr.join();
-	 * cout << "join return" << endl;
+     * cout << "join return" << endl;
      * 在windows下join一个已经完成join的thread会抛出异常。应该先用joinable()判断
-	 * detach之后 joinable为false
+     * detach之后 joinable为false
      * // thr.join();
      */
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     return 0;
 }
