@@ -68,12 +68,13 @@ void test4()
     fprintf(fp.get(), "hello\n");
 }
 
+
 int main()
 {
     // test1();
     // test2();
-    // test3();
-    test4();
+    test3();
+    // test4();
 
     return 0;
 }
