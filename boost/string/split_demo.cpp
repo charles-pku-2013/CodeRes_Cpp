@@ -32,7 +32,7 @@ int main()
 
     //!! 或者在split之后做以下操作
     values.erase(
-        std::remove_if(values.begin(), values.end(), [](const string &s){
+        std::remove_if(values.begin(), values.end(), [](const std::string &s){
             return s.empty();
         }),
         values.end()

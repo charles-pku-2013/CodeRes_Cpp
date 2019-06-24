@@ -43,7 +43,7 @@ int main()
     call(foo, &Foo::print_data);
 
     auto pBar = std::make_shared<Bar>();
-    call(*pBar, &Bar::greet, "beauty");
+    call(*pBar, &Bar::greet, "beauty"); // NOTE!!! 函数名前必须有取地址算符
     string str;
     call(*pBar, &Bar::concat, str, "hello", "beauty");
     cout << str << endl;
