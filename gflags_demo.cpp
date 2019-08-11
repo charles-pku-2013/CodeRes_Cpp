@@ -1,3 +1,16 @@
+DEFINE_string(server, "", "server addr ip:port");
+
+namespace {
+bool _check_server = gflags::RegisterFlagValidator(&FLAGS_server,
+            [](const char* flagname, const std::string& value){
+    if (value.empty()) {  //!!! NOTE here cannot use FLAGS_server
+        std::cerr << flagname << " not set" << std::endl;
+        return false;
+    }
+    return true;
+});
+} // namespace
+
 /*
  * Tutorial: https://gflags.github.io/gflags/#validate
  * gflags_demo.cpp

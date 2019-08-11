@@ -23,3 +23,13 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+#if 0
+// list files
+for (directory_iterator itr(path_ss); itr!=directory_iterator(); ++itr)
+{
+    cout << itr->path().filename() << ' '; // display filename only
+    if (is_regular_file(itr->status())) cout << " [" << file_size(itr->path()) << ']';
+    cout << '\n';
+}
+#endif 
