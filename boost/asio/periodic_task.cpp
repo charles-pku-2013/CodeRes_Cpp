@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <boost/asio.hpp>
 
+#include <string>
+
 
 class PeriodicTask {
  public:
@@ -106,6 +108,7 @@ void PeriodicTaskSet::_TimerRoutine() {
                 try {
                     p_task->RunSchedule();
                 } catch (const std::exception &ex) {
+                    //!!!NOTE!!! here cannot use iterator outside thread
                     LOG(ERROR) << "Running periodic task " << it->first << " encounter error: " << ex.what();
                 } catch (...) {
                     LOG(ERROR)<< "Running periodic task " << it->first << " encounter unknown error!";
