@@ -16,8 +16,8 @@ using namespace std;
 
 int main()
 {
-	char buf[20];
-	
+    char buf[20];
+
     typedef std::chrono::system_clock Clock;
 
     auto now = Clock::now();
@@ -31,8 +31,8 @@ int main()
     cout << milliseconds.count() << endl;
     cout << microseconds.count() << endl;
     cout << nanoseconds.count() << endl;
-	snprintf(buf, 17, "%016ld", microseconds.count());
-	cout << buf << endl;
+    snprintf(buf, 17, "%016ld", microseconds.count());
+    cout << buf << endl;
 
     cout << typeid(now).name() << endl;
     cout << typeid(d).name() << endl;

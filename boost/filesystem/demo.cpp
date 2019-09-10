@@ -1,11 +1,11 @@
 /*
- * c++ -o /tmp/test demo.cpp -lglog -lboost_filesystem -lboost_system -std=c++11 -g
+c++ -o /tmp/test demo.cpp -lboost_filesystem -lboost_system -std=c++11 -g
  */
 #include <iostream>
 #include <fstream>
 #include <chrono>
 #include <boost/filesystem.hpp>
-#include <glog/logging.h>
+// #include <glog/logging.h>
 
 using namespace std;
 
@@ -51,21 +51,29 @@ void test_mkdir()
 {
     namespace fs = boost::filesystem;
     fs::path p1("/tmp/a/b/c/d");
-    if (fs::create_directories(p1))
+    if (fs::create_directories("/tmp/a/b/c/d"))
         cout << "created dir " << p1 << endl;
     else
         cout << "create dir fail!" << endl;
 }
 
+void test_rmdir()
+{
+    namespace fs = boost::filesystem;
+    fs::path p1("/tmp/a");
+    cout << fs::remove_all(p1) << endl;
+}
+
 
 int main(int argc, char* argv[])
 {
-    google::InitGoogleLogging(argv[0]);
+    // google::InitGoogleLogging(argv[0]);
 
     try {
         // test1();
-        test_dir();
-        // test_mkdir();
+        // test_dir();
+        test_mkdir();
+        // test_rmdir();
 
     } catch (const std::exception &ex) {
         cerr << ex.what() << endl;
