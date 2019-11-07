@@ -32,7 +32,7 @@ void gettimeofday_test() {
     localtime_r(&tv.tv_sec, &tm);
     char buffer[64] = {'\0'};
     std::size_t n = std::strftime(buffer, 64, "%Y%m%d %H:%M:%S", &tm);
-    sprintf(buffer + n, "%06ld", tv.tv_usec);
+    snprintf(buf + n, sizeof(buf) - n, "_%06ld", tv.tv_usec);
     cout << buffer << endl;
 }
 

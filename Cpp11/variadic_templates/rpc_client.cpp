@@ -6,7 +6,7 @@
 #include <utility>
 #include <iostream>
 
-template<typename Request, typename Response, typename StubType>
+template<typename StubType>
 class RpcClient {
  public:
     explicit RpcClient(const std::string &server, const std::string &load_balancer = "")
@@ -36,3 +36,71 @@ class RpcClient {
     std::unique_ptr<StubType> stub_;
 };
 
+// example
+class KnnTest {
+ public:
+    using KnnStub = tensorflow::serving::KnnPredService_Stub;
+    using Request = tensorflow::serving::KnnPredSearchRequest;
+    using Response = tensorflow::serving::KnnPredSearchResult;
+    using KnnPredService = tensorflow::serving::KnnPredService;
+    using ClientType = jdsearch::BRpcSingleClient<KnnPredService, Request, Response>;
+
+    struct KnnClient : public ClientType {
+        KnnClient() {
+            ClientType::InitSubCallFunc(&KnnPredService::Stub::KnnPredSearch);
+        }
+    };
+
+    void test1() {
+        Request request;
+        Response response;
+        request.set_querystr("手机");
+        request.set_top_k(10);
+        request.mutable_model_spec()->set_name("knnpred_v3");
+
+        rpc_client_.reset(new RpcClient<KnnStub>("11.7.159.141:8000"));
+        brpc::ChannelOptions options;
+        options.protocol = "h2:grpc";
+        if (!rpc_client_->Init(options)) {
+            cout << "knn client init fail!" << endl;
+            return;
+        }
+
+        brpc::Controller cntl;
+        rpc_client_->Call(&cntl, &KnnStub::KnnPredSearch, &request, &response);
+
+        if (cntl.Failed()) {
+            cout << cntl.ErrorText() << endl;
+            return;
+        }
+
+        cout << response.DebugString() << endl;
+    }
+
+    void test() {
+        Request request;
+        Response response;
+        request.set_querystr("手机");
+        request.set_top_k(10);
+        request.mutable_model_spec()->set_name("knnpred_v3");
+
+        knn_client_.reset(new KnnClient);
+        brpc::ChannelOptions options;
+        options.protocol = "h2:grpc";
+        if (!knn_client_->InitChannel("11.7.159.141:8000", "", options)) {
+            cout << "knn client init fail!" << endl;
+            return;
+        }
+
+        if (!knn_client_->GetData(request, &response)) {
+            cout << "call knn server failed" << endl;
+            return;
+        }
+
+        cout << response.DebugString() << endl;
+    }
+
+ private:
+    std::unique_ptr<KnnClient> knn_client_;
+    std::unique_ptr<RpcClient<KnnStub>> rpc_client_;
+};
