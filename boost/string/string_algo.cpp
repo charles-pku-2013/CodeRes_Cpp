@@ -103,5 +103,7 @@ boost::split(targetStrVec, origStr, boost::is_any_of("," SPACES), boost::token_c
 // 不加最后的标记会产生空字符串
 // origStr最好先trim一下
 
+// case insensitive compare, strcasecmp
+boost::iequals(str1, str2);
 
 
