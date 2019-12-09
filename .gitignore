@@ -17,3 +17,6 @@
 !.gitignore
 !Makefile
 !CmakeLists.txt
+!WORKSPACE
+!BUILD
+!*.bzl
