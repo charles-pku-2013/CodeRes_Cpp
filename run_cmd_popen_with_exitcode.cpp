@@ -16,7 +16,7 @@ int run_cmd(const std::string &cmd, std::string &output)
 
     int retval = 0;
 
-    string cmdStr = "stdbuf -o0 ";
+    string cmdStr = "stdbuf -oL ";
     cmdStr.append(cmd).append(" 2>&1");
 
     FILE *fp = popen(cmdStr.c_str(), "r");
@@ -24,7 +24,7 @@ int run_cmd(const std::string &cmd, std::string &output)
 
     typedef boost::iostreams::stream< boost::iostreams::file_descriptor_source >
                     FDRdStream;
-    FDRdStream ppStream( fileno(fp), boost::iostreams::never_close_handle );
+    FDRdStream ppStream(fileno(fp), boost::iostreams::never_close_handle);
 
     stringstream ss;
     ss << ppStream.rdbuf();
