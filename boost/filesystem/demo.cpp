@@ -25,7 +25,7 @@ void test1(const char *filepath)
     cout << "is_relative: " << p1.is_relative() << endl;
     cout << "absolute_path: " << fs::absolute(p1) << endl;
     cout << "relative_path: " << p1.relative_path() << endl;
-    cout << "is_directory: " << fs::is_directory(p1) << endl;  // TODO symlink
+    cout << "is_directory: " << fs::is_directory(p1) << endl;
     cout << "is_regular_file: " << fs::is_regular_file(p1) << endl;
     cout << "is_symlink: " << fs::is_symlink(p1) << endl;
     cout << "exists: " << fs::exists(p1) << endl;
