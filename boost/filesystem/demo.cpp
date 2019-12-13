@@ -20,14 +20,14 @@ void test1(const char *filepath)
     cout << "parent_path: " << p1.parent_path() << endl;
     cout << "filename: " << p1.filename() << endl;
     cout << "stem: " << p1.stem() << endl; // 主文件名
-    cout << "extension: " << p1.extension() << endl;
+    cout << "extension: " << p1.extension() << endl;  // ".cpp"
     cout << "is_absolute: " << p1.is_absolute() << endl;
     cout << "is_relative: " << p1.is_relative() << endl;
     cout << "absolute_path: " << fs::absolute(p1) << endl;
     cout << "relative_path: " << p1.relative_path() << endl;
-    cout << "is_directory: " << fs::is_directory(p1) << endl;  // TODO symlink
+    cout << "is_directory: " << fs::is_directory(p1) << endl;
     cout << "is_regular_file: " << fs::is_regular_file(p1) << endl;
-    cout << "is_symlink: " << fs::is_symlink(p1) << endl;
+    cout << "is_symlink: " << fs::is_symlink(p1) << endl;  // regular file 也可以同时是 sym_link
     cout << "exists: " << fs::exists(p1) << endl;
     cout << "root_path:  " << p1.root_path() << endl;
     cout << "root_name: " << p1.root_name() << endl;

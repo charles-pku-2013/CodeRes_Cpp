@@ -1,5 +1,9 @@
 /*
 c++ -o /tmp/test demo.cpp -lboost_system -lboost_filesystem -std=c++11 -g
+https://www.boost.org/doc/libs/1_65_1/doc/html/boost_process/tutorial.html#boost_process.tutorial.io
+
+NOTE!!!
+命令中不可以用重定向如 2>&1
  */
 #include <iostream>
 #include <chrono>
@@ -10,8 +14,8 @@ namespace bp = boost::process;
 namespace fs = boost::filesystem;
 using namespace std;
 
-void test_child(const char *cmd) {
-    bp::child c("ping www.baidu.com");
+void test_child() {
+    bp::child c("ping -c3 www.baidu.com");
     if (c.running())
     { cout << "Child process " << c.id() << " is running" << endl; }
 
@@ -75,7 +79,7 @@ void test_sync_io(const char *cmd) {
 int main(int argc, char **argv) {
     try {
         // test_system(argv[1]);
-        // test_child(argv[1]);
+        // test_child();
         test_sync_io(argv[1]);
 
     } catch (const std::exception &ex) {
