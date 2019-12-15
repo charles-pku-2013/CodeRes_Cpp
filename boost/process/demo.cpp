@@ -4,6 +4,7 @@ https://www.boost.org/doc/libs/1_65_1/doc/html/boost_process/tutorial.html#boost
 
 NOTE!!!
 命令中不可以用重定向如 2>&1
+stdout stderr 不可重定向到同一个stream
  */
 #include <iostream>
 #include <chrono>
