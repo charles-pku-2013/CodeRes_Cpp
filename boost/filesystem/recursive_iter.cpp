@@ -1,5 +1,5 @@
 /*
- * c++ -o /tmp/test recursive_iter.cpp -lboost_filesystem -lboost_system -std=c++11 -g
+c++ -o /tmp/test recursive_iter.cpp -lboost_filesystem -lboost_system -std=c++11 -g
  */
 #include <iostream>
 #include <fstream>
