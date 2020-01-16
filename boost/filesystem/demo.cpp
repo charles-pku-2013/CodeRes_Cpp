@@ -102,11 +102,11 @@ int main(int argc, char* argv[])
 
     try {
         // check_empty(argv[1]);
-        // test1(argv[1]);
+        test1(argv[1]);
         // test_dir();
         // test_mkdir();
         // test_rmdir();
-        test_remove_file(argv[1]);
+        // test_remove_file(argv[1]);
 
     } catch (const std::exception &ex) {
         cerr << ex.what() << endl;
