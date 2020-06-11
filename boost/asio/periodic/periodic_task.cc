@@ -43,8 +43,8 @@ void PeriodicTaskSet::_TimerRoutine() {
     for (auto it = task_set_.begin(); it != task_set_.end();) {
         auto p_task = it->second.lock();
         if (p_task) {
-            // NOTE cannot capture p_task by ref
-            std::thread thr([=]{
+            // NOTE!!! cannot capture p_task by ref
+            std::thread thr([&, p_task]{
                 try {
                     p_task->RunSchedule();
                 } catch (const std::exception &ex) {

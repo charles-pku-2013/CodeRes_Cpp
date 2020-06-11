@@ -43,6 +43,7 @@ int main()
      */
     // auto f = std::bind(func, foo, std::placeholders::_1);
     auto f = std::bind(func, std::ref(foo), std::placeholders::_1);
+    // auto f = std::bind(func, foo, std::placeholders::_1);
     f(20);
     cout << "After calling bind func, foo.data is: " << foo.data << endl;
 

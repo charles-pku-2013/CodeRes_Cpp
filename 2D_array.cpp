@@ -9,6 +9,13 @@
 
 using namespace std;
 
+template<typename Iter>
+void PrintContainer(std::ostream &os, Iter beg, Iter end)
+{
+    typedef typename Iter::value_type Type;
+    std::copy(beg, end, std::ostream_iterator<Type>(os, " "));
+    os << std::endl;
+}
 
 template < typename T >
 void PrintContainer( const T &c )
