@@ -29,3 +29,18 @@ int main()
     t3.join();
     t4.join();
 }
+
+namespace example1 {
+std::once_flag tflite_session_init_flag;
+if (predictor->IsTfLite()) {
+    tensorflow::Status tflite_init_status;
+    std::call_once(tflite_session_init_flag, [&](tensorflow::Status *status){
+        *status = tensorflow::serving::TfLiteSession::Init(predictor->InnerModelName(), predictor->Version(),
+                predictor->BatchSize());
+    }, &tflite_init_status);
+    if (!tflite_init_status.ok()) {
+        LOG(ERROR) << "BaseLTFRank::RankImpl TfLiteSession init fail! " << tflite_init_status;
+        return;
+    }
+}
+}  // namespace example1

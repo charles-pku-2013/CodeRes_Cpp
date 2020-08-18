@@ -44,6 +44,11 @@ void test1(const char *filepath)
     // cout << pp << endl;
 }
 
+/*
+ * 若是目录，判断是否是空目录
+ * 若是文件，返回内容是否是空（0字节）
+ * 不可以传入不存在的文件或目录，会跑出异常
+ */
 void check_empty(const char *filepath) {
     fs::path p(filepath);
     cout << fs::is_empty(p) << endl;
@@ -66,7 +71,7 @@ void test_mkdir()
     try {
         fs::path p1("/tmp/a/b/c/d");
         // cout << fs::is_empty(p1) << endl;  // exception 不可以用于不存在的目录
-        if (fs::create_directories("/tmp/a/b/c/d"))
+        if (fs::create_directories(p1))
             cout << "created dir " << p1 << endl;
         else
             cout << "create dir fail!" << endl;
@@ -101,8 +106,8 @@ int main(int argc, char* argv[])
     // google::InitGoogleLogging(argv[0]);
 
     try {
-        // check_empty(argv[1]);
-        test1(argv[1]);
+        check_empty(argv[1]);
+        // test1(argv[1]);
         // test_dir();
         // test_mkdir();
         // test_rmdir();
