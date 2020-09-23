@@ -11,7 +11,7 @@ to_upper
 trim
 to_lower_copy
 ireplace_first_copy
-iends_with
+boost::algorithm::starts_with istarts_with iends_with ends_with contains icontains iequals
 (all( text1, is_lower() )
 is_from_range('a','z')
 is_digit()
