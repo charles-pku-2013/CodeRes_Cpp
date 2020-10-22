@@ -17,8 +17,6 @@ class SignalHandler final {
 
  public:
     explicit SignalHandler(int num_threads = 5) {
-        io_service_work_ = absl::make_unique<boost::asio::io_service::work>(std::ref(io_service_));
-        signals_ = absl::make_unique<boost::asio::signal_set>(io_service_);
         if (num_threads > 0) { n_handle_threads_ = num_threads; }
     }
 
@@ -30,6 +28,8 @@ class SignalHandler final {
     void Start() {
         if (running_) { return; }
         running_ = true;
+        io_service_work_ = absl::make_unique<boost::asio::io_service::work>(std::ref(io_service_));
+        signals_ = absl::make_unique<boost::asio::signal_set>(io_service_);
         signals_->async_wait(std::bind(&SignalHandler::_SigHandleRoutine, this,
                     std::placeholders::_1, std::placeholders::_2));
         for (int i = 0; i < n_handle_threads_; ++i) {
@@ -58,9 +58,18 @@ class SignalHandler final {
 
  private:
     void _SigHandleRoutine(const boost::system::error_code& error, int signo) {
+        if (!running_) { return; }
+
         auto it = handle_map_.find(signo);
         if (it == handle_map_.end() || !(it->second)) { return; }
-        (it->second)();
+        try {
+            (it->second)();
+        } catch (const std::exception &ex) {
+
+        } catch (...) {
+
+        }
+
         if (running_) {
             signals_->async_wait(std::bind(&SignalHandler::_SigHandleRoutine, this,
                     std::placeholders::_1, std::placeholders::_2));
