@@ -106,7 +106,7 @@ public:
         if (handle == INVALID_HANDLE_VALUE) 
         { 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::add_directory: CreateFile failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::add_directory: CreateFile failed"); 
             boost::throw_exception(e); 
         } 
 
@@ -118,7 +118,7 @@ public:
         { 
             delete ck; 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::add_directory: CreateIoCompletionPort failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::add_directory: CreateIoCompletionPort failed"); 
             boost::throw_exception(e); 
         } 
 
@@ -128,7 +128,7 @@ public:
         { 
             delete ck; 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::add_directory: ReadDirectoryChangesW failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::add_directory: ReadDirectoryChangesW failed"); 
             boost::throw_exception(e); 
         } 
 
@@ -199,7 +199,7 @@ private:
         if (iocp == NULL) 
         { 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::init_iocp: CreateIoCompletionPort failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::init_iocp: CreateIoCompletionPort failed"); 
             boost::throw_exception(e); 
         } 
         return iocp; 
@@ -216,7 +216,7 @@ private:
             if (!res) 
             { 
                 DWORD last_error = GetLastError(); 
-                boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::work_thread: GetQueuedCompletionStatus failed"); 
+                boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::work_thread: GetQueuedCompletionStatus failed"); 
                 boost::throw_exception(e); 
             } 
 
@@ -263,7 +263,7 @@ private:
                         { 
                             delete ck; 
                             DWORD last_error = GetLastError(); 
-                            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::work_thread: ReadDirectoryChangesW failed"); 
+                            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::work_thread: ReadDirectoryChangesW failed"); 
                             boost::throw_exception(e); 
                         } 
                     } 
@@ -291,7 +291,7 @@ private:
         if (!res) 
         { 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::stop_work_thread: PostQueuedCompletionStatus failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::stop_work_thread: PostQueuedCompletionStatus failed"); 
             boost::throw_exception(e); 
         } 
     } 
@@ -302,7 +302,7 @@ private:
         if (!size) 
         { 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::to_utf8: WideCharToMultiByte failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::to_utf8: WideCharToMultiByte failed"); 
             boost::throw_exception(e); 
         } 
 
@@ -321,7 +321,7 @@ private:
         if (!size) 
         { 
             DWORD last_error = GetLastError(); 
-            boost::system::system_error e(boost::system::error_code(last_error, boost::system::get_system_category()), "boost::asio::basic_dir_monitor_service::to_utf8: WideCharToMultiByte failed"); 
+            boost::system::system_error e(boost::system::error_code(last_error, boost::system::system_category()), "boost::asio::basic_dir_monitor_service::to_utf8: WideCharToMultiByte failed"); 
             boost::throw_exception(e); 
         } 
 
