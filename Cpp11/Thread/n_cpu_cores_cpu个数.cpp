@@ -1,12 +1,8 @@
-/*
- * c++ -o /tmp/test n_cpu.cpp -std=c++11 -pthread -lboost_thread -lboost_system -O3
- */
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <atomic>
 #include <vector>
-// #include <boost/thread.hpp>
 #include <unistd.h>
 
 #define SLEEP_SECONDS(x)      std::this_thread::sleep_for(std::chrono::seconds(x))
