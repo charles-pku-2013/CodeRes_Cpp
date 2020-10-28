@@ -30,6 +30,7 @@ int main()
     t4.join();
 }
 
+#if 0
 namespace example1 {
 std::once_flag tflite_session_init_flag;
 if (predictor->IsTfLite()) {
@@ -44,3 +45,5 @@ if (predictor->IsTfLite()) {
     }
 }
 }  // namespace example1
+#endif
+
