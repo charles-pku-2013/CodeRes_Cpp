@@ -39,12 +39,13 @@ bool PeriodicTaskSet::Stop() {
 }
 
 void PeriodicTaskSet::_TimerRoutine() {
+    if (!timer_) { return; }
     boost::unique_lock<PeriodicTaskSet> lck(*this);
     for (auto it = task_set_.begin(); it != task_set_.end();) {
         auto p_task = it->second.lock();
         if (p_task) {
             // NOTE!!! cannot capture p_task by ref
-            std::thread thr([&, p_task]{
+            std::thread thr([p_task]{
                 try {
                     p_task->RunSchedule();
                 } catch (const std::exception &ex) {
@@ -63,8 +64,10 @@ void PeriodicTaskSet::_TimerRoutine() {
     lck.unlock();
 
     // reset timer
-    timer_->expires_from_now(boost::posix_time::seconds(interval_));
-    timer_->async_wait(std::bind(&PeriodicTaskSet::_TimerRoutine, this));
+    if (timer_) {
+        timer_->expires_from_now(boost::posix_time::seconds(interval_));
+        timer_->async_wait(std::bind(&PeriodicTaskSet::_TimerRoutine, this));
+    }
 }
 
 std::string PeriodicTaskSet::DebugString() {

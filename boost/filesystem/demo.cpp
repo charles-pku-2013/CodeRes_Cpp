@@ -24,6 +24,7 @@ void test1(const char *filepath)
     cout << "is_absolute: " << p1.is_absolute() << endl;
     cout << "is_relative: " << p1.is_relative() << endl;
     cout << "absolute_path: " << fs::absolute(p1) << endl;
+    cout << "absolute_path by canonical: " << fs::canonical(p1) << endl;  // require exist, otherwise exception
     cout << "relative_path: " << p1.relative_path() << endl;
     cout << "is_directory: " << fs::is_directory(p1) << endl;
     cout << "is_regular_file: " << fs::is_regular_file(p1) << endl;
@@ -106,15 +107,15 @@ int main(int argc, char* argv[])
     // google::InitGoogleLogging(argv[0]);
 
     try {
-        check_empty(argv[1]);
-        // test1(argv[1]);
+        // check_empty(argv[1]);
+        test1(argv[1]);
         // test_dir();
         // test_mkdir();
         // test_rmdir();
         // test_remove_file(argv[1]);
 
     } catch (const std::exception &ex) {
-        cerr << ex.what() << endl;
+        cerr << "Exception: " << ex.what() << endl;
     } // try
 
     return 0;
