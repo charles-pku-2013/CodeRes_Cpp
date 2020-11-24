@@ -11,7 +11,7 @@ struct Foo {
             // ~_OnDone() { flag_ = false; }
         // } _on_done; // WRONG
         std::unique_ptr<void, std::function<void(void*)>>
-                _on_done((void*)-1, [&,this](void*){flag_ = false;});
+                _on_done((void*)-1, [this](void*){flag_ = false;});
         cout << "test() flag=" << flag_ << endl;
     }
 };

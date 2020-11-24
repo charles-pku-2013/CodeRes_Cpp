@@ -15,7 +15,7 @@ int main()
 					fclose(fp);
 				};
 				
-	unique_ptr< FILE, decltype(del) > pFILE( 
+	unique_ptr< FILE, decltype(del)> pFILE( 
 					fopen("/tmp/test.txt", "w"),
 					del
 				);
