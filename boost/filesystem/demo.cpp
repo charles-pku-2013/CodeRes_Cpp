@@ -17,9 +17,9 @@ void test1(const char *filepath)
     // fs::path p1("../../Cpp11/type_traits/is_destructible.cpp");
     fs::path p1(filepath);
     cout << "orig: " << p1 << endl;
-    cout << "parent_path: " << p1.parent_path() << endl;
+    cout << "parent_path: " << p1.parent_path() << endl; // 返回文件所在目录
     cout << "filename: " << p1.filename() << endl;
-    cout << "stem: " << p1.stem() << endl; // 主文件名 是 fs::path
+    cout << "stem: " << p1.stem() << endl; // 主文件名 是 fs::path 转成字符串用 stem().string() 不包含前缀路径
     cout << "extension: " << p1.extension() << endl;  // ".cpp"
     cout << "is_absolute: " << p1.is_absolute() << endl;
     cout << "is_relative: " << p1.is_relative() << endl;
