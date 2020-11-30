@@ -19,4 +19,5 @@
 !CmakeLists.txt
 !WORKSPACE
 !BUILD
+!*.BUILD
 !*.bzl
