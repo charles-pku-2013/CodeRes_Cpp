@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
     }
     ifs.close();
 
-    LOG(INFO) << base_no;  // DEBUG
+    // LOG(INFO) << base_no;  // DEBUG
     if (base_no <= 0) { return 0; }
 
     fs::path stream_path = m3u8_path.parent_path();
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
         if (!get_serial_no(fname, &no)) { continue; }
         if (no < base_no) {
             try {
-                LOG(INFO) << "Removing file " << fpath;  // DEBUG
+                // LOG(INFO) << "Removing file " << fpath;  // DEBUG
                 fs::remove(fpath);
             } catch (const std::exception &ex) {
                 LOG(ERROR) << "Cannot delete file " << fpath << ". " << ex.what();
