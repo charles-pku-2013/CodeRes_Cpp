@@ -57,21 +57,21 @@ try {
     // mkv command
     {
         auto it = src_files.begin();
-        std::string cmd_mkvmerge = FLAGS_mkv +" -o " + FLAGS_o + ".mkv " + *it;
+        std::string cmd_mkv = FLAGS_mkv + " -o " + FLAGS_o + ".mkv " + *it;
         ++it;
         for (; it != src_files.end(); ++it) {
-            cmd_mkvmerge.append(" +").append(*it);
+            cmd_mkv.append(" +").append(*it);
         }
-        LOG(INFO) << "cmd_mkvmerge: " << cmd_mkvmerge;
+        LOG(INFO) << "cmd_mkv: " << cmd_mkv;
     }
 
     // ffmpeg command
     {
         // TODO check mkv file exists
-        std::string cmd_ffmpeg = absl::StrFormat("%s -i %s -filter_complex "
+        std::string cmd_mp4 = absl::StrFormat("%s -i %s -filter_complex "
                 "\"[0:v:0][0:a:0]concat=n=1:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
                 "-preset fast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
-        LOG(INFO) << "cmd_ffmpeg: " << cmd_ffmpeg;
+        LOG(INFO) << "cmd_mp4: " << cmd_mp4;
     }
 
     return 0;
