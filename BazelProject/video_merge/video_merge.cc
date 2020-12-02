@@ -1,6 +1,7 @@
 /*
 bazel build -c opt //video_merge:video_merge
  */
+#include <cstdlib>
 #include <string>
 #include <set>
 #include <iostream>
@@ -63,15 +64,20 @@ try {
             cmd_mkv.append(" +").append(*it);
         }
         LOG(INFO) << "cmd_mkv: " << cmd_mkv;
+        ::system(cmd_mkv.c_str());
     }
 
     // ffmpeg command
     {
-        // TODO check mkv file exists
+        if (!fs::exists(FLAGS_o + ".mkv")) {
+            LOG(ERROR) << "Cannot create mp4 for mkv file does not exist!";
+            return 0;
+        }
         std::string cmd_mp4 = absl::StrFormat("%s -i %s -filter_complex "
                 "\"[0:v:0][0:a:0]concat=n=1:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
-                "-preset fast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
+                "-preset superfast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
         LOG(INFO) << "cmd_mp4: " << cmd_mp4;
+        ::system(cmd_mp4.c_str());
     }
 
     return 0;

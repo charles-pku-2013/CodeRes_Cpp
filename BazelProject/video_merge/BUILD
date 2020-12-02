@@ -12,5 +12,6 @@ cc_binary(
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
     ],
+    copts = ["-Wno-unused-result"],
 )
 
