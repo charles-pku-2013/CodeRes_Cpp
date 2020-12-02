@@ -28,8 +28,6 @@ bool get_serial_no(const std::string& str, int64_t *no) {
 }
 
 int main(int argc, char **argv) {
-    using namespace std;
-
     FLAGS_logtostderr = true;
     google::InitGoogleLogging(argv[0]);
 
@@ -38,13 +36,29 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    std::string m3u8_file = argv[1];
-    fs::path m3u8_path(m3u8_file);
+    fs::path m3u8_path(argv[1]);
+    if (!fs::exists(m3u8_path) || !fs::is_regular_file(m3u8_path)) {
+        LOG(ERROR) << "hls_cleanup " << m3u8_path << "is not valid!";
+        return 0;
+    }
+
+    std::string m3u8_bak = "/tmp/" + m3u8_path.filename().string();
+    try { fs::remove(m3u8_bak); } catch (...) {}  // remove if exists
+    try {
+        fs::copy_file(m3u8_path, m3u8_bak);
+    } catch (const std::exception &ex) {
+        LOG(ERROR) << "hls_cleanup fail to create copy of " << m3u8_path << " " << ex.what();
+        return 0;
+    }
+    std::unique_ptr<void, std::function<void(void*)>> _on_finish((void*)1, [&m3u8_bak](void*){
+        try { fs::remove(m3u8_bak); } catch (...) {}
+    });
+
     std::string stream_name = m3u8_path.stem().string();
 
-    std::ifstream ifs(m3u8_file, std::ios::in);
+    std::ifstream ifs(m3u8_bak, std::ios::in);
     if (!ifs) {
-        LOG(ERROR) << "Cannot open " << m3u8_file << " for reading!";
+        LOG(ERROR) << "hls_cleanup cannot open " << m3u8_bak << " for reading!";
         return 0;
     }
 
@@ -59,7 +73,7 @@ int main(int argc, char **argv) {
     }
     ifs.close();
 
-    // LOG(INFO) << base_no;  // DEBUG
+    LOG(INFO) << "hls_cleanup base_no = " << base_no;
     if (base_no <= 0) { return 0; }
 
     fs::path stream_path = m3u8_path.parent_path();
@@ -71,12 +85,12 @@ int main(int argc, char **argv) {
         }
         int64_t no = -1;
         if (!get_serial_no(fname, &no)) { continue; }
-        if (no < base_no) {
+        if (no < base_no && no >= 0) {
             try {
-                // LOG(INFO) << "Removing file " << fpath;  // DEBUG
+                LOG(INFO) << "hls_cleanup removing " << fpath;
                 fs::remove(fpath);
             } catch (const std::exception &ex) {
-                LOG(ERROR) << "Cannot delete file " << fpath << ". " << ex.what();
+                LOG(ERROR) << "hls_cleanup cannot delete file " << fpath << ". " << ex.what();
             }
         }  // if
     }  // for

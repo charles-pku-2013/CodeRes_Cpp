@@ -1,0 +1,13 @@
+# disable sandbox
+build --spawn_strategy=standalone
+build --genrule_strategy=standalone
+
+# build --define=with_glog=true
+build --cxxopt=-std=c++14
+build --host_cxxopt=-std=c++14
+build:nativeopt --copt=-O3
+
+# build --copt="-Wno-error"
+# build --copt="-Wno-error=sign-compare"
+# build --copt="-Wno-error=unused-function"
+

@@ -15,6 +15,8 @@ bazel build -c opt //video_merge:video_merge
 DEFINE_string(d, ".", "target dir");
 DEFINE_string(src_type, "flv", "source file extension");
 DEFINE_string(o, "", "output file main name");
+DEFINE_string(mkv, "mkvmerge", "tool for generating mkv");
+DEFINE_string(mp4, "ffmpeg", "tool for generating mp4");
 
 namespace fs = boost::filesystem;
 
@@ -51,6 +53,26 @@ try {
     LOG(INFO) << absl::StrFormat("Merging sequence: {%s}", absl::StrJoin(src_files, ", "));
 
     if (src_files.empty()) { return 0; }
+
+    // mkv command
+    {
+        auto it = src_files.begin();
+        std::string cmd_mkvmerge = FLAGS_mkv +" -o " + FLAGS_o + ".mkv " + *it;
+        ++it;
+        for (; it != src_files.end(); ++it) {
+            cmd_mkvmerge.append(" +").append(*it);
+        }
+        LOG(INFO) << "cmd_mkvmerge: " << cmd_mkvmerge;
+    }
+
+    // ffmpeg command
+    {
+        // TODO check mkv file exists
+        std::string cmd_ffmpeg = absl::StrFormat("%s -i %s -filter_complex "
+                "\"[0:v:0][0:a:0]concat=n=1:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
+                "-preset fast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
+        LOG(INFO) << "cmd_ffmpeg: " << cmd_ffmpeg;
+    }
 
     return 0;
 

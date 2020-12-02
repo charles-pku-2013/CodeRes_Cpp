@@ -14,10 +14,12 @@
 !*.cin
 !*.cfg
 !*.rsp
+!*.proto
 !.gitignore
 !Makefile
 !CmakeLists.txt
 !WORKSPACE
+!.bazelrc
 !BUILD
 !*.BUILD
 !*.bzl

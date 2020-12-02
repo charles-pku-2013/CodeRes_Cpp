@@ -10,6 +10,32 @@ https://www.boost.org/doc/libs/1_65_0/libs/filesystem/doc/reference.html
 using namespace std;
 namespace fs = boost::filesystem;
 
+#if 0
+# examples
+## path.stem()
+std::cout << path("/foo/bar.txt").stem(); // outputs "bar"
+path p = "foo.bar.baz.tar";
+for (; !p.extension().empty(); p = p.stem())
+    std::cout << p.extension() << '\n';
+
+## path.filename()
+std::cout << path("/foo/bar.txt").filename(); // outputs "bar.txt"
+std::cout << path("/foo/bar").filename();     // outputs "bar"
+std::cout << path("/foo/bar/").filename();    // outputs "."
+std::cout << path("/").filename();            // outputs "/"
+std::cout << path(".").filename();            // outputs "."
+std::cout << path("..").filename();           // outputs ".."
+
+## path.parent_path()
+std::cout << path("/foo/bar.txt").parent_path(); // outputs "/foo"
+std::cout << path("/foo/bar").parent_path();     // outputs "/foo"
+std::cout << path("/foo/bar/").parent_path();    // outputs "/foo/bar"
+std::cout << path("/").parent_path();            // outputs ""
+std::cout << path(".").parent_path();            // outputs ""
+std::cout << path("..").parent_path();           // outputs ""
+
+#endif
+
 void test1(const char *filepath)
 {
     cout << "current_path: " << fs::current_path() << endl;
