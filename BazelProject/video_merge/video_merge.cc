@@ -18,6 +18,7 @@ DEFINE_string(src_type, "flv", "source file extension");
 DEFINE_string(o, "", "output file main name");
 DEFINE_string(mkv, "mkvmerge", "tool for generating mkv");
 DEFINE_string(mp4, "ffmpeg", "tool for generating mp4");
+DEFINE_bool(no_mp4, false, "do not create mp4");
 
 namespace fs = boost::filesystem;
 
@@ -68,6 +69,7 @@ try {
     }
 
     // ffmpeg command
+    if (!FLAGS_no_mp4)
     {
         if (!fs::exists(FLAGS_o + ".mkv")) {
             LOG(ERROR) << "Cannot create mp4 for mkv file does not exist!";

@@ -1,8 +1,8 @@
 /*
 # first build so
-bazel build //:libplugin.so
+bazel build -c opt //plugin_demo:libplugin.so
 # then build demo
-bazel build //:demo
+bazel build -c opt //plugin_demo:demo
 # run and input bazel-bin/libplugin.so
 bazel-bin/demo
  */

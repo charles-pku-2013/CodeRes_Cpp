@@ -53,6 +53,7 @@ class KernelFactory final {
         example::KernelFactory::Instance().RegisterCreator(class_name, \
                 [](const std::string& name)-> type* { return new type(name); });
 // NOTE 宏参数不要和其他参数如lambda函数形参重名
+// 之前宏形参name与lambda函数中的name冲突，改成class_name解决
 
 }  // namespace example
 
