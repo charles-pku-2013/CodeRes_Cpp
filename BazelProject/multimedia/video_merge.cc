@@ -58,6 +58,7 @@ try {
 
     // mkv command
     {
+        try { fs::remove(FLAGS_o + ".mkv"); } catch (...) {}  // remove if exists
         auto it = src_files.begin();
         std::string cmd_mkv = FLAGS_mkv + " -o " + FLAGS_o + ".mkv " + *it;
         ++it;
@@ -75,6 +76,7 @@ try {
             LOG(ERROR) << "Cannot create mp4 for mkv file does not exist!";
             return 0;
         }
+        try { fs::remove(FLAGS_o + ".mp4"); } catch (...) {}  // remove if exists
         std::string cmd_mp4 = absl::StrFormat("%s -i %s -filter_complex "
                 "\"[0:v:0][0:a:0]concat=n=1:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
                 "-preset superfast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
