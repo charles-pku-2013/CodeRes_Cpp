@@ -50,6 +50,7 @@ void test1(const char *filepath)
     cout << "is_absolute: " << p1.is_absolute() << endl;
     cout << "is_relative: " << p1.is_relative() << endl;
     cout << "absolute_path: " << fs::absolute(p1) << endl;
+    cout << "absolute_path by system_complete: " << fs::system_complete(p1) << endl;  // like above
     cout << "absolute_path by canonical: " << fs::canonical(p1) << endl;  // require exist, otherwise exception
     cout << "relative_path: " << p1.relative_path() << endl;
     cout << "is_directory: " << fs::is_directory(p1) << endl;
