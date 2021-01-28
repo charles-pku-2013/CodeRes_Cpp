@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <string>
-#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include "absl/strings/str_join.h"
@@ -13,20 +14,7 @@ DEFINE_string(dir, ".", "target dir");
 DEFINE_string(raw, "raf", "raw file type");
 DEFINE_bool(y, false, "remove without confirm");
 
-
 namespace fs = boost::filesystem;
-
-template<typename Iter>
-void remove_files(Iter beg, Iter end) {
-    for(; beg != end; ++beg) {
-        try {
-            LOG(INFO) << "Removing " << *beg;
-            fs::remove(*beg);
-        } catch (const std::exception &ex) {
-            LOG(ERROR) << "Fail to remove file " << *beg << ". " << ex.what();
-        }
-    }
-}
 
 int main(int argc, char **argv)
 try {
@@ -41,34 +29,51 @@ try {
 
     fs::current_path(FLAGS_dir);
 
-    std::set<std::string> to_be_removed;
+    using RawFileSet = std::unordered_map<std::string, std::string>;
+    RawFileSet raw_file_set;
+    std::unordered_set<std::string> jpg_file_set;
     for (fs::directory_iterator itr("."); itr != fs::directory_iterator(); ++itr) {
         if (!fs::is_regular_file(*itr)) { continue; }
-        if (absl::EqualsIgnoreCase(itr->path().extension().string(), FLAGS_raw)) {
-            std::string jpg_file1 = itr->path().stem().string() + ".jpg";
-            std::string jpg_file2 = itr->path().stem().string() + ".JPG";
-            if (!fs::exists(jpg_file1) && !fs::exists(jpg_file2)) {
-                to_be_removed.insert(itr->path().filename().string());
-            }
+        if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + FLAGS_raw)) {
+            raw_file_set[itr->path().stem().string()] = itr->path().filename().string();
+        } else if (absl::EqualsIgnoreCase(itr->path().extension().string(), ".jpg") ||
+                absl::EqualsIgnoreCase(itr->path().extension().string(), ".jpeg")) {
+            jpg_file_set.emplace(itr->path().stem().string());
         }
     }  // for itr
 
-    if (to_be_removed.empty()) {
+    for (const auto& item : jpg_file_set) {
+        raw_file_set.erase(item);
+    }
+
+    if (raw_file_set.empty()) {
         LOG(INFO) << "No file found";
         return 0;
     }
 
+    auto remove_files = [&] {
+        for (const auto& kv : raw_file_set) {
+            try {
+                LOG(INFO) << "Removing " << kv.second;
+                fs::remove(kv.second);
+            } catch (const std::exception &ex) {
+                LOG(ERROR) << "Fail to remove file " << kv.second << ". " << ex.what();
+            }
+        }
+    };
+
     if (FLAGS_y) {
-        remove_files(to_be_removed.begin(), to_be_removed.end());
+        remove_files();
     } else {
         std::cerr << "The following files will be removed:\n"
-            << absl::StrJoin(to_be_removed, "\n")
-            << "Please confirm (Y/n): " << std::flush;
+            << absl::StrJoin(raw_file_set, "\n", [](std::string *out, const RawFileSet::value_type &val){
+                    absl::StrAppend(out, val.second); })
+            << "\nPlease confirm (Y/n): " << std::flush;
         std::string input;
         std::getline(std::cin, input);
         absl::StripAsciiWhitespace(&input);
         if (absl::EqualsIgnoreCase(input, "y")) {
-            remove_files(to_be_removed.begin(), to_be_removed.end());
+            remove_files();
         } else {
             LOG(INFO) << "Aborted!";
             return 0;
