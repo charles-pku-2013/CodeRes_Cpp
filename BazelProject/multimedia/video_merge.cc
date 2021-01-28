@@ -19,6 +19,7 @@ DEFINE_string(o, "", "output file main name");
 DEFINE_string(mkv, "mkvmerge", "tool for generating mkv");
 DEFINE_string(mp4, "ffmpeg", "tool for generating mp4");
 DEFINE_bool(no_mp4, false, "do not create mp4");
+DEFINE_bool(no_mkv, true, "remove mkv if create mp4");
 
 namespace fs = boost::filesystem;
 
@@ -81,7 +82,10 @@ try {
                 "\"[0:v:0][0:a:0]concat=n=1:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
                 "-preset superfast -profile:v high %s", FLAGS_mp4, (FLAGS_o + ".mkv"), (FLAGS_o + ".mp4"));
         LOG(INFO) << "cmd_mp4: " << cmd_mp4;
-        ::system(cmd_mp4.c_str());
+        int retval = ::system(cmd_mp4.c_str());
+        if (0 == retval && FLAGS_no_mkv) {
+            try { fs::remove(FLAGS_o + ".mkv"); } catch (...) {}
+        }
     }
 
     return 0;
