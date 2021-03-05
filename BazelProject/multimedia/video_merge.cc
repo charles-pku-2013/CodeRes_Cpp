@@ -14,12 +14,12 @@ bazel build -c opt //video_merge:video_merge
 #include <gflags/gflags.h>
 
 DEFINE_string(d, ".", "target dir");
-DEFINE_string(src_type, "flv", "source file extension");
+DEFINE_string(t, "flv", "source file type");
 DEFINE_string(o, "", "output file main name");
 DEFINE_string(mkv, "mkvmerge", "tool for generating mkv");
 DEFINE_string(mp4, "ffmpeg", "tool for generating mp4");
 DEFINE_bool(no_mp4, false, "do not create mp4");
-DEFINE_bool(no_mkv, true, "remove mkv if create mp4");
+DEFINE_bool(no_mkv, false, "remove mkv if create mp4");
 
 namespace fs = boost::filesystem;
 
@@ -49,7 +49,7 @@ try {
 
     std::set<std::string> src_files;
     for (fs::directory_iterator itr("."); itr != fs::directory_iterator(); ++itr) {
-        if (fs::is_regular_file(*itr) && itr->path().extension() == "." + FLAGS_src_type) {
+        if (fs::is_regular_file(*itr) && itr->path().extension() == "." + FLAGS_t) {
             src_files.insert(static_cast<std::string>(absl::StripPrefix(itr->path().string(), "./")));
         }
     }
