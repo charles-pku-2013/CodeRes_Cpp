@@ -11,8 +11,6 @@
 #include "common/brpc_client/client.h"
 #include "tensorflow_serving/apis/prediction_service.pb.h"
 
-namespace jdsearch {
-namespace searcher {
 
 class TFSPredictor final : public Predictor {
  public:
@@ -20,7 +18,7 @@ class TFSPredictor final : public Predictor {
     using Request = tensorflow::serving::PredictRequest;
     using Response = tensorflow::serving::PredictResponse;
     using PredictionService = tensorflow::serving::PredictionService;
-    using ClientType = jdsearch::BRpcSingleClient<PredictionService, Request, Response>;
+    using ClientType = XX::BRpcSingleClient<PredictionService, Request, Response>;
 
     class TfsClient final : public boost::shared_lockable_adapter<boost::shared_mutex> {
      public:
@@ -132,5 +130,3 @@ class TFSPredictor final : public Predictor {
 };
 
 
-}  // namespace searcher
-}  // namespace jdsearch

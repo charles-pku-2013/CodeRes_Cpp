@@ -8,8 +8,6 @@
 
 #define SLEEP_MILLISECONDS(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 
-namespace jdsearch {
-namespace searcher {
 
 namespace {
 template<typename ProtoType>
@@ -95,5 +93,3 @@ bool TFSPredictor::Predict(const Request &req, Response *res, int timeout,
 
 REGISTER_PREDICTOR_FACTORY("tfs", TFSPredictor);
 
-}  // namespace searcher
-}  // namespace jdsearch

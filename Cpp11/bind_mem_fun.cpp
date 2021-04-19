@@ -31,7 +31,7 @@ int main()
 #if 0
 class TfsHostSet final : public boost::shared_lockable_adapter<boost::shared_mutex> {
  public:
-    using ReadZkEventProcessor = jdsearch::zookeeper::ReadZkEventProcessor;
+    using ReadZkEventProcessor = XX::zookeeper::ReadZkEventProcessor;
 
  public:
     static TfsHostSet& Instance() {

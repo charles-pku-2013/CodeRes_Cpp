@@ -43,7 +43,7 @@ class KnnTest {
     using Request = tensorflow::serving::KnnPredSearchRequest;
     using Response = tensorflow::serving::KnnPredSearchResult;
     using KnnPredService = tensorflow::serving::KnnPredService;
-    using ClientType = jdsearch::BRpcSingleClient<KnnPredService, Request, Response>;
+    using ClientType = XX::BRpcSingleClient<KnnPredService, Request, Response>;
 
     struct KnnClient : public ClientType {
         KnnClient() {
