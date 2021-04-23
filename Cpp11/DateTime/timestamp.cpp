@@ -35,6 +35,16 @@ void gettimeofday_test() {
     snprintf(buf + n, sizeof(buf) - n, "_%06ld", tv.tv_usec);
     cout << buffer << endl;
 }
+std::string gen_timestamp() {
+    char buf[64] = {'\0'};
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    std::tm tm;
+    localtime_r(&tv.tv_sec, &tm);
+    std::size_t n = std::strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", &tm);
+    snprintf(buf + n, sizeof(buf) - n, "_%06ld", tv.tv_usec);
+    return buf;
+}
 
 // time_t to tm and then strftime
 void demo1() {
