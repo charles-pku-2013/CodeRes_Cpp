@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <cstdio>
+#include <typeinfo>
 
 using namespace std;
 
@@ -97,6 +98,16 @@ void test1()
     exit(0);
 }
 
+// NOTE!!! cannot capture by non-const ref
+// This OK, value is also OK
+// int lambda_as_param(const std::function<int(void)> &fn) {
+    // return fn();
+// }
+// FIAL
+int lambda_as_param(std::function<int(void)> *fn) {
+    return (*fn)();
+}
+
 // capture this
 struct Foo {
     Foo( const std::string &_Name, int _i, int _j )
@@ -110,8 +121,11 @@ struct Foo {
             i *= 2; j *= 2;
             return i + j + name.length();
         };
+        // cout << typeid(do_sum).name() << endl;
+        // cout << (typeid(do_sum) == typeid(std::function<int(void)>)) << endl;
 
         cout << do_sum() << endl;
+        cout << lambda_as_param(do_sum) << endl;
     }
 
     int i, j;

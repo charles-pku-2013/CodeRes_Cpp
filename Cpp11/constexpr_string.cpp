@@ -5,7 +5,8 @@
 #include <boost/lexical_cast.hpp>
 
 struct Foo {
-    static constexpr const char* name = "Foo";
+    static constexpr const char* name = "Foo";  // OK
+    static constexpr const char* Name() { return "Foo"; }  // OK
     // static constexpr const char name[] = "Foo"; // WRONG link error
 };
 
@@ -15,6 +16,7 @@ int main() {
 
     Foo foo;
     cout << foo.name << endl;
+    cout << foo.Name() << endl;
 
     return 0;
 }
