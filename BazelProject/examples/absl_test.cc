@@ -5,6 +5,7 @@
 #include "absl/strings/str_split.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/strip.h"
 
 using namespace std;
 
@@ -21,6 +22,14 @@ int main() {
         absl::StrAppend(out, val.second);  // Use the value directly
     });
     cout << str_mm << endl;
+
+    // NOTE!!! SkipWhitespace 是指整个字符串是空白字符如" ", 不会自动strip
+    // std::vector<std::string> v = absl::StrSplit("a , b=c", absl::ByAnyChar(",="), absl::SkipWhitespace());
+    // 下面的是预期的效果
+    constexpr char SPACES[] = " \t\f\r\v\n";
+    std::vector<std::string> v = absl::StrSplit("a , b,,=c",
+                absl::ByAnyChar(absl::StrCat(",=", SPACES)), absl::SkipWhitespace());
+    cout << absl::StrJoin(v, ",") << endl;
 
     return 0;
 }
