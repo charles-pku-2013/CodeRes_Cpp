@@ -8,7 +8,7 @@
 using namespace std;
 
 inline
-bool str2time(const std::string &s, std::tm &tm, 
+bool str2time(const std::string &s, std::tm &tm,
               const std::string &format = "%Y-%m-%d %H:%M:%S",
               const std::string &encoding = "")
 {
@@ -21,7 +21,7 @@ bool str2time(const std::string &s, std::tm &tm,
 
 
 inline
-bool str2time(const std::string &s, std::time_t &t, 
+bool str2time(const std::string &s, std::time_t &t,
               const std::string &format = "%Y-%m-%d %H:%M:%S",
               const std::string &encoding = "")
 {
@@ -34,7 +34,7 @@ bool str2time(const std::string &s, std::time_t &t,
 
 
 inline
-bool str2time(const std::string &s, 
+bool str2time(const std::string &s,
               std::chrono::system_clock::time_point &tp,
               const std::string &format = "%Y-%m-%d %H:%M:%S",
               const std::string &encoding = "")
@@ -84,7 +84,7 @@ static
 void test4()
 {
     std::time_t now = std::time(0);
-    cout << time2str(now) << endl;
+    cout << time2str(now) << endl;  // 2021-06-04 17:49:09
 }
 
 
@@ -92,7 +92,7 @@ static
 void test5()
 {
     auto now = std::chrono::system_clock::now();
-    cout << time2str(now) << endl;
+    cout << time2str(now) << endl;  // 2021-06-04 17:48:18
 }
 
 
@@ -120,7 +120,7 @@ void test1()
     // bool success = str2time("2016-10-1 11:30:45", tm);
     bool success = str2time("2016-10-1", tm);
     if (success) {
-        cout << std::put_time(&tm, "%c") << endl;
+        cout << std::put_time(&tm, "%c") << endl;  // Sun Oct  1 00:00:00 2016
     } else {
         cout << "Parse fail!" << endl;
     } // if
@@ -143,21 +143,21 @@ void test6()
     std::time_t tm = 0;
     bool ret = str2time(str, tm, "%Y%m%d");
     cout << ret << endl;
-    cout << time2str(tm) << endl;
+    cout << time2str(tm) << endl;  // 2016-05-18 00:00:00
 }
 
 int main()
 {
-    // test1();
+    test1();
     // test2();
     // test3();
     // test4();
     // test5();
-    test6();
+    // test6();
 
     return 0;
 }
- 
+
 #if 0
 int main()
 {

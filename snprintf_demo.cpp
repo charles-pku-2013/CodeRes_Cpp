@@ -13,7 +13,7 @@ int main()
     {
         char buf[5];
         snprintf(buf, 5, "Hello world!");   // 最多写入指定的sz-1个字符
-        cout << buf << endl;
+        cout << buf << endl;  // Hell
     }
 
     /*

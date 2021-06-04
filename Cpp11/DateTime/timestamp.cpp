@@ -32,7 +32,7 @@ void gettimeofday_test() {
     localtime_r(&tv.tv_sec, &tm);
     char buffer[64] = {'\0'};
     std::size_t n = std::strftime(buffer, 64, "%Y%m%d %H:%M:%S", &tm);
-    snprintf(buf + n, sizeof(buf) - n, "_%06ld", tv.tv_usec);
+    snprintf(buffer + n, sizeof(buffer) - n, "_%06ld", tv.tv_usec);
     cout << buffer << endl;
 }
 std::string gen_timestamp() {
@@ -52,20 +52,21 @@ void demo1() {
     std::tm tm;
     localtime_r(&now, &tm);
     char buffer[64] = {'\0'};
-    std::strftime(buffer, 64, "%Y%m%d%H%M%S", &tm);
+    std::strftime(buffer, 64, "%Y%m%d%H%M%S", &tm);  // 20210604174302
     cout << buffer << endl;
 }
 
 int main() {
     demo1();
-    cout << std::chrono::system_clock::now() << endl;
-    gettimeofday_test();
+    cout << std::chrono::system_clock::now() << endl;  // Fri Jun  4 17:43:02 2021
+    gettimeofday_test();  // 20210604 17:43:02_156937
     SLEEP_MILLISECONDS(2);
     gettimeofday_test();
 
     return 0;
 }
 
+#if 0
 namespace example1 {
 bool TFSPredictor::_SaveErrReq(const Request &req, const std::string &err_msg) {
     if (!save_err_req_) { return false; }
@@ -110,4 +111,5 @@ inline bool save_req(const ProtoType *msg, const std::string &fname) {
     return msg->SerializeToOstream(&ofs);
 }
 }  // namespace example1
+#endif
 
