@@ -2,6 +2,7 @@
 #include <iostream>
 #include <functional>
 #include <cstdio>
+#include <boost/format.hpp>
 
 #define ON_FINISH(name, deleter) \
     std::unique_ptr<void, std::function<void(void*)> > \
@@ -68,14 +69,56 @@ void test4()
     fprintf(fp.get(), "hello\n");
 }
 
+void test5()
+{
+#if 0
+    // NOTE!!! unique_ptr的reset函数不支持指定定制的deleter实例
+    std::unique_ptr<char, std::function<void(char*)>> ptr;
+    char *data = new char[100];
+    ptr.reset(data, [](char* p){
+        if (p) {
+            cout << "custom deleter called!" << endl;
+            delete [] p;
+        }
+    });
+#endif
+
+#if 0
+    // NOTE!!! 使用reset正确的方式
+    struct _Deleter {
+        void operator()(char *p) {
+            if (p) {
+                cout << "custom deleter called! Addr: " << boost::format("%lx") % (void*)p << endl;
+                delete [] p;
+            }
+        }
+    };
+    std::unique_ptr<char, _Deleter> ptr;  // call the default construct of _Deleter
+    char *data = new char[100];
+    cout << "Addr of data: " << boost::format("%lx") % (void*)data << endl;
+    ptr.reset(data);
+#endif
+
+    // NOTE!!! This also OK!
+    std::unique_ptr<char, std::function<void(char*)>> ptr(nullptr, [](char* p){
+        if (p) {
+            cout << "custom deleter called! Addr: " << boost::format("%lx") % (void*)p << endl;
+            delete [] p;
+        }
+    });
+    char *data = new char[100];
+    cout << "Addr of data: " << boost::format("%lx") % (void*)data << endl;
+    ptr.reset(data);
+}
+
 
 int main()
 {
     // test1();
     // test2();
-    test3();
+    // test3();
     // test4();
+    test5();
 
     return 0;
 }
-
