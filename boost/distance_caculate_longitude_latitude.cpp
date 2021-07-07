@@ -5,7 +5,7 @@
 using namespace std;
 
 int main() {
-    using spherical_point = 
+    using spherical_point =
         boost::geometry::model::point<double, 2, boost::geometry::cs::spherical_equatorial<boost::geometry::degree>>;
 
     spherical_point p(116.394476, 40.00694);
