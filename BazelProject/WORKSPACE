@@ -14,9 +14,13 @@ http_archive(
 
 git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "cbcfa62e709d3c04dd410be40c8b4573e523263b",
-    remote = "https://github.com/charles-pku-2013/rules_boost.git",
+    commit = "11f0851ace21b791657ef5e1accbecf6034fdd63",
+    remote = "git@github.com:charles-pku-2013/bazel_boost.git",
 )
+# local_repository(
+    # name = "com_github_nelhage_rules_boost",
+    # path = "/Users/sunchao11/Documents/Devel/jd/bazel_boost",
+# )
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 boost_deps()
 

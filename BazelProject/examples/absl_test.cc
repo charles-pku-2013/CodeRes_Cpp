@@ -29,7 +29,7 @@ int main() {
     constexpr char SPACES[] = " \t\f\r\v\n";
     std::vector<std::string> v = absl::StrSplit("a , b,,=c",
                 absl::ByAnyChar(absl::StrCat(",=", SPACES)), absl::SkipWhitespace());
-    cout << absl::StrJoin(v, ",") << endl;
+    cout << absl::StrJoin(v, ",") << endl;  // a,b,c
 
     return 0;
 }
