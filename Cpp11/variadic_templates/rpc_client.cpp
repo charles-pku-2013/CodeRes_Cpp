@@ -22,6 +22,7 @@ class RpcClient {
         return true;
     }
 
+    // NOTE!!!
     template<typename F, typename... Args>
     bool Call(brpc::Controller *controller, F&& func, Args&&... args) {
         (stub_.get()->*func)(controller, std::forward<Args>(args)..., NULL);

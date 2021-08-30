@@ -1,18 +1,22 @@
 #include <cstdlib>
 #include <string>
 #include <map>
+#include <unordered_set>
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
+#include "absl/strings/strip.h"
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 
 DEFINE_string(src_dir, ".", "source dir");
 DEFINE_string(dst_dir, ".", "target dir");
 DEFINE_string(src_type, "", "source file type like jpg");
-DEFINE_string(dst_type, "", "target file type like raf");
+DEFINE_string(dst_type, "", "target file types like raf,nef Use \',\' to seperate multiple items");
 DEFINE_string(exclude, "", "file or dir to ignore");
 DEFINE_bool(n, false, "dry run");
 DEFINE_bool(verbose, false, "verbose mode");
@@ -22,12 +26,11 @@ namespace fs = boost::filesystem;
 class PhotoSync final {
  public:
     using FileTable = std::map<std::string, fs::path>;
+    using FileTypeSet = std::unordered_set<std::string>;
 
  public:
-    PhotoSync(const std::string &src_path, const std::string dst_path,
-            const std::string &src_type, const std::string &dst_type)
-                : src_path_(src_path), dst_path_(dst_path),
-                  src_type_(src_type), dst_type_(dst_type) {}
+    PhotoSync(const std::string &src_path, const std::string &dst_path,
+              const std::string &src_type, const std::string &dst_type);
 
     void Run(bool dry_run);
 
@@ -37,22 +40,49 @@ class PhotoSync final {
     std::string DebugString() const;
 
  private:
-    static void _ScanPath(const std::string &path, const std::string &file_type, const std::string &exclude,
+    template<typename Iter>
+    void _SetDstTypes(Iter beg, Iter end) {
+        FileTypeSet types(beg, end);
+        dst_types_.swap(types);
+    }
+
+    static void _ScanPath(const std::string &path, const FileTypeSet &file_types, const std::string &exclude,
                           FileTable *_file_table);
 
  private:
-    std::string src_path_, dst_path_, src_type_, dst_type_, exclude_;
+    std::string src_path_, dst_path_, src_type_, exclude_;
+    FileTypeSet dst_types_;
     FileTable src_files_, dst_files_, remove_files_;
     bool verbose_ = false;
 };
+
+PhotoSync::PhotoSync(const std::string &src_path, const std::string &dst_path,
+                     const std::string &src_type, const std::string &dst_type)
+                            : src_path_(src_path), dst_path_(dst_path) {
+    src_type_ = "." + absl::AsciiStrToLower(src_type);
+    std::vector<std::string> dst_types = absl::StrSplit(dst_type,
+            absl::ByAnyChar(","), absl::SkipWhitespace()); // 这里默认返回类型是string_view所以不可以用auto
+    for (auto& item : dst_types) {
+        absl::StripAsciiWhitespace(&item);
+        item = "." + absl::AsciiStrToLower(item);
+    }
+    _SetDstTypes(dst_types.begin(), dst_types.end());
+    if (dst_types_.empty()) {
+        throw std::runtime_error("PhotoSync dst_types is empty!");
+    }
+    if (dst_types_.count(src_type_) > 0) {
+        throw std::runtime_error(absl::StrFormat("PhotoSync src_type %s in dst_type set", src_type_));
+    }
+}
 
 void PhotoSync::Run(bool dry_run) {
     src_files_.clear();
     dst_files_.clear();
     remove_files_.clear();
 
-    _ScanPath(src_path_, src_type_, exclude_, &src_files_);
-    _ScanPath(dst_path_, dst_type_, exclude_, &dst_files_);
+    FileTypeSet src_types{src_type_};
+    _ScanPath(src_path_, src_types, exclude_, &src_files_);
+    _ScanPath(dst_path_, dst_types_, exclude_, &dst_files_);
 
     for (auto& kv : dst_files_) {
         if (src_files_.count(kv.first) == 0) {
@@ -88,14 +118,16 @@ void PhotoSync::Run(bool dry_run) {
     }  // if !dry_run
 }
 
-void PhotoSync::_ScanPath(const std::string &path, const std::string &file_type, const std::string &exclude,
+void PhotoSync::_ScanPath(const std::string &path, const FileTypeSet &file_types, const std::string &exclude,
                           FileTable *_file_table) {
     FileTable file_table;
     for (fs::recursive_directory_iterator itr(path); itr != fs::recursive_directory_iterator(); ++itr) {
         if (!fs::is_regular_file(*itr)) { continue; }
         // 路径中包含排除字段
         if (!exclude.empty() && itr->path().string().find(exclude) != std::string::npos) { continue; }
-        if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + file_type)) {
+        std::string extension = absl::AsciiStrToLower(itr->path().extension().string());
+        if (file_types.count(extension) > 0) {
+            // if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + file_type))
             // key like ./DSC_1888 /photo/xxx/DSC_1888
             // fs::path key = fs::relative(itr->path().parent_path(), path) / itr->path().stem();
             // file_table[key.string()] = itr->path();
@@ -119,9 +151,11 @@ std::string PhotoSync::DebugString() const {
             [](std::string *out, const decltype(remove_files_)::value_type &val){
         absl::StrAppend(out, "{", val.first, ":", val.second.string(), "}");
     });
-    return absl::StrFormat("src_path:%s, dst_path:%s, src_type:%s, dst_type:%s, "
+    return absl::StrFormat("src_path:%s, dst_path:%s, src_type:%s, dst_type:{%s}, "
                            "src_files:{%s}, dst_files:{%s}, remove_files:{%s}",
-                           src_path_, dst_path_, src_type_, dst_type_, str_src_files, str_dst_files, str_remove_files);
+                           src_path_, dst_path_, src_type_,
+                           absl::StrJoin(dst_types_, ","),
+                           str_src_files, str_dst_files, str_remove_files);
 }
 
 namespace {
