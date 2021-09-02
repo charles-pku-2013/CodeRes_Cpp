@@ -1,3 +1,6 @@
+/*
+bazel build -c opt //photosync:photosync
+ */
 #include <cstdlib>
 #include <string>
 #include <map>
@@ -32,9 +35,10 @@ class PhotoSync final {
     PhotoSync(const std::string &src_path, const std::string &dst_path,
               const std::string &src_type, const std::string &dst_type);
 
-    void Run(bool dry_run);
+    void Run();
 
     void SetVerbose(bool val) { verbose_ = val; }
+    void SetDryRun(bool val) { dry_run_ = val; }
     void SetExclude(const std::string& exclude) { exclude_ = exclude; }
 
     std::string DebugString() const;
@@ -53,7 +57,7 @@ class PhotoSync final {
     std::string src_path_, dst_path_, src_type_, exclude_;
     FileTypeSet dst_types_;
     FileTable src_files_, dst_files_, remove_files_;
-    bool verbose_ = false;
+    bool verbose_ = false, dry_run_ = false;
 };
 
 PhotoSync::PhotoSync(const std::string &src_path, const std::string &dst_path,
@@ -75,7 +79,7 @@ PhotoSync::PhotoSync(const std::string &src_path, const std::string &dst_path,
     }
 }
 
-void PhotoSync::Run(bool dry_run) {
+void PhotoSync::Run() {
     src_files_.clear();
     dst_files_.clear();
     remove_files_.clear();
@@ -99,14 +103,14 @@ void PhotoSync::Run(bool dry_run) {
         return;
     }
 
-    std::cout << "The following files will be removed: " << (dry_run ? "(dry run)" : "") << std::endl;
+    std::cout << "The following files will be removed: " << (dry_run_ ? "(dry run)" : "") << std::endl;
     for (auto& kv : remove_files_) {
         std::cout << kv.second.string() << std::endl;
     }
     std::cout << std::endl;
 
     // remove files
-    if (!dry_run) {
+    if (!dry_run_) {
         for (auto& kv : remove_files_) {
             try {
                 std::cout << "Removing " << kv.second << std::endl;
@@ -115,7 +119,7 @@ void PhotoSync::Run(bool dry_run) {
                 LOG(ERROR) << "Fail to remove file " << kv.second << ". " << ex.what();
             }
         }
-    }  // if !dry_run
+    }  // if !dry_run_
 }
 
 void PhotoSync::_ScanPath(const std::string &path, const FileTypeSet &file_types, const std::string &exclude,
@@ -132,7 +136,13 @@ void PhotoSync::_ScanPath(const std::string &path, const FileTypeSet &file_types
             // fs::path key = fs::relative(itr->path().parent_path(), path) / itr->path().stem();
             // file_table[key.string()] = itr->path();
             // key is just stem like DSC_1888
-            file_table[itr->path().stem().string()] = itr->path();
+            // file_table[itr->path().stem().string()] = itr->path();
+            auto ret = file_table.emplace(itr->path().stem().string(), itr->path());
+            if (!ret.second) {
+                LOG(ERROR) << absl::StrFormat("Failed to insert file item {%s:%s} "
+                        "for same item with path %s already exists!",
+                        itr->path().stem().string(), itr->path().string(), ret.first->second.string());
+            }
         }
     }
     _file_table->swap(file_table);
@@ -191,7 +201,8 @@ try {
     PhotoSync ps(FLAGS_src_dir, FLAGS_dst_dir, FLAGS_src_type, FLAGS_dst_type);
     ps.SetVerbose(FLAGS_verbose);
     ps.SetExclude(FLAGS_exclude);
-    ps.Run(FLAGS_n);
+    ps.SetDryRun(FLAGS_n);
+    ps.Run();
 
     return 0;
 
