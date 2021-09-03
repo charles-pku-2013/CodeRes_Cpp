@@ -116,6 +116,10 @@ void PhotoSync::Run() {
     _ScanPath(src_path_, src_types, exclude_, &src_files_);
     _ScanPath(dst_path_, dst_types_, exclude_, &dst_files_);
 
+    if (verbose_) {
+        std::cout << "PhotoSync: {" << DebugString() << "}" << std::endl;
+    }
+
     switch (task_) {
         case REMOVE:
             _RunRemove();
@@ -133,10 +137,6 @@ void PhotoSync::_RunRemove() {
         if (src_files_.count(kv.first) == 0) {
             remove_files[kv.first] = kv.second;
         }
-    }
-
-    if (verbose_) {
-        std::cout << "PhotoSync: {" << DebugString() << "}" << std::endl;
     }
 
     if (remove_files.empty()) {
@@ -164,7 +164,29 @@ void PhotoSync::_RunRemove() {
 }
 
 void PhotoSync::_RunMove() {
-    throw std::runtime_error("Move not implemented!");
+    for (auto& dst_kv : dst_files_) {
+        auto it = src_files_.find(dst_kv.first);
+        if (it != src_files_.end()) {
+            auto& old_path = dst_kv.second;
+            auto new_path = it->second.parent_path() / old_path.filename();
+            if (fs::exists(new_path)) {
+                LOG(ERROR) << "Cannot move " << old_path.string() << " to " << new_path.string()
+                           << " for file already exists!";
+                continue;
+            }
+            if (dry_run_) {
+                std::cout << old_path.string() << " would be moved to " << new_path.string() << std::endl;
+            } else {
+                std::cout << "Moving " << old_path.string() << " to " << new_path.string() << std::endl;
+                try {
+                    fs::rename(old_path, new_path);
+                } catch (const std::exception &ex) {
+                    LOG(ERROR) << "Fail to move " << old_path.string() << " to " << new_path.string()
+                               << ". " << ex.what();
+                }
+            }  // if dry_run_
+        }  // if it
+    }  // for dst_kv
 }
 
 void PhotoSync::_ScanPath(const std::string &path, const FileTypeSet &file_types, const std::string &exclude,
