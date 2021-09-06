@@ -47,6 +47,8 @@ void test1(const char *filepath)
     cout << "filename: " << p1.filename() << endl;
     cout << "stem: " << p1.stem() << endl; // 主文件名 是 fs::path 转成字符串用 stem().string() 不包含前缀路径
     cout << "extension: " << p1.extension() << endl;  // ".cpp"
+    cout << "change extension to dat: " << fs::change_extension(p1, ".dat").string() << endl;
+    cout << "basename: " << fs::basename(p1) << endl;  // /foo/bar/test.txt -> test
     cout << "is_absolute: " << p1.is_absolute() << endl;
     cout << "is_relative: " << p1.is_relative() << endl;
     cout << "absolute_path: " << fs::absolute(p1) << endl;
@@ -128,6 +130,19 @@ void test_remove_file(const char *path) {
     }
 }
 
+void test_compare_equal() {
+    fs::path p1("foo/bar.txt");
+    fs::path p2("./foo/bar.txt");
+    // if (fs::equivalent(p1, p2))  // Operation not permitted: "foo/bar.txt", "./foo/bar.txt"
+    // if (p1 == p2)  // fail
+    // if (p1.compare(p2) == 0) // fail
+    // if (fs::absolute(p1) == fs::absolute(p2)) // fail
+    if (fs::system_complete(p1) == fs::system_complete(p2)) {  // fail
+        cout << "Equal!" << endl;
+    } else {
+        cout << "Not equal!" << endl;
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -135,11 +150,12 @@ int main(int argc, char* argv[])
 
     try {
         // check_empty(argv[1]);
-        test1(argv[1]);
+        // test1(argv[1]);
         // test_dir();
         // test_mkdir();
         // test_rmdir();
         // test_remove_file(argv[1]);
+        test_compare_equal();
 
     } catch (const std::exception &ex) {
         cerr << "Exception: " << ex.what() << endl;
