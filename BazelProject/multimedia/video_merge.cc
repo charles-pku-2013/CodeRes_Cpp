@@ -1,5 +1,5 @@
 /*
-bazel build -c opt //video_merge:video_merge
+bazel build -c opt //multimedia:video_merge
  */
 #include <cstdlib>
 #include <string>
@@ -131,8 +131,8 @@ void VideoMerge::_Scan() {
 
     for (fs::directory_iterator itr(target_dir_); itr != fs::directory_iterator(); ++itr) {
         if (!fs::is_regular_file(*itr)) { continue; }
-        if (itr->path().filename().string() == mp4_file_ ||
-                        itr->path().filename().string == mkv_file_)
+        if (itr->path().filename() == fs::path(mp4_file_).filename() ||
+                        itr->path().filename() == fs::path(mkv_file_).filename())
         { continue; }
 
         std::string extension = absl::AsciiStrToLower(itr->path().extension().string());
