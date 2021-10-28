@@ -11,9 +11,6 @@ bazel build -c opt //multimedia:gen_chapter
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include "absl/strings/str_format.h"
-// #include "absl/strings/str_join.h"
-// #include "absl/strings/strip.h"
-// #include "absl/strings/match.h"
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include "tools/run_cmd.h"
@@ -81,12 +78,13 @@ void GenChapter::Run() {
     std::sort(chapters_.begin(), chapters_.end());
 
     // set end time
-    for (int32_t i = 0; i < chapters_.size()-1; ++i) {
+    for (int32_t i = 0; i < chapters_.size() - 1; ++i) {
         auto& chapter = chapters_[i];
         chapter.end = chapters_[i + 1].start;
     }
-    chapters_.back().end = duration_;
-    if (chapters_.back().start > chapters_.back().end) {
+    auto& last = chapters_.back();
+    last.end = duration_;
+    if (last.start > last.end) {
         LOG(ERROR) << "Invalid last chapter!";
         exit(-1);
     }
@@ -109,6 +107,7 @@ int32_t GenChapter::_GetDuration() {
 
     int32_t duration = 0;
     try {
+        boost::trim(out);
         duration = boost::lexical_cast<int32_t>(out);
     } catch (const std::exception &ex) {
         LOG(ERROR) << "Get duration fail: " << ex.what();
@@ -147,16 +146,21 @@ void GenChapter::_ReadChapter() {
     }
 
     int32_t line_cnt = 0;
-    while (ifs) {
+    std::string line;
+    while (std::getline(ifs, line)) {
         ++line_cnt;
+        boost::trim(line);
+        if (line.empty()) { continue; }
+        std::istringstream iss(line);
         std::string time, title;
-        ifs >> time;
+        iss >> time;
         int32_t timestamp = _Str2Time(time);
         if (timestamp < 0) {
+            LOG(ERROR) << "Line " << line_cnt << ": Invalid time format " << time;
             exit(-1);
         }
 
-        std::getline(ifs, title);
+        std::getline(iss, title);
         boost::trim(title);
         if (title.empty()) {
             LOG(ERROR) << "Line " << line_cnt << ": empty title!";
@@ -188,6 +192,13 @@ try {
     google::InitGoogleLogging(argv[0]);
 
     if (!check_args()) { return -1; }
+
+    GenChapter worker;
+    worker.SetChapterFile(FLAGS_c);
+    worker.SetMediaFile(FLAGS_i);
+    worker.SetStartTitle(FLAGS_start);
+
+    worker.Run();
 
     return 0;
 
