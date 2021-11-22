@@ -17,3 +17,13 @@ cc_binary(
         "@com_google_absl//absl/strings:str_format",
     ],
 )
+
+cc_binary(
+    name = "thread_pool_test",
+    srcs = [
+        "thread_pool_test.cc",
+    ],
+    deps = [
+        "//tools:thread_pool",
+    ],
+)

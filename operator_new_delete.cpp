@@ -28,6 +28,10 @@ struct Foo {
     char c;
     // double d;
 
+    Foo() {
+        cout << "Foo construct" << endl;
+    }
+
     //!! 注意这里的size是最终的字节数，allocator中的是元素个数
     static void* operator new( size_t sz )
     {

@@ -141,11 +141,27 @@ void test2()
     exit(0);
 }
 
+void lambda_capture_alias() {
+    struct Foo {
+        int x = 0;
+    };
+
+    Foo foo;
+    // NOTE!!! -std=c++14 required
+    auto f = [&val = foo.x]() {
+        val = 10;
+    };
+
+    f();
+    cout << foo.x << endl;
+}
+
 int main()
 {
     // test();
     // test1();
-    test2();
+    // test2();
+    lambda_capture_alias();
 
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
