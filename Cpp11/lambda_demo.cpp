@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <thread>
 #include <cstdio>
 #include <typeinfo>
 
@@ -43,6 +44,7 @@ using namespace std;
 //!! [&os,m] 是capture list，相当于 function object 的成员变量
 // x 相当于 operator（） 的形参
 // capture list 是针对于lambda之外的本地变量的，可以直接引用的。
+// #if 0
 void print_modulo(const vector<int> &v, ostream& os, int m)
 // output v[i] to os if v[i]%m==0
 {
@@ -155,20 +157,40 @@ void lambda_capture_alias() {
     f();
     cout << foo.x << endl;
 }
+// #endif
+
+void thread_with_arg_and_return() {
+    std::vector<int> arr{1,2,3,4,5};
+    std::vector<int> results(arr.size(), 0);
+    std::vector<std::thread> workers(arr.size());
+    for (auto i = 0; i < arr.size(); ++i) {
+        workers[i] = std::thread([&val = arr[i], &result = results[i]]{
+            result = val * val;
+        });
+    }
+    for (auto i = 0; i < arr.size(); ++i) {
+        workers[i].join();
+    }
+    std::copy(results.begin(), results.end(), std::ostream_iterator<int>(cout, " "));
+    cout << endl;
+}
 
 int main()
 {
     // test();
     // test1();
     // test2();
-    lambda_capture_alias();
+    // lambda_capture_alias();
+    thread_with_arg_and_return();
 
+// #if 0
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
 
     char *p = NULL;
     [&]{ p = new char[100]; }();
     printf("%lx\n", (long)p);
+// #endif
 
     return 0;
 }
