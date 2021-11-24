@@ -183,14 +183,14 @@ int main()
     // lambda_capture_alias();
     thread_with_arg_and_return();
 
-// #if 0
+#if 0
     vector<int> v1 = {1,2,3,4,5,6,7,8,9,10};
     print_modulo( v1, cout, 3 );
 
     char *p = NULL;
     [&]{ p = new char[100]; }();
     printf("%lx\n", (long)p);
-// #endif
+#endif
 
     return 0;
 }
