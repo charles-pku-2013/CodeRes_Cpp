@@ -1,6 +1,7 @@
 /*
 bazel build -c opt //multimedia:gen_chapter
  */
+#include <cstdio>
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -9,8 +10,10 @@ bazel build -c opt //multimedia:gen_chapter
 #include <fstream>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_cat.h"
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include "tools/run_cmd.h"
@@ -18,6 +21,8 @@ bazel build -c opt //multimedia:gen_chapter
 DEFINE_string(i, "", "media file");
 DEFINE_string(c, "", "chapter file");
 DEFINE_string(start, "Start", "title of the starting chapter");
+
+namespace fs = boost::filesystem;
 
 struct Chapter {
     Chapter(const std::string &_Title, int32_t _Start)
@@ -53,15 +58,23 @@ class GenChapter final {
  private:
     void _ReadChapter();
     int32_t _GetDuration();
+    int32_t _GetMeta();
+    int32_t _MergeMeta();
     static int32_t _Str2Time(const std::string &time);
 
-    std::string media_file_, chapter_file_, start_title_;
+    std::string media_file_, chapter_file_, meta_file_, start_title_;
     ChapterList chapters_;
     int32_t duration_ = 0;
 };
 
 void GenChapter::Run() {
     chapters_.clear();
+
+    meta_file_ = std::tmpnam(nullptr);
+    if (meta_file_.empty()) {
+        LOG(ERROR) << "Cannot create meta file!";
+        exit(-1);
+    }
 
     duration_ = _GetDuration();
     if (duration_ < 0) {
@@ -89,10 +102,50 @@ void GenChapter::Run() {
         exit(-1);
     }
 
-    // print to stdout
+    // get meta
+    if (_GetMeta() != 0) { exit(-1); }
+
+    // append to meta
+    std::ofstream ofs(meta_file_, std::ios::out | std::ios::app);
     for (const auto &chapter : chapters_) {
-        std::cout << chapter.ToString() << std::endl;
+        ofs << chapter.ToString() << std::endl;
     }
+    ofs.close();
+
+    // merge meta
+    if (_MergeMeta() != 0) { exit(-1); }
+
+    LOG(INFO) << "Done!";
+}
+
+int32_t GenChapter::_MergeMeta() {
+    fs::path p(media_file_);
+    fs::path ext = p.extension();
+    p.replace_extension();
+    std::string new_media_file = p.string();
+    absl::StrAppend(&new_media_file, "_chapters", ext.string());
+
+    std::string out;
+    std::string cmd =
+        absl::StrFormat("ffmpeg -i %s -i %s -map_metadata 1 -codec copy %s", media_file_, meta_file_, new_media_file);
+    int32_t status = tools::run_cmd(cmd, &out);
+    if (status != 0) {
+        LOG(ERROR) << "Merge meta fail!";
+        return -1;
+    }
+    return 0;
+}
+
+int32_t GenChapter::_GetMeta() {
+    std::string out;
+    std::string cmd =
+        absl::StrFormat("ffmpeg -i %s -f ffmetadata %s", media_file_, meta_file_);
+    int32_t status = tools::run_cmd(cmd, &out);
+    if (status != 0) {
+        LOG(ERROR) << "Get meta fail!";
+        return -1;
+    }
+    return 0;
 }
 
 int32_t GenChapter::_GetDuration() {

@@ -54,6 +54,7 @@ cc_binary(
         "//tools:run_cmd",
         "@boost//:algorithm",
         "@boost//:lexical_cast",
+        "@boost//:filesystem",
         "@com_google_absl//absl/strings:str_format",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
