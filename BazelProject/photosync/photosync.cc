@@ -18,7 +18,7 @@ bazel build -c opt //photosync:photosync
 
 DEFINE_string(src_dir, ".", "source dir");
 DEFINE_string(dst_dir, ".", "target dir");
-DEFINE_string(src_type, "", "source file type like jpg");
+DEFINE_string(src_type, "jpg", "source file type like jpg");
 DEFINE_string(dst_type, "", "target file types like raf,nef Use \',\' to seperate multiple items");
 DEFINE_string(task, "remove", "task type \"move\" or \"remove\"");
 DEFINE_string(exclude, "", "file or dir to ignore");

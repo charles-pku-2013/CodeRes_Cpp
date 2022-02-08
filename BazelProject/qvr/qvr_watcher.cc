@@ -8,6 +8,7 @@
 #include <gflags/gflags.h>
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "tools/run_cmd.h"
 
 namespace fs = boost::filesystem;
 
@@ -15,6 +16,7 @@ DEFINE_string(work_dir, "", "working directory");
 DEFINE_string(video_dir, "qvr", "video directory");
 DEFINE_string(video_type, "mp4", "video type");
 DEFINE_string(record_file, "qvr_streamed.txt", "record file");
+DEFINE_string(worker_cmd, "workerup", "worker command");
 
 class QVRWatcher final {
  public:
@@ -27,19 +29,21 @@ class QVRWatcher final {
     { video_dir_ = val; }
     void SetVideoType(const std::string &val)
     { video_type_ = val; }
+    void SetWorkerCmd(const std::string &val)
+    { worker_cmd_ = val; }
 
     void Run();
 
  private:
-    bool _LoadRecord();
+    void _LoadRecord();
 
-    std::string record_file_, video_dir_, video_type_;
-    RecordList record_;
+    std::string record_file_, video_dir_, video_type_, worker_cmd_;
+    RecordList record_;  // only filename like xx.mp4 not including ./
 };
 
 void QVRWatcher::Run() {
     // load record from file
-    if (!_LoadRecord()) { return; }
+    _LoadRecord();
 
     // Scan video dir
     fs::path video_path(video_dir_);
@@ -53,21 +57,24 @@ void QVRWatcher::Run() {
         if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + video_type_)) {
             std::string fname = itr->path().filename().string();
             if (record_.count(fname) == 0) {
-                LOG(INFO) << "Found new video " << fname;
-                // TODO wake up worker
+                LOG(INFO) << absl::StrFormat("Detected new video %s waking up woker...", fname);
+                std::string out;
+                int32_t status = tools::run_cmd(worker_cmd_, &out);
+                if (status != 0) {
+                    LOG(ERROR) << "Run worker fail: " << out;
+                }
             }
         }
     }  // for
 }
 
-bool QVRWatcher::_LoadRecord() {
+void QVRWatcher::_LoadRecord() {
     record_.clear();
 
     std::string line;
     std::ifstream ifs(record_file_, std::ios::in);
     if (!ifs) {
-        LOG(ERROR) << "Fail to open record file " << record_file_;
-        return false;
+        return;
     }
 
     while (std::getline(ifs, line)) {
@@ -76,11 +83,12 @@ bool QVRWatcher::_LoadRecord() {
         record_.insert(line);
     }
 
-    return true;
+    return;
 }
 
 int main(int argc, char **argv)
 try {
+    // with -flagfile like: -worker_cmd=bash -c workerup
     GFLAGS_NAMESPACE::ParseCommandLineFlags(&argc, &argv, true);
     FLAGS_logtostderr = true;
     google::InitGoogleLogging(argv[0]);
@@ -88,18 +96,21 @@ try {
     // set working dir
     if (!FLAGS_work_dir.empty()) {
         fs::current_path(FLAGS_work_dir);
-        LOG(INFO) << "Setting working dir to " << fs::current_path();
     }
 
+    LOG(INFO) << "Working dir: " << fs::current_path();
     LOG(INFO) << "Video dir: " << FLAGS_video_dir;
     LOG(INFO) << "Video type: " << FLAGS_video_type;
     LOG(INFO) << "Record file: " << FLAGS_record_file;
+    LOG(INFO) << "Worker cmd: " << FLAGS_worker_cmd;
 
     QVRWatcher watcher;
     watcher.SetVideoDir(FLAGS_video_dir);
     watcher.SetRecordFile(FLAGS_record_file);
     watcher.SetVideoType(FLAGS_video_type);
+    watcher.SetWorkerCmd(FLAGS_worker_cmd);
 
+    // check every 10 sec
     while (true) {
         watcher.Run();
         ::sleep(10);

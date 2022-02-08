@@ -28,7 +28,7 @@ void test1()
         // record end time
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff = end-start;
-        std::cout << "Time to fill and iterate a vector of " 
+        std::cout << "Time to fill and iterate a vector of "
                   << size << " ints : " << diff.count() << " s\n";
     } // for
 }
@@ -36,6 +36,7 @@ void test1()
 static
 void test2()
 {
+    // std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
     auto start = std::chrono::high_resolution_clock::now();
 
     int sum = 0;

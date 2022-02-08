@@ -9,6 +9,8 @@ bazel build -c opt //multimedia:gen_chapter
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <streambuf>
+#include <iterator>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -62,7 +64,7 @@ class GenChapter final {
     int32_t _MergeMeta();
     static int32_t _Str2Time(const std::string &time);
 
-    std::string media_file_, chapter_file_, meta_file_, start_title_;
+    std::string media_file_, chapter_file_, meta_file_, start_title_, meta_content_;
     ChapterList chapters_;
     int32_t duration_ = 0;
 };
@@ -105,12 +107,16 @@ void GenChapter::Run() {
     // get meta
     if (_GetMeta() != 0) { exit(-1); }
 
+    LOG(INFO) << "meta content: " << meta_content_;  // DEBUG
     // append to meta
-    std::ofstream ofs(meta_file_, std::ios::out | std::ios::app);
+    std::ofstream ofs(meta_file_, std::ios::out | std::ios::trunc);
+    ofs << meta_content_ << std::endl;  // copy old content
     for (const auto &chapter : chapters_) {
         ofs << chapter.ToString() << std::endl;
+        std::cout << chapter.ToString() << std::endl;  // DEBUG
     }
     ofs.close();
+    LOG(INFO) << "meta file: " << meta_file_;  // DEBUG
 
     // merge meta
     if (_MergeMeta() != 0) { exit(-1); }
@@ -125,6 +131,7 @@ int32_t GenChapter::_MergeMeta() {
     std::string new_media_file = p.string();
     absl::StrAppend(&new_media_file, "_chapters", ext.string());
 
+    LOG(INFO) << absl::StrFormat("Merging meta %s into new media file %s", meta_file_, new_media_file);
     std::string out;
     std::string cmd =
         absl::StrFormat("ffmpeg -i %s -i %s -map_metadata 1 -codec copy %s", media_file_, meta_file_, new_media_file);
@@ -145,6 +152,18 @@ int32_t GenChapter::_GetMeta() {
         LOG(ERROR) << "Get meta fail!";
         return -1;
     }
+    // read meta and remove old chapters
+    std::ifstream ifs(meta_file_, std::ios::in);
+    if (!ifs) {
+        LOG(ERROR) << "Cannot open meta file " << meta_file_ << " for reading!";
+        return -1;
+    }
+    std::istreambuf_iterator<char> beg(ifs), end;
+    meta_content_ = std::string(beg, end);
+    auto pos = meta_content_.find("[CHAPTER]");
+    if (pos != std::string::npos)
+    { meta_content_.resize(pos); }
+    boost::trim(meta_content_);
     return 0;
 }
 
