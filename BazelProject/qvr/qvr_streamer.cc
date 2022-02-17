@@ -20,6 +20,7 @@ DEFINE_string(video_dir, "qvr", "video directory");
 DEFINE_string(video_type, "mp4", "video type");
 DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(stream_cmd, "", "stream command");
+DEFINE_string(url, "", "rtmp://...");
 DEFINE_int32(shutdown_time, 1800, "wait time for shutdown if no more work");
 
 class QVRStreamer final {
@@ -32,6 +33,7 @@ class QVRStreamer final {
         video_type_ = FLAGS_video_type;
         record_file_ = FLAGS_record_file;
         stream_cmd_ = FLAGS_stream_cmd;
+        url_ = FLAGS_url;
         shutdown_time_ = FLAGS_shutdown_time;
     }
 
@@ -41,7 +43,7 @@ class QVRStreamer final {
     void _LoadRecord();
     void _Stream(const std::string &file);
 
-    std::string record_file_, video_dir_, video_type_, stream_cmd_;
+    std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
     RecordList record_;  // only filename like xx.mp4 not including ./
     int32_t shutdown_time_ = 0;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_streamed_;
@@ -117,6 +119,10 @@ namespace {
 void check_args() {
     if (FLAGS_stream_cmd.empty()) {
         LOG(ERROR) << "-stream_cmd not set!";
+        exit(-1);
+    }
+    if (FLAGS_url.empty()) {
+        LOG(ERROR) << "-url not set!";
         exit(-1);
     }
 }

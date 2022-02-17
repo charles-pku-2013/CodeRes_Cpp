@@ -82,6 +82,7 @@ void QVRWatcher::_LoadRecord() {
         if (line.empty()) { continue; }
         record_.insert(line);
     }
+    LOG(INFO) << absl::StrFormat("Streamed: {%s}", absl::StrJoin(record_, ","));  // DEBUG
 
     return;
 }

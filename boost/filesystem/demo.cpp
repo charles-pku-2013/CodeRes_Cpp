@@ -1,11 +1,15 @@
 /*
-c++ -o /tmp/test demo.cpp -lboost_filesystem -lboost_system -std=c++11 -g
+c++ -o /tmp/test demo.cpp -lboost_filesystem -lboost_system -labsl_strings -std=c++11 -g
 https://www.boost.org/doc/libs/1_65_0/libs/filesystem/doc/reference.html
+brew install abseil
+brew ls abseil
  */
 #include <iostream>
 #include <fstream>
-#include <chrono>
+#include <algorithm>
+#include <iterator>
 #include <boost/filesystem.hpp>
+#include "absl/strings/str_join.h"
 
 using namespace std;
 namespace fs = boost::filesystem;
@@ -144,6 +148,21 @@ void test_compare_equal() {
     }
 }
 
+// path iterator 也是一种容器
+void test_split_merge_iterator(const std::string &str) {
+    fs::path path(str);
+    // for (const auto& elem : path) {
+        // cout << elem << endl;
+    // }
+    // std::vector<fs::path> elems(path.begin(), path.end());  // OK
+
+    // split into string vector
+    std::vector<std::string> elems;
+    std::transform(path.begin(), path.end(), std::back_inserter(elems),
+            [](const fs::path &p)->std::string { return p.string(); });
+    cout << absl::StrJoin(elems, ",") << endl;
+}
+
 int main(int argc, char* argv[])
 {
     // google::InitGoogleLogging(argv[0]);
@@ -155,7 +174,8 @@ int main(int argc, char* argv[])
         // test_mkdir();
         // test_rmdir();
         // test_remove_file(argv[1]);
-        test_compare_equal();
+        // test_compare_equal();
+        test_split_merge_iterator(argv[1]);
 
     } catch (const std::exception &ex) {
         cerr << "Exception: " << ex.what() << endl;
