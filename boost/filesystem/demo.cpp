@@ -92,12 +92,19 @@ void check_empty(const char *filepath) {
     // p.empty() 只判断名字是否空字符串
 }
 
-void test_dir()
+void test_dir(const std::string &s)
 {
-    fs::path p1 = fs::current_path();
-    cout << p1.stem().string() << endl;
-    cout << p1.filename() << endl; // 最后一级目录
+    // fs::path p1 = fs::current_path();
+    fs::path p1(s);
     cout << fs::is_directory(p1) << endl;
+
+    // NOTE!!! 注意最后的 /
+    /*
+     * /foo/bar/ 返回 "."
+     * /foo/bar  返回 "bar"
+     */
+    cout << p1.stem().string() << endl;
+    cout << p1.filename() << endl;
 }
 
 void test_mkdir()
@@ -170,12 +177,12 @@ int main(int argc, char* argv[])
     try {
         // check_empty(argv[1]);
         // test1(argv[1]);
-        // test_dir();
+        test_dir(argv[1]);
         // test_mkdir();
         // test_rmdir();
         // test_remove_file(argv[1]);
         // test_compare_equal();
-        test_split_merge_iterator(argv[1]);
+        // test_split_merge_iterator(argv[1]);
 
     } catch (const std::exception &ex) {
         cerr << "Exception: " << ex.what() << endl;
