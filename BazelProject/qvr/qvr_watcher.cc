@@ -1,3 +1,11 @@
+/*
+qvr_watcher.gflags
+-work_dir=/share
+-video_dir=qvr
+-video_type=mp4
+-record_file=qvr_streamed.txt
+-worker_cmd=worker up
+ */
 #include <unistd.h>
 #include <iostream>
 #include <string>
@@ -7,6 +15,7 @@
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include "absl/strings/match.h"
+#include "absl/strings/str_join.h"
 #include "absl/strings/str_format.h"
 #include "tools/run_cmd.h"
 
@@ -59,7 +68,7 @@ void QVRWatcher::Run() {
             if (record_.count(fname) == 0) {
                 LOG(INFO) << absl::StrFormat("Detected new video %s waking up woker...", fname);
                 std::string out;
-                int32_t status = tools::run_cmd(worker_cmd_, &out);
+                int32_t status = tools::run_cmd(absl::StrCat(worker_cmd_, " 2>&1"), &out);
                 if (status != 0) {
                     LOG(ERROR) << "Run worker fail: " << out;
                 }
@@ -82,7 +91,6 @@ void QVRWatcher::_LoadRecord() {
         if (line.empty()) { continue; }
         record_.insert(line);
     }
-    LOG(INFO) << absl::StrFormat("Streamed: {%s}", absl::StrJoin(record_, ","));  // DEBUG
 
     return;
 }

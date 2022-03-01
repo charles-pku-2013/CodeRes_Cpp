@@ -21,7 +21,8 @@ int run_cmd(const std::string &cmd, std::string *out) {
         }
     );
     if (!pp) {
-        *out = "popen error!";
+        if (out)
+        { *out = "popen error!"; }
         return -1;
     }
     ::setlinebuf(pp.get());
@@ -33,7 +34,8 @@ int run_cmd(const std::string &cmd, std::string *out) {
     std::stringstream ss;
     ss << stream.rdbuf();
 
-    *out = ss.str();
+    if (out)
+    { *out = ss.str(); }
 
     pp.reset();   // must call it manually
     return retval;

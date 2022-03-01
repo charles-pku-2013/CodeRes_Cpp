@@ -1,8 +1,18 @@
+/*
+qvr_streamer.gflags
+-work_dir=/share
+-video_dir=qvr
+-video_type=mp4
+-record_file=qvr_streamed.txt
+-shutdown_time=1800
+-url=rtmp://192.168.50.3:1935/live/live
+-stream_cmd=ffmpeg -i $file -vcodec libx264 -preset:v ultrafast -r 30 -g 60 -keyint_min 60 -sc_threshold 0 -b:v 2500k -maxrate 3000k -bufsize 5000k -sws_flags lanczos+accurate_rnd -acodec aac -b:a 96k -ar 48000 -ac 2 -f flv $url
+ */
 #include <unistd.h>
 #include <iostream>
 #include <string>
 #include <map>
-#include <unordered_set>
+#include <set>
 #include <chrono>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -11,6 +21,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_replace.h"
 #include "tools/run_cmd.h"
 
 namespace fs = boost::filesystem;
@@ -25,7 +36,7 @@ DEFINE_int32(shutdown_time, 1800, "wait time for shutdown if no more work");
 
 class QVRStreamer final {
  public:
-    using RecordList = std::unordered_set<std::string>;
+    using RecordList = std::set<std::string>;
 
  public:
     QVRStreamer() {
@@ -35,12 +46,14 @@ class QVRStreamer final {
         stream_cmd_ = FLAGS_stream_cmd;
         url_ = FLAGS_url;
         shutdown_time_ = FLAGS_shutdown_time;
+        last_streamed_ = std::chrono::high_resolution_clock::now();
     }
 
     void Run();
 
  private:
     void _LoadRecord();
+    void _UpdateRecord();
     void _Stream(const std::string &file);
 
     std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
@@ -61,7 +74,7 @@ void QVRStreamer::Run() {
             return;
         }
 
-        std::map<std::string, std::string> file_list;
+        std::map<std::string, std::string> file_list;  // video file that scanned 文件名有序
         for (fs::directory_iterator itr(video_path); itr != fs::directory_iterator(); ++itr) {
             if (!fs::is_regular_file(*itr)) { continue; }
             if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + video_type_)) {
@@ -76,24 +89,31 @@ void QVRStreamer::Run() {
             if (record_.count(fname) == 0) {
                 LOG(INFO) << absl::StrFormat("Streaming video %s ...", fname);
                 _Stream(path);
-                // std::string out;
-                // int32_t status = tools::run_cmd(stream_cmd_, &out);
-                // if (status != 0) {
-                    // LOG(ERROR) << "Stream fail: " << out;
-                // }
+                record_.insert(fname);
+                _UpdateRecord();
+                last_streamed_ = std::chrono::high_resolution_clock::now();
             }
         }
 
+        auto now = std::chrono::high_resolution_clock::now();
+        auto idle_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_streamed_).count();
+        if (idle_time > shutdown_time_) {
+            LOG(INFO) << "Poweroff for idle...";
+            tools::run_cmd("poweroff.sh", nullptr);
+        }
         ::sleep(10);
     }  // while
 }
 
 void QVRStreamer::_Stream(const std::string &file) {
     std::string out;
-    std::string cmd = absl::StrReplaceAll(stream_cmd_, {{"$file", file}});
-    int32_t status = tools::run_cmd(cmd, &out);
+    std::string cmd = absl::StrReplaceAll(stream_cmd_, {{"$file", file}, {"$url", url_}});
+    LOG(INFO) << "Stream cmd: " << cmd;  // DEBUG
+    int32_t status = tools::run_cmd(absl::StrCat(cmd, " 2>&1"), &out);
     if (status != 0) {
         LOG(ERROR) << "Stream fail: " << out;
+    } else {
+        LOG(ERROR) << "Stream fail: " << out;  // DEBUG
     }
 }
 
@@ -113,6 +133,18 @@ void QVRStreamer::_LoadRecord() {
     }
 
     return;
+}
+
+void QVRStreamer::_UpdateRecord() {
+    std::ofstream ofs(record_file_, std::ios::out | std::ios::trunc);
+    if (!ofs) {
+        LOG(ERROR) << absl::StrFormat("Update record fail! fail to open %s for writting!", record_file_);
+        return;
+    }
+    for (const auto& v : record_) {
+        ofs << v << std::endl;
+    }
+    ofs << std::flush;
 }
 
 namespace {
@@ -146,6 +178,8 @@ try {
     LOG(INFO) << "Video type: " << FLAGS_video_type;
     LOG(INFO) << "Record file: " << FLAGS_record_file;
     LOG(INFO) << "Stream cmd: " << FLAGS_stream_cmd;
+    LOG(INFO) << "Stream URL: " << FLAGS_url;
+    LOG(INFO) << "Shutdown time: " << FLAGS_shutdown_time;
 
     QVRStreamer streamer;
     streamer.Run();
