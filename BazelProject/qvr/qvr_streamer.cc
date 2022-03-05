@@ -13,6 +13,7 @@ qvr_streamer.gflags
 #include <string>
 #include <map>
 #include <set>
+#include <ctime>
 #include <chrono>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -32,7 +33,8 @@ DEFINE_string(video_type, "mp4", "video type");
 DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(stream_cmd, "", "stream command");
 DEFINE_string(url, "", "rtmp://...");
-DEFINE_int32(shutdown_time, 1800, "wait time for shutdown if no more work");
+DEFINE_int32(shutdown_time, 1800, "wait time in seconds for shutdown if no more work");
+DEFINE_int32(stream_interval, 10, "wait time in seconds for successive stream file");
 
 class QVRStreamer final {
  public:
@@ -46,6 +48,7 @@ class QVRStreamer final {
         stream_cmd_ = FLAGS_stream_cmd;
         url_ = FLAGS_url;
         shutdown_time_ = FLAGS_shutdown_time;
+        stream_interval_ = FLAGS_stream_interval;
         last_streamed_ = std::chrono::high_resolution_clock::now();
     }
 
@@ -58,22 +61,24 @@ class QVRStreamer final {
 
     std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
     RecordList record_;  // only filename like xx.mp4 not including ./
-    int32_t shutdown_time_ = 0;
+    int32_t shutdown_time_ = 0, stream_interval_ = 0;;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_streamed_;
 };
 
 void QVRStreamer::Run() {
+    // check video dir
+    fs::path video_path(video_dir_);
+    if (!fs::exists(video_path) || !fs::is_directory(video_path)) {
+        LOG(ERROR) << absl::StrFormat("Video dir %s is not ready!", video_path.string());
+        ::sleep(10);  // prepare for restart
+        exit(0);
+    }
+
     // load record from file
     _LoadRecord();
 
     while (true) {
         // Scan video dir
-        fs::path video_path(video_dir_);
-        if (!fs::exists(video_path) || !fs::is_directory(video_path)) {
-            LOG(ERROR) << absl::StrFormat("Video dir %s does exist!", video_dir_);
-            return;
-        }
-
         std::map<std::string, std::string> file_list;  // video file that scanned 文件名有序
         for (fs::directory_iterator itr(video_path); itr != fs::directory_iterator(); ++itr) {
             if (!fs::is_regular_file(*itr)) { continue; }
@@ -83,6 +88,7 @@ void QVRStreamer::Run() {
             }
         }  // for
 
+        // stream new found files
         for (const auto& it : file_list) {
             const std::string &fname = it.first;
             const auto &path = it.second;
@@ -92,6 +98,7 @@ void QVRStreamer::Run() {
                 record_.insert(fname);
                 _UpdateRecord();
                 last_streamed_ = std::chrono::high_resolution_clock::now();
+                ::sleep(stream_interval_);
             }
         }
 
@@ -101,19 +108,18 @@ void QVRStreamer::Run() {
             LOG(INFO) << "Poweroff for idle...";
             tools::run_cmd("poweroff.sh", nullptr);
         }
+
         ::sleep(10);
-    }  // while
+    }  // while true
 }
 
 void QVRStreamer::_Stream(const std::string &file) {
     std::string out;
     std::string cmd = absl::StrReplaceAll(stream_cmd_, {{"$file", file}, {"$url", url_}});
-    LOG(INFO) << "Stream cmd: " << cmd;  // DEBUG
+    // LOG(INFO) << "Stream cmd: " << cmd;  // DEBUG
     int32_t status = tools::run_cmd(absl::StrCat(cmd, " 2>&1"), &out);
     if (status != 0) {
         LOG(ERROR) << "Stream fail: " << out;
-    } else {
-        LOG(ERROR) << "Stream fail: " << out;  // DEBUG
     }
 }
 
@@ -122,9 +128,7 @@ void QVRStreamer::_LoadRecord() {
 
     std::string line;
     std::ifstream ifs(record_file_, std::ios::in);
-    if (!ifs) {
-        return;
-    }
+    if (!ifs) { return; }
 
     while (std::getline(ifs, line)) {
         boost::trim(line);
@@ -166,6 +170,9 @@ try {
     FLAGS_logtostderr = true;
     google::InitGoogleLogging(argv[0]);
 
+    std::time_t now = std::time(0);
+    LOG(INFO) << "========= QVR Streamer running at " << std::ctime(&now) << " =========";
+
     // set working dir
     if (!FLAGS_work_dir.empty()) {
         fs::current_path(FLAGS_work_dir);
@@ -180,6 +187,7 @@ try {
     LOG(INFO) << "Stream cmd: " << FLAGS_stream_cmd;
     LOG(INFO) << "Stream URL: " << FLAGS_url;
     LOG(INFO) << "Shutdown time: " << FLAGS_shutdown_time;
+    LOG(INFO) << "Stream interval: " << FLAGS_stream_interval;
 
     QVRStreamer streamer;
     streamer.Run();
