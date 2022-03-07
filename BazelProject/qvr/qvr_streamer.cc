@@ -5,6 +5,7 @@ qvr_streamer.gflags
 -video_type=mp4
 -record_file=qvr_streamed.txt
 -shutdown_time=1800
+-stream_interval=5
 -url=rtmp://192.168.50.3:1935/live/live
 -stream_cmd=ffmpeg -i $file -vcodec libx264 -preset:v ultrafast -r 30 -g 60 -keyint_min 60 -sc_threshold 0 -b:v 2500k -maxrate 3000k -bufsize 5000k -sws_flags lanczos+accurate_rnd -acodec aac -b:a 96k -ar 48000 -ac 2 -f flv $url
  */
@@ -106,7 +107,7 @@ void QVRStreamer::Run() {
         // check for shutdown
         auto now = std::chrono::high_resolution_clock::now();
         auto idle_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_streamed_).count();
-        if (idle_time > shutdown_time_) {
+        if (shutdown_time_ > 0 && idle_time > shutdown_time_) {
             LOG(INFO) << "Poweroff for idle...";
             tools::run_cmd("poweroff.sh", nullptr);
         }
