@@ -34,7 +34,7 @@ DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(stream_cmd, "", "stream command");
 DEFINE_string(url, "", "rtmp://...");
 DEFINE_int32(shutdown_time, 1800, "wait time in seconds for shutdown if no more work");
-DEFINE_int32(stream_interval, 10, "wait time in seconds for successive stream file");
+DEFINE_int32(stream_interval, 0, "wait time in seconds for successive stream file");
 
 class QVRStreamer final {
  public:
@@ -98,10 +98,12 @@ void QVRStreamer::Run() {
                 record_.insert(fname);
                 _UpdateRecord();
                 last_streamed_ = std::chrono::high_resolution_clock::now();
-                ::sleep(stream_interval_);
+                if (stream_interval_ > 0)
+                { ::sleep(stream_interval_); }
             }
         }
 
+        // check for shutdown
         auto now = std::chrono::high_resolution_clock::now();
         auto idle_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_streamed_).count();
         if (idle_time > shutdown_time_) {
