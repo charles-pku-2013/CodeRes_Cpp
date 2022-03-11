@@ -24,7 +24,6 @@ std::ostream &operator<<(std::ostream &stream,
     return stream << buffer;
 }
 
-// 精确到微秒的时间戳
 void gettimeofday_test() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -35,13 +34,15 @@ void gettimeofday_test() {
     snprintf(buffer + n, sizeof(buffer) - n, "_%06ld", tv.tv_usec);
     cout << buffer << endl;
 }
+
+// 精确到微秒的时间戳 20220315_113345_123456
 std::string gen_timestamp() {
     char buf[64] = {'\0'};
     struct timeval tv;
     gettimeofday(&tv, NULL);
     std::tm tm;
     localtime_r(&tv.tv_sec, &tm);
-    std::size_t n = std::strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", &tm);
+    std::size_t n = std::strftime(buf, sizeof(buf), "%Y%m%d_%H%M%S", &tm);
     snprintf(buf + n, sizeof(buf) - n, "_%06ld", tv.tv_usec);
     return buf;
 }
