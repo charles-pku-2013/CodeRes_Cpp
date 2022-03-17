@@ -8,6 +8,8 @@ qvr_streamer.gflags
 -stream_interval=5
 -url=rtmp://192.168.50.3:1935/live/live
 -stream_cmd=ffmpeg -i $file -vcodec libx264 -preset:v ultrafast -r 30 -g 60 -keyint_min 60 -sc_threshold 0 -b:v 2500k -maxrate 3000k -bufsize 5000k -sws_flags lanczos+accurate_rnd -acodec aac -b:a 96k -ar 48000 -ac 2 -f flv $url
+-try_cnt=5
+-try_interval=3
  */
 #include <unistd.h>
 #include <iostream>
@@ -36,6 +38,8 @@ DEFINE_string(stream_cmd, "", "stream command");
 DEFINE_string(url, "", "rtmp://...");
 DEFINE_int32(shutdown_time, 1800, "wait time in seconds for shutdown if no more work");
 DEFINE_int32(stream_interval, 0, "wait time in seconds for successive stream file");
+DEFINE_int32(try_cnt, 0, "try count if streaming fail");
+DEFINE_int32(try_interval, 0, "time span between two try streaming if fail");
 
 class QVRStreamer final {
  public:
@@ -51,6 +55,8 @@ class QVRStreamer final {
         shutdown_time_ = FLAGS_shutdown_time;
         stream_interval_ = FLAGS_stream_interval;
         last_streamed_ = std::chrono::high_resolution_clock::now();
+        try_cnt_ = FLAGS_try_cnt;
+        try_interval_ = FLAGS_try_interval;
     }
 
     void Run();
@@ -62,7 +68,7 @@ class QVRStreamer final {
 
     std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
     RecordList record_;  // only filename like xx.mp4 not including ./
-    int32_t shutdown_time_ = 0, stream_interval_ = 0;;
+    int32_t shutdown_time_ = 0, stream_interval_ = 0, try_cnt_ = 0, try_interval_ = 0;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_streamed_;
 };
 
@@ -94,7 +100,7 @@ void QVRStreamer::Run() {
             const std::string &fname = it.first;
             const auto &path = it.second;
             if (record_.count(fname) == 0) {
-                LOG(INFO) << absl::StrFormat("Streaming video %s ...", fname);
+                // LOG(INFO) << absl::StrFormat("Streaming video %s ...", fname);
                 _Stream(path);
                 record_.insert(fname);
                 _UpdateRecord();
@@ -117,13 +123,20 @@ void QVRStreamer::Run() {
 }
 
 void QVRStreamer::_Stream(const std::string &file) {
-    std::string out;
     std::string cmd = absl::StrReplaceAll(stream_cmd_, {{"$file", file}, {"$url", url_}});
     // LOG(INFO) << "Stream cmd: " << cmd;  // DEBUG
-    int32_t status = tools::run_cmd(absl::StrCat(cmd, " 2>&1"), &out);
-    if (status != 0) {
-        LOG(ERROR) << "Stream fail: " << out;
-    }
+    std::string out;
+    int32_t i = 0, status = 0;
+    do {
+        LOG(INFO) << absl::StrFormat("Streaming video %s ...", file);
+        status = tools::run_cmd(absl::StrCat(cmd, " 2>&1"), &out);
+        if (status == 0) { return; }  // success
+        LOG(ERROR) << "Stream " << file << " fail, try again...";
+        if (try_interval_ > 0) { ::sleep(try_interval_); }
+    } while (++i < try_cnt_);
+
+    if (status != 0)
+    { LOG(ERROR) << absl::StrFormat("Stream %s fail: %s", file, out); }
 }
 
 void QVRStreamer::_LoadRecord() {
@@ -191,6 +204,8 @@ try {
     LOG(INFO) << "Stream URL: " << FLAGS_url;
     LOG(INFO) << "Shutdown time: " << FLAGS_shutdown_time;
     LOG(INFO) << "Stream interval: " << FLAGS_stream_interval;
+    LOG(INFO) << "Try count: " << FLAGS_try_cnt;
+    LOG(INFO) << "Try interval: " << FLAGS_try_interval;
 
     QVRStreamer streamer;
     streamer.Run();
