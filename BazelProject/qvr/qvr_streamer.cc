@@ -130,8 +130,11 @@ void QVRStreamer::_Stream(const std::string &file) {
     do {
         LOG(INFO) << absl::StrFormat("Streaming video %s ...", file);
         status = tools::run_cmd(absl::StrCat(cmd, " 2>&1"), &out);
-        if (status == 0) { return; }  // success
-        LOG(ERROR) << "Stream " << file << " fail, try again...";
+        if (status == 0) {
+            LOG(INFO) << "Successfully streamed video " << file;
+            return;
+        }
+        LOG(ERROR) << absl::StrFormat("Stream %s fail! try again %d", file, (i + 1));
         if (try_interval_ > 0) { ::sleep(try_interval_); }
     } while (++i < try_cnt_);
 
@@ -187,7 +190,7 @@ try {
     google::InitGoogleLogging(argv[0]);
 
     std::time_t now = std::time(0);
-    LOG(INFO) << "========= QVR Streamer running at " << std::ctime(&now) << " =========";
+    LOG(INFO) << "======== QVR Streamer running at " << std::ctime(&now) << " ========";
 
     // set working dir
     if (!FLAGS_work_dir.empty()) {
