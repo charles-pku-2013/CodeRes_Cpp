@@ -1,4 +1,5 @@
 /*
+bazel build -c opt //qvr:qvr_streamer
 qvr_streamer.gflags
 -work_dir=/share
 -video_dir=qvr
@@ -64,6 +65,7 @@ class QVRStreamer final {
  private:
     void _LoadRecord();
     void _UpdateRecord();
+    bool _CheckMedia(const std::string &file);
     void _Stream(const std::string &file);
 
     std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
@@ -99,8 +101,7 @@ void QVRStreamer::Run() {
         for (const auto& it : file_list) {
             const std::string &fname = it.first;
             const auto &path = it.second;
-            if (record_.count(fname) == 0) {
-                // LOG(INFO) << absl::StrFormat("Streaming video %s ...", fname);
+            if (record_.count(fname) == 0 && _CheckMedia(path)) {
                 _Stream(path);
                 record_.insert(fname);
                 _UpdateRecord();
@@ -124,7 +125,7 @@ void QVRStreamer::Run() {
 
 void QVRStreamer::_Stream(const std::string &file) {
     std::string cmd = absl::StrReplaceAll(stream_cmd_, {{"$file", file}, {"$url", url_}});
-    // LOG(INFO) << "Stream cmd: " << cmd;  // DEBUG
+    // LOG(INFO) << "Stream cmd: " << cmd;
     std::string out;
     int32_t i = 0, status = 0;
     do {
@@ -140,6 +141,12 @@ void QVRStreamer::_Stream(const std::string &file) {
 
     if (status != 0)
     { LOG(ERROR) << absl::StrFormat("Stream %s fail: %s", file, out); }
+}
+
+bool QVRStreamer::_CheckMedia(const std::string &file) {
+    int32_t status = tools::run_cmd(absl::StrCat("ffprobe ", file, " 2>&1"), nullptr);
+    // LOG(INFO) << absl::StrFormat("Check media %s %s!", file, (status ? "fail" : "success"));
+    return (status == 0);
 }
 
 void QVRStreamer::_LoadRecord() {
