@@ -33,6 +33,7 @@ namespace fs = boost::filesystem;
 
 DEFINE_string(work_dir, "", "working directory");
 DEFINE_string(video_dir, "qvr", "video directory");
+DEFINE_string(download_dir, "", "directory for download stream finished videos");
 DEFINE_string(video_type, "mp4", "video type");
 DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(stream_cmd, "", "stream command");
@@ -49,6 +50,7 @@ class QVRStreamer final {
  public:
     QVRStreamer() {
         video_dir_ = FLAGS_video_dir;
+        download_dir_ = FLAGS_download_dir;
         video_type_ = FLAGS_video_type;
         record_file_ = FLAGS_record_file;
         stream_cmd_ = FLAGS_stream_cmd;
@@ -67,8 +69,9 @@ class QVRStreamer final {
     void _UpdateRecord();
     bool _CheckMedia(const std::string &file);
     void _Stream(const std::string &file);
+    void _MoveToDownload(const std::string &file);
 
-    std::string record_file_, video_dir_, video_type_, stream_cmd_, url_;
+    std::string record_file_, video_dir_, download_dir_, video_type_, stream_cmd_, url_;
     RecordList record_;  // only filename like xx.mp4 not including ./
     int32_t shutdown_time_ = 0, stream_interval_ = 0, try_cnt_ = 0, try_interval_ = 0;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_streamed_;
@@ -105,6 +108,7 @@ void QVRStreamer::Run() {
                 _Stream(path);
                 record_.insert(fname);
                 _UpdateRecord();
+                _MoveToDownload(path);
                 last_streamed_ = std::chrono::high_resolution_clock::now();
                 if (stream_interval_ > 0)
                 { ::sleep(stream_interval_); }
@@ -147,6 +151,17 @@ bool QVRStreamer::_CheckMedia(const std::string &file) {
     int32_t status = tools::run_cmd(absl::StrCat("ffprobe ", file, " 2>&1"), nullptr);
     // LOG(INFO) << absl::StrFormat("Check media %s %s!", file, (status ? "fail" : "success"));
     return (status == 0);
+}
+
+void QVRStreamer::_MoveToDownload(const std::string &old_p) {
+    fs::path new_p = fs::path(download_dir_) / fs::path(old_p).filename();
+    try {
+        fs::create_directories(download_dir_);  // create the dir if not exists
+        fs::rename(old_p, new_p);
+    } catch (const std::exception &ex) {
+        LOG(ERROR) << absl::StrFormat("Fail to move file from %s to %s, %s",
+                        old_p, new_p.string(), ex.what());
+    }
 }
 
 void QVRStreamer::_LoadRecord() {
@@ -208,6 +223,7 @@ try {
 
     LOG(INFO) << "Working dir: " << fs::current_path();
     LOG(INFO) << "Video dir: " << FLAGS_video_dir;
+    LOG(INFO) << "Download dir: " << FLAGS_download_dir;
     LOG(INFO) << "Video type: " << FLAGS_video_type;
     LOG(INFO) << "Record file: " << FLAGS_record_file;
     LOG(INFO) << "Stream cmd: " << FLAGS_stream_cmd;
