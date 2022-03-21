@@ -110,12 +110,13 @@ void test_dir(const std::string &s)
 void test_mkdir()
 {
     try {
-        fs::path p1("/tmp/a/b/c/d");
+        fs::path p1("/tmp/a/b/c/d");  // same like mkdir -p
         // cout << fs::is_empty(p1) << endl;  // exception 不可以用于不存在的目录
-        if (fs::create_directories(p1))
+        if (fs::create_directories(p1)) {
             cout << "created dir " << p1 << endl;
-        else
-            cout << "create dir fail!" << endl;
+        } else {
+            cout << "create dir fail!" << endl;  // fail if already exists
+        }
         cout << fs::is_empty(p1) << endl;
     } catch (const std::exception &ex) {
         cout << ex.what() << endl;
@@ -177,8 +178,8 @@ int main(int argc, char* argv[])
     try {
         // check_empty(argv[1]);
         // test1(argv[1]);
-        test_dir(argv[1]);
-        // test_mkdir();
+        // test_dir(argv[1]);
+        test_mkdir();
         // test_rmdir();
         // test_remove_file(argv[1]);
         // test_compare_equal();

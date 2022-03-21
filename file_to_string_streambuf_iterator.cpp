@@ -4,18 +4,16 @@
 #include <streambuf>
 #include <iterator>
 
-using namespace std;
- 
 int main()
 {
     // 没有换行符 都挤在一块
     // istream_iterator<char> beg(cin), end;
 
     // This OK
-    istreambuf_iterator<char> beg(cin), end;
+    std::istreambuf_iterator<char> beg(std::cin), end;
 
     std::string str(beg, end);
-    cout << str << endl;
+    std::cout << str << std::endl;
 
     return 0;
 }
