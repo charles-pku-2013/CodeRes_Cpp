@@ -1,11 +1,19 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
+void test_output_redirect() {
+    ofstream ofs("/tmp/out.txt", ios::out);
+    std::streambuf *coutRdbuf = cout.rdbuf();
+    cout.rdbuf(ofs.rdbuf());  // for restore
+    cout << "Redirect to file" << endl;
+    cout.rdbuf(coutRdbuf);  // restore
+    cout << "Print to screen" << endl;
+}
 
-int main()
-{
+void test_input_redirect() {
     stringstream sstream("1 3 5 7");
 
     // for restore
@@ -36,7 +44,11 @@ int main()
 
     cin.rdbuf(cinRdbuf);
     // cin >> n;
+}
 
+int main()
+{
+    test_output_redirect();
     return 0;
 }
 
