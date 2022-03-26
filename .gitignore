@@ -15,6 +15,7 @@
 !*.cfg
 !*.rsp
 !*.proto
+!*.md
 !.gitignore
 !Makefile
 !CmakeLists.txt
@@ -23,3 +24,5 @@
 !BUILD
 !*.BUILD
 !*.bzl
+!*.conf
+!*.gflags

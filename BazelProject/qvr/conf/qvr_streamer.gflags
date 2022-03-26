@@ -1,0 +1,13 @@
+-work_dir=/share
+-video_dir=qvr
+-download_dir=qvr_download
+-video_type=mp4
+-record_file=qvr_streamed.txt
+-shutdown_time=1200
+-stream_interval=3
+-try_cnt=40
+-try_interval=3
+-url=rtmp://192.168.50.3:21935/qvr_live/live
+-stream_cmd=ffmpeg -i $file -vcodec libx264 -preset:v ultrafast -r 30 -g 60 -keyint_min 60 -sc_threshold 0 -b:v 2500k -maxrate 3000k -bufsize 5000k -sws_flags lanczos+accurate_rnd -acodec aac -b:a 96k -ar 48000 -ac 2 -f flv $url
+#-stream_cmd=ffmpeg -i $file -c:v libx264 -preset:v ultrafast -b:v 2500k -c:a libfdk_aac -b:a 96k -ar 48000 -f flv $url
+

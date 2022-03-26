@@ -1,16 +1,5 @@
 /*
 bazel build -c opt //qvr:qvr_streamer
-qvr_streamer.gflags
--work_dir=/share
--video_dir=qvr
--video_type=mp4
--record_file=qvr_streamed.txt
--shutdown_time=1800
--stream_interval=5
--url=rtmp://192.168.50.3:1935/live/live
--stream_cmd=ffmpeg -i $file -vcodec libx264 -preset:v ultrafast -r 30 -g 60 -keyint_min 60 -sc_threshold 0 -b:v 2500k -maxrate 3000k -bufsize 5000k -sws_flags lanczos+accurate_rnd -acodec aac -b:a 96k -ar 48000 -ac 2 -f flv $url
--try_cnt=5
--try_interval=3
  */
 #include <unistd.h>
 #include <iostream>
