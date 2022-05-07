@@ -45,6 +45,7 @@ class QVRWatcher final {
 
  private:
     void _LoadRecord();
+    bool _CheckMedia(const std::string &file);
 
     std::string record_file_, video_dir_, video_type_, worker_cmd_;
     RecordList record_;  // only filename like xx.mp4 not including ./
@@ -65,7 +66,7 @@ void QVRWatcher::Run() {
         if (!fs::is_regular_file(*itr)) { continue; }
         if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + video_type_)) {
             std::string fname = itr->path().filename().string();
-            if (record_.count(fname) == 0) {
+            if (record_.count(fname) == 0 && _CheckMedia(itr->path().string())) {
                 LOG(INFO) << absl::StrFormat("Detected new video %s waking up woker...", fname);
                 std::string out;
                 int32_t status = tools::run_cmd(absl::StrCat(worker_cmd_, " 2>&1"), &out);
@@ -93,6 +94,12 @@ void QVRWatcher::_LoadRecord() {
     }
 
     return;
+}
+
+bool QVRWatcher::_CheckMedia(const std::string &file) {
+    int32_t status = tools::run_cmd(absl::StrCat("ffprobe ", file, " 2>&1"), nullptr);
+    // LOG(INFO) << absl::StrFormat("Check media %s %s!", file, (status ? "fail" : "success"));
+    return (status == 0);
 }
 
 int main(int argc, char **argv)
