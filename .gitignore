@@ -26,3 +26,4 @@
 !*.bzl
 !*.conf
 !*.gflags
+!*.pdf
