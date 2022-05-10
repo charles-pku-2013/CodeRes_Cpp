@@ -24,7 +24,6 @@ DEFINE_string(work_dir, "", "working directory");
 DEFINE_string(video_dir, "qvr", "video directory");
 DEFINE_string(download_dir, "", "directory for download stream finished videos");
 DEFINE_string(video_type, "mp4", "video type");
-DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(stream_cmd, "", "stream command");
 DEFINE_string(url, "", "rtmp://...");
 DEFINE_int32(shutdown_time, 1800, "wait time in seconds for shutdown if no more work");
@@ -34,14 +33,10 @@ DEFINE_int32(try_interval, 0, "time span between two try streaming if fail");
 
 class QVRStreamer final {
  public:
-    using RecordList = std::set<std::string>;
-
- public:
     QVRStreamer() {
         video_dir_ = FLAGS_video_dir;
         download_dir_ = FLAGS_download_dir;
         video_type_ = FLAGS_video_type;
-        record_file_ = FLAGS_record_file;
         stream_cmd_ = FLAGS_stream_cmd;
         url_ = FLAGS_url;
         shutdown_time_ = FLAGS_shutdown_time;
@@ -54,14 +49,11 @@ class QVRStreamer final {
     void Run();
 
  private:
-    void _LoadRecord();
-    void _UpdateRecord();
     bool _CheckMedia(const std::string &file);
     void _Stream(const std::string &file);
     void _MoveToDownload(const std::string &file);
 
-    std::string record_file_, video_dir_, download_dir_, video_type_, stream_cmd_, url_;
-    RecordList record_;  // only filename like xx.mp4 not including ./
+    std::string video_dir_, download_dir_, video_type_, stream_cmd_, url_;
     int32_t shutdown_time_ = 0, stream_interval_ = 0, try_cnt_ = 0, try_interval_ = 0;
     std::chrono::time_point<std::chrono::high_resolution_clock> last_streamed_;
 };
@@ -74,9 +66,6 @@ void QVRStreamer::Run() {
         ::sleep(10);  // prepare for restart
         exit(0);
     }
-
-    // load record from file
-    _LoadRecord();
 
     while (true) {
         // Scan video dir
@@ -91,12 +80,9 @@ void QVRStreamer::Run() {
 
         // stream new found files
         for (const auto& it : file_list) {
-            const std::string &fname = it.first;
             const auto &path = it.second;
-            if (record_.count(fname) == 0 && _CheckMedia(path)) {
+            if (_CheckMedia(path)) {
                 _Stream(path);
-                record_.insert(fname);
-                _UpdateRecord();
                 _MoveToDownload(path);
                 last_streamed_ = std::chrono::high_resolution_clock::now();
                 if (stream_interval_ > 0)
@@ -153,34 +139,6 @@ void QVRStreamer::_MoveToDownload(const std::string &old_p) {
     }
 }
 
-void QVRStreamer::_LoadRecord() {
-    record_.clear();
-
-    std::string line;
-    std::ifstream ifs(record_file_, std::ios::in);
-    if (!ifs) { return; }
-
-    while (std::getline(ifs, line)) {
-        boost::trim(line);
-        if (line.empty()) { continue; }
-        record_.insert(line);
-    }
-
-    return;
-}
-
-void QVRStreamer::_UpdateRecord() {
-    std::ofstream ofs(record_file_, std::ios::out | std::ios::trunc);
-    if (!ofs) {
-        LOG(ERROR) << absl::StrFormat("Update record fail! fail to open %s for writting!", record_file_);
-        return;
-    }
-    for (const auto& v : record_) {
-        ofs << v << std::endl;
-    }
-    ofs << std::flush;
-}
-
 namespace {
 void check_args() {
     if (FLAGS_stream_cmd.empty()) {
@@ -214,7 +172,6 @@ try {
     LOG(INFO) << "Video dir: " << FLAGS_video_dir;
     LOG(INFO) << "Download dir: " << FLAGS_download_dir;
     LOG(INFO) << "Video type: " << FLAGS_video_type;
-    LOG(INFO) << "Record file: " << FLAGS_record_file;
     LOG(INFO) << "Stream cmd: " << FLAGS_stream_cmd;
     LOG(INFO) << "Stream URL: " << FLAGS_url;
     LOG(INFO) << "Shutdown time: " << FLAGS_shutdown_time;

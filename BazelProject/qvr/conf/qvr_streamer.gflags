@@ -2,7 +2,6 @@
 -video_dir=qvr
 -download_dir=qvr_download
 -video_type=mp4
--record_file=qvr_streamed.txt
 -shutdown_time=1200
 -stream_interval=3
 -try_cnt=40

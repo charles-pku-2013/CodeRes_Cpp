@@ -1,6 +1,5 @@
 -work_dir=/share
 -video_dir=qvr
 -video_type=mp4
--record_file=qvr_streamed.txt
 -worker_cmd=worker up
 

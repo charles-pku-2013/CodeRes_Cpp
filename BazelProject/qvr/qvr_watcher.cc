@@ -3,7 +3,6 @@ qvr_watcher.gflags
 -work_dir=/share
 -video_dir=qvr
 -video_type=mp4
--record_file=qvr_streamed.txt
 -worker_cmd=worker up
  */
 #include <unistd.h>
@@ -24,16 +23,10 @@ namespace fs = boost::filesystem;
 DEFINE_string(work_dir, "", "working directory");
 DEFINE_string(video_dir, "qvr", "video directory");
 DEFINE_string(video_type, "mp4", "video type");
-DEFINE_string(record_file, "qvr_streamed.txt", "record file");
 DEFINE_string(worker_cmd, "workerup", "worker command");
 
 class QVRWatcher final {
  public:
-    using RecordList = std::unordered_set<std::string>;
-
- public:
-    void SetRecordFile(const std::string &val)
-    { record_file_ = val; }
     void SetVideoDir(const std::string &val)
     { video_dir_ = val; }
     void SetVideoType(const std::string &val)
@@ -44,17 +37,11 @@ class QVRWatcher final {
     void Run();
 
  private:
-    void _LoadRecord();
     bool _CheckMedia(const std::string &file);
-
-    std::string record_file_, video_dir_, video_type_, worker_cmd_;
-    RecordList record_;  // only filename like xx.mp4 not including ./
+    std::string video_dir_, video_type_, worker_cmd_;
 };
 
 void QVRWatcher::Run() {
-    // load record from file
-    _LoadRecord();
-
     // Scan video dir
     fs::path video_path(video_dir_);
     if (!fs::exists(video_path) || !fs::is_directory(video_path)) {
@@ -64,36 +51,16 @@ void QVRWatcher::Run() {
 
     for (fs::directory_iterator itr(video_path); itr != fs::directory_iterator(); ++itr) {
         if (!fs::is_regular_file(*itr)) { continue; }
-        if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + video_type_)) {
-            std::string fname = itr->path().filename().string();
-            if (record_.count(fname) == 0 && _CheckMedia(itr->path().string())) {
-                LOG(INFO) << absl::StrFormat("Detected new video %s waking up woker...", fname);
-                std::string out;
-                int32_t status = tools::run_cmd(absl::StrCat(worker_cmd_, " 2>&1"), &out);
-                if (status != 0) {
-                    LOG(ERROR) << "Run worker fail: " << out;
-                }
+        if (absl::EqualsIgnoreCase(itr->path().extension().string(), "." + video_type_) &&
+                    _CheckMedia(itr->path().string())) {
+            LOG(INFO) << absl::StrFormat("Detected new video %s waking up woker...", itr->path().filename().string());
+            std::string out;
+            int32_t status = tools::run_cmd(absl::StrCat(worker_cmd_, " 2>&1"), &out);  // wake up worker
+            if (status != 0) {
+                LOG(ERROR) << "Run worker fail: " << out;
             }
         }
     }  // for
-}
-
-void QVRWatcher::_LoadRecord() {
-    record_.clear();
-
-    std::string line;
-    std::ifstream ifs(record_file_, std::ios::in);
-    if (!ifs) {
-        return;
-    }
-
-    while (std::getline(ifs, line)) {
-        boost::trim(line);
-        if (line.empty()) { continue; }
-        record_.insert(line);
-    }
-
-    return;
 }
 
 bool QVRWatcher::_CheckMedia(const std::string &file) {
@@ -117,12 +84,10 @@ try {
     LOG(INFO) << "Working dir: " << fs::current_path();
     LOG(INFO) << "Video dir: " << FLAGS_video_dir;
     LOG(INFO) << "Video type: " << FLAGS_video_type;
-    LOG(INFO) << "Record file: " << FLAGS_record_file;
     LOG(INFO) << "Worker cmd: " << FLAGS_worker_cmd;
 
     QVRWatcher watcher;
     watcher.SetVideoDir(FLAGS_video_dir);
-    watcher.SetRecordFile(FLAGS_record_file);
     watcher.SetVideoType(FLAGS_video_type);
     watcher.SetWorkerCmd(FLAGS_worker_cmd);
 
