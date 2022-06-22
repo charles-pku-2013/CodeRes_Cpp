@@ -49,6 +49,7 @@ lib_files = [
 
 genrule(
     name = "libevent-srcs",
+    srcs = glob(["**"]),
     outs = include_files + lib_files,
     cmd = "\n".join([
 # pwd: /root/.cache/bazel/_bazel_root/6b498043c3554c8234ef8edd683063a7/execroot/BazelProject
