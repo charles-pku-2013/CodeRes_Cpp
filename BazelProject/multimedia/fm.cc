@@ -39,19 +39,19 @@ int main(int argc, char **argv) {
 
     if (is_album) {
         cmd = absl::StrFormat("find . -type d -iname \'*%s*\'", pattern);
-        LOG(INFO) << "Running command: " << cmd;
+        // LOG(INFO) << "Running command: " << cmd;
         std::system(cmd.c_str());
         return 0;
     }
 
     // find single files
-    cmd = absl::StrFormat("find . -type f \\( %s \\) | parallel --pipe grep -E \'%s\'", MUSIC_FILE_TYPE, pattern);
-    LOG(INFO) << "Running command: " << cmd;
+    cmd = absl::StrFormat("find . -type f \\( %s \\) | grep -iE \'%s\'", MUSIC_FILE_TYPE, pattern);
+    // LOG(INFO) << "Running command: " << cmd;
     std::system(cmd.c_str());
 
     // find in cue
-    cmd = absl::StrFormat("find . -type f -iname \'*.cue\' | parallel \"grep -n -H -E \'%s\' {}\"", pattern);
-    LOG(INFO) << "Running command: " << cmd;
+    cmd = absl::StrFormat("find . -type f -iname \'*.cue\' -print0 | xargs -0 -I{} grep -n -H -iE \'%s\' {}", pattern);
+    // LOG(INFO) << "Running command: " << cmd;
     std::system(cmd.c_str());
 
     return 0;
