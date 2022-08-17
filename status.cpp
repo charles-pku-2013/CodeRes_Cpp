@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 
+// from grpc
 enum StatusCode : int32_t {
     OK = 0,
     CANCELLED = 1,
@@ -34,6 +35,7 @@ class Status {
         : code_(code), error_message_(error_message) {}
 
     static const Status& OK;
+    static const Status& CANCELLED;
 
     StatusCode error_code() const { return code_; }
     const std::string& error_message() const { return error_message_; }
@@ -53,7 +55,9 @@ class Status {
     std::string error_message_;
 };
 
+// should put in .cc
 const Status& Status::OK = Status();
+const Status& Status::CANCELLED = Status(StatusCode::CANCELLED, "");
 
 // TEST
 // awk '{printf "\{StatusCode::%s, \"%s\"\},\n", $1, $1}' /tmp/a.txt
