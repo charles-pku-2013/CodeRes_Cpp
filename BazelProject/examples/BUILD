@@ -37,3 +37,16 @@ cc_binary(
         "@com_github_gflags_gflags//:gflags",
     ],
 )
+
+cc_binary(
+    name = "test",
+    srcs = [
+        "test.cc",
+    ],
+    deps = [
+        "//tools:run_cmd",
+        "@boost//:algorithm",
+        "@boost//:filesystem",
+        "@com_github_gflags_gflags//:gflags",
+    ],
+)
