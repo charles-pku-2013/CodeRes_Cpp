@@ -4,9 +4,10 @@
 using namespace std;
 
 struct Foo {
-    Foo() : counter_(0) {}
+    // Foo() : counter_(0) {}  // OK
 
-    std::atomic_int counter_;
+    // std::atomic_int counter_ = 0;  // WRONG
+    std::atomic_int counter_ = {0};  // OK!!! atomic 成员变量初始化
 };
 
 int main()
