@@ -1,22 +1,26 @@
-#include <memory>
 #include <iostream>
+#include <string>
+#include <memory>
 
-using namespace std;
+struct Foo {
+    Foo() {
+        std::cout << "Foo default construct" << std::endl;
+    }
 
-void test() {
-    struct Foo {
-        Foo() { cout << "Foo construct" << endl; }
-        ~Foo() { cout << "Foo destruct" << endl; }
-    };
+    Foo(int i) : data_(i) {
+        std::cout << "Foo construct data=" << data_ << std::endl;
+    }
 
-    // NOTE!!! 自动调用数组版的delete
-    std::unique_ptr<Foo[]> ptr(new Foo[10]);
-}
+    ~Foo() {
+        std::cout << "Foo destruct data=" << data_ << std::endl;
+    }
 
-int main()
-{
-    test();
+    int data_ = 0;
+};
+
+
+int main() {
+    std::unique_ptr<Foo[]> ptr(new Foo[10]{[0 ... 9] = {5}});
 
     return 0;
 }
-
