@@ -1,6 +1,17 @@
 package(default_visibility = ["//visibility:public"],)
 
 cc_binary(
+    name = "test",
+    srcs = [
+        "test.cc",
+    ],
+    deps = [
+        "@com_google_absl//absl/strings:strings",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_binary(
     name = "macro_demo",
     srcs = [
         "macro_demo.cc",
@@ -39,14 +50,16 @@ cc_binary(
 )
 
 cc_binary(
-    name = "test",
+    name = "str_elem_cmp",
     srcs = [
-        "test.cc",
+        "str_elem_cmp.cc",
     ],
     deps = [
-        "//tools:run_cmd",
-        "@boost//:algorithm",
-        "@boost//:filesystem",
+        # "//tools:run_cmd",
+        # "@boost//:algorithm",
+        # "@boost//:filesystem",
         "@com_github_gflags_gflags//:gflags",
+        "@com_google_absl//absl/strings:strings",
+        "@com_google_absl//absl/strings:str_format",
     ],
 )

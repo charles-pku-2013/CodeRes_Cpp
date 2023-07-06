@@ -3,8 +3,8 @@ build --spawn_strategy=standalone
 build --genrule_strategy=standalone
 
 # build --define=with_glog=true
-build --cxxopt=-std=c++14
-build --host_cxxopt=-std=c++14
+build --cxxopt=-std=c++17
+build --host_cxxopt=-std=c++17
 build:nativeopt --copt=-O3
 
 # build --copt="-Wno-error"
