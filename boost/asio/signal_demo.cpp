@@ -20,6 +20,12 @@ int main() {
     using namespace std;
 
     try {
+        // When the io_service::run method is called without a work object,
+        // it will return right away. Typically, that is not the behavior most developers are looking for.
+        // There are of course some exceptions, but most developers are looking to specify a thread
+        // to handle all of the asynchronous processing and don't want that thread to exit until told to do so.
+        // That is what your code example does.
+        // 这里可以不要io_service::work 如果信号处理函数的目的就是终止进程
         boost::asio::io_service                io_service;
         pIoServiceWork = std::make_shared< boost::asio::io_service::work >(std::ref(io_service));
         boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
