@@ -34,8 +34,8 @@ class Status {
     Status(StatusCode code, const std::string& error_message)
         : code_(code), error_message_(error_message) {}
 
-    static const Status& OK;
-    static const Status& CANCELLED;
+    static const Status OK;
+    static const Status CANCELLED;
 
     StatusCode error_code() const { return code_; }
     const std::string& error_message() const { return error_message_; }
@@ -56,8 +56,8 @@ class Status {
 };
 
 // should put in .cc
-const Status& Status::OK = Status();
-const Status& Status::CANCELLED = Status(StatusCode::CANCELLED, "");
+const Status Status::OK = Status();
+const Status Status::CANCELLED = Status(StatusCode::CANCELLED, "");
 
 // TEST
 // awk '{printf "\{StatusCode::%s, \"%s\"\},\n", $1, $1}' /tmp/a.txt
