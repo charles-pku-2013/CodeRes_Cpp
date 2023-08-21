@@ -13,6 +13,7 @@ class Foo final {
     void run() {
         for (int i = 0; i < 10; ++i) {
             // workers_.emplace_back(std::move(std::thread(&Foo::routine, this, i, i + 1)));
+            // NOTE!!! 注意顺序，`this` first, then args
             workers_.emplace_back(&Foo::routine, this, i, i + 1);
         }
         for (auto& thr : workers_) {
