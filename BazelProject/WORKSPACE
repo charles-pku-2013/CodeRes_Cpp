@@ -12,10 +12,15 @@ http_archive(
     ],
 )
 
+# git_repository(
+    # name = "com_github_nelhage_rules_boost",
+    # commit = "11f0851ace21b791657ef5e1accbecf6034fdd63",
+    # remote = "git@github.com:charles-pku-2013/bazel_boost.git",
+# )
 git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "11f0851ace21b791657ef5e1accbecf6034fdd63",
-    remote = "git@github.com:charles-pku-2013/bazel_boost.git",
+    remote = "git@coding.jd.com:jd_search/bazel_boost.git",
+    commit = "ff3d013bc6091e845047c7b850f4fdd6ea470e65",
 )
 # local_repository(
     # name = "com_github_nelhage_rules_boost",
