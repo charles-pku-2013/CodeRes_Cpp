@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include <mutex>
+#include <vector>
 
 struct Foo {
     Foo() { std::cout << "Foo construct" << std::endl; }
@@ -17,8 +17,12 @@ void delete_foo(Foo *p) {
     delete p;
 }
 void test1() {
+    // std::unique_ptr<Foo, decltype(&delete_foo)> ptr;  // WRONG no default constructor
     std::unique_ptr<Foo, decltype(&delete_foo)> ptr(nullptr, delete_foo);
     ptr.reset(new_foo());
+
+    std::vector<std::unique_ptr<Foo, decltype(&delete_foo)>> arr;
+    arr.emplace_back(nullptr, delete_foo);
     // std::unique_ptr<Foo, decltype(&delete_foo)> ptr(new_foo(), delete_foo);
     // ptr.reset();  // manully free
 }
@@ -40,10 +44,15 @@ void test2() {
     std::unique_ptr<Foo, decltype(&destory_foo)> ptr(&foo, destory_foo);
 }
 
+struct Container {
+    std::unique_ptr<Foo, decltype(&delete_foo)> ptr{nullptr, delete_foo};  // OK NOTE!!! initialization list is required
+};
+
 int main() {
     // test1();
-    test2();
+    // test2();
 
+    Container c;
     std:: cout << "main terminate..." << std::endl;
 
     return 0;
