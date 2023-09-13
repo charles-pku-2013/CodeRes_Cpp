@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"],)
 cc_binary(
     name = "test",
     srcs = [
-        "retrieve_map_key.cc",
+        "test.cc",
     ],
     deps = [
         "@com_google_absl//absl/strings:strings",

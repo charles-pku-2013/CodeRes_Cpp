@@ -19,11 +19,23 @@ void test_StrAppend() {
 
 void test_StrJoin_map() {
     std::map<std::string, double> mm = {{"abc",3.14}, {"def",7.62}, {"canon",5.56}};
-    std::string str_mm = absl::StrJoin(mm, " ",
+
+    // fully customize how to print value
+    std::string str_map_value = absl::StrJoin(mm, " ",
                 [](std::string *out, const decltype(mm)::value_type &val){
         absl::StrAppend(out, val.second);  // Use the value directly
     });
-    cout << str_mm << endl;
+    cout << str_map_value << endl;
+
+    std::string str_map_1 = absl::StrJoin(mm, ":",
+                [](std::string *out, const decltype(mm)::value_type &val){
+        absl::StrAppend(out, absl::StrFormat("%s{%lf}", val.first, val.second));
+    });
+    cout << str_map_1 << endl;
+
+    // Standard
+    std::string str_map = absl::StrJoin(mm, ",", absl::PairFormatter("="));
+    cout << str_map << endl;
 }
 
 void test_StrSplit_1() {
@@ -57,9 +69,9 @@ void test_Strip_Trim() {
 
 int main() {
     // test_StrAppend();
-    // test_StrJoin_map();
+    test_StrJoin_map();
     // test_StrSplit_1();
-    test_StrSplit_2();
+    // test_StrSplit_2();
     // test_Strip_Trim();
 
     return 0;
