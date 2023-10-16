@@ -8,6 +8,8 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_join.h"
 
 class ConfigReader final {
  public:
@@ -16,10 +18,7 @@ class ConfigReader final {
     bool load_config(const std::string &fanme);
 
     std::string DebugString() const {
-        std::ostringstream oss;
-        for (const auto &kv : config_)
-            oss << kv.first << "=" << kv.second << " ";
-        return oss.str();
+        return absl::StrCat("{", absl::StrJoin(config_, ",", absl::PairFormatter("=")), "}");
     }
 
     const CfgDict& all_configs() const { return config_; }
