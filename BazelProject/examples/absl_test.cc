@@ -36,6 +36,32 @@ void test_StrJoin_map() {
     // Standard
     std::string str_map = absl::StrJoin(mm, ",", absl::PairFormatter("="));
     cout << str_map << endl;
+
+#if 0
+    // Only print keys
+    std::string str_creators = absl::StrJoin(servable_creators_, ",",
+        [](std::string* out, const ServableCreatorTable::value_type& in) {
+            absl::StrAppend(out, in.first);
+        });
+
+    // element is array
+    LOG(INFO) << absl::StrFormat("bundle_vec: {%s}",
+        absl::StrJoin(bundle_vec, ",", [](std::string *out, const BundlePtr& bundle){
+                absl::StrAppend(out, absl::StrCat("{", bundle->DebugString(), "}"));
+    }));
+    // nested StrJoin
+    std::string str_table = absl::StrJoin(in, ",",
+            [](std::string *out, const ServableIndexTable::value_type &val){
+        absl::StrAppend(out, absl::StrCat(val.first, "{", absl::StrJoin(val.second, ","), "}"));
+    });
+    std::string content = absl::StrJoin(in, ", ", [&](std::string *out, const ServableStateTable::value_type& val){
+            absl::StrAppend(out, absl::StrCat(val.first, "{",
+                absl::StrJoin(val.second.versions, ", ", ver_state_table_2_string), "}"));
+    std::string str_groups = absl::StrJoin(groups_, ",",
+        [](std::string *out, const std::set<std::string> &val){
+            absl::StrAppend(out, absl::StrCat("{", absl::StrJoin(val, ","), "}"));
+        });
+#endif
 }
 
 void test_StrSplit_1() {
@@ -43,7 +69,7 @@ void test_StrSplit_1() {
     // std::vector<std::string> v = absl::StrSplit("a , b=c", absl::ByAnyChar(",="), absl::SkipWhitespace());
     // 下面的是预期的效果
     constexpr char SPACES[] = " \t\f\r\v\n";
-    std::vector<std::string> v = absl::StrSplit("a , b,,=c",
+    std::vector<std::string_view> v = absl::StrSplit("a , b,,=c",
                 absl::ByAnyChar(absl::StrCat(",=", SPACES)), absl::SkipWhitespace());
     cout << absl::StrJoin(v, ",") << endl;  // a,b,c
 }
