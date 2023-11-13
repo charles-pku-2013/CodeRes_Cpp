@@ -83,6 +83,7 @@ void test1( int argc, char **argv )
 
 int main( int argc, char **argv )
 {
+    gflags::AllowCommandLineReparsing();
     int idx = gflags::ParseCommandLineFlags(&argc, &argv, true);
 
     // 未被gflags识别的参数
