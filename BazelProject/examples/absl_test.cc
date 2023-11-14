@@ -65,6 +65,7 @@ void test_StrJoin_map() {
 }
 
 void test_StrSplit_1() {
+    // NOTE!!! 空字符串split的结果vector.size是1, vec[0]是空字符串
     // NOTE!!! SkipWhitespace 是指整个字符串是空白字符如" ", 不会自动strip
     // std::vector<std::string> v = absl::StrSplit("a , b=c", absl::ByAnyChar(",="), absl::SkipWhitespace());
     // 下面的是预期的效果
