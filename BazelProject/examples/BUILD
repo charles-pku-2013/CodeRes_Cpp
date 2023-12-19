@@ -6,8 +6,10 @@ cc_binary(
         "test.cc",
     ],
     deps = [
+        "@boost//:lexical_cast",
         "@com_google_absl//absl/strings:strings",
         "@com_google_absl//absl/strings:str_format",
+        "@com_github_google_glog//:glog",
     ],
 )
 

@@ -1,16 +1,12 @@
 #include <iostream>
+#include <glog/logging.h>
 #include "absl/strings/str_format.h"
-
-// #undef __DATE__
-// #undef __TIME__
-// #undef __TIMESTAMP__
+#include <boost/lexical_cast.hpp>
 
 int main() {
-    // std::cout << absl::StrFormat("%s built at %s", __FILE__, __TIMESTAMP__) << std::endl;
-    // std::cout << absl::StrFormat("%s built at %s %s", __FILE__, __DATE__, __TIME__) << std::endl;
-    std::cout << __date << std::endl;
-    std::cout << __TIME__ << std::endl;
-
+    std::string s("0.33103448");
+    float f = boost::lexical_cast<float>(s);
+    LOG(ERROR) << f;
     return 0;
 }
 
