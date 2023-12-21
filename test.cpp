@@ -2,13 +2,21 @@
 #include <iomanip>
 #include <cmath>
 
-int main() {
+int main(int argc, char **argv) {
     using namespace std;
+    int i = atoi(argv[1]);
 
-    float f = 0.33103448;
-    cout << std::setprecision(100) << f << endl;
-    double d = 0.33103448;
-    cout << std::setprecision(100) << d << endl;
+    switch(i) {
+        case 1: {
+            cout << "100" << endl;
+        }
+        case 2: {
+            cout << "200" << endl;
+            break;
+        }
+        default:
+            break;
+    }
 
     return 0;
 }

@@ -36,3 +36,37 @@ int main()
 
     return 0;
 }
+
+class SpinLock {
+ public:
+    class Holder;
+
+ private:
+    void lock() {
+        while (locked.test_and_set(std::memory_order_acquire)) { ; }
+    }
+    void unlock() {
+        locked.clear(std::memory_order_release);
+    }
+
+    std::atomic_flag locked = ATOMIC_FLAG_INIT;
+};
+
+class SpinLock::Holder {
+ public:
+    explicit Holder(SpinLock *lock): lock(lock) {
+        lock->lock();
+    }
+
+    ~Holder() {
+        lock->unlock();
+    }
+
+    void release() {
+        // sometimes you may want to manually unlock
+        lock->unlock();
+    }
+
+ private:
+    SpinLock* lock;
+};
