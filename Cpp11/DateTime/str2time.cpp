@@ -146,14 +146,32 @@ void test6()
     cout << time2str(tm) << endl;  // 2016-05-18 00:00:00
 }
 
+void test7() {
+    std::string format = "%H:%M:%S";
+    std::string s("12:30:00abc");
+    std::istringstream ss(s);
+    std::tm tm{};
+    ss >> std::get_time(&tm, format.c_str());
+    if (ss.fail()) {
+        std::cerr << "Bad string" << std::endl;
+    }
+    std::cerr << tm.tm_hour << std::endl;
+    std::cerr << tm.tm_min << std::endl;
+    std::cerr << tm.tm_sec << std::endl;
+    std::cerr << tm.tm_year << std::endl;
+    std::cerr << tm.tm_mon << std::endl;
+    std::cerr << tm.tm_mday << std::endl;
+}
+
 int main()
 {
-    test1();
+    // test1();
     // test2();
     // test3();
     // test4();
     // test5();
     // test6();
+    test7();
 
     return 0;
 }
@@ -186,3 +204,4 @@ int main()
     return 0;
 }
 #endif
+

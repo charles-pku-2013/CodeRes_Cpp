@@ -34,18 +34,20 @@ struct Container {
     Container( const string &s1, const string &s2 )
             : obj2(s2)
             , obj1(s1)
-    {}
+    { std::cout << "Container construct" << std::endl; }
+
+    ~Container()
+    { std::cout << "Container destruct" << std::endl; }
 
     Foo obj1;
     Foo obj2;
 };
-/*
- * Foo obj obj1 constructed.
- * Foo obj obj2 constructed.
- * Foo obj obj2 destructed.
- * Foo obj obj1 destructed.
- */
-
+// Foo obj obj1 constructed.
+// Foo obj obj2 constructed.
+// Container construct
+// Container destruct
+// Foo obj obj2 destructed.
+// Foo obj obj1 destructed.
 
 struct A {
     A() : n2(1), n1(n2 + 2) {}
@@ -57,15 +59,14 @@ struct A {
 int main()
 {
     // test 1
-    /*
-     * {
-     *     Container *p = new Container("obj1", "obj2");
-     *     getchar();
-     *     delete p;
-     * }
-     */
+    {
+        Container *p = new Container("obj1", "obj2");
+        getchar();
+        delete p;
+    }
 
     // test 2 剑指Offer p244，再次证明，成员变量初始化顺序只与定义顺序有关
+#if 0
     {
         A a;
         cout << "a.n1 = " << a.n1 << endl;
@@ -74,6 +75,7 @@ int main()
         // a.n1 = 2
         // a.n2 = 1
     }
+#endif
 
     return 0;
 }
