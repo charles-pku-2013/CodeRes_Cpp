@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sys/time.h>
-#include <ctime>
 
 void test() {
     std::cout << "test" << std::endl;
@@ -21,13 +20,24 @@ void test() {
     std::cout << str_tz << std::endl;
 }
 
-int main(int argc, char **argv) {
+int main() {
     test();
+
+    struct timeval tv;
+    struct timezone tz;
+    ::gettimeofday(&tv, &tz);
+
+    std::cout << tv.tv_sec << std::endl;
+    std::cout << tv.tv_usec << std::endl;
+    std::cout << tz.tz_minuteswest << std::endl;   // -480
+    std::cout << tz.tz_dsttime << std::endl;      // 0
 
     return 0;
 }
 
-/*
- * 0.331034481525421142578125
- * 0.331034480000000019828121367027051746845245361328125
- */
+// 1706064251
+// 394708
+// -480
+// 0
+
+
