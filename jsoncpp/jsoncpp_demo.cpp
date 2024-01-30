@@ -1,5 +1,7 @@
 /*
  * c++ -o /tmp/test jsoncpp_demo.cpp -ljsoncpp -std=c++11 -g
+ * brew install jsoncpp
+ * c++ -o /tmp/test jsoncpp/jsoncpp_demo.cpp -I$(brew --prefix jsoncpp)/include -L$(brew --prefix jsoncpp)/lib -ljsoncpp -std=c++17 -g
  */
 #include <json/json.h>
 #include <iostream>
@@ -47,48 +49,48 @@ void readJson()
 
 void WriteJsonData(const char* filename)
 {
-    Json::Reader reader;  
-    Json::Value root; // Json::Value是一种很重要的类型，可以代表任意类型。如int, string, object, array        
+    Json::Reader reader;
+    Json::Value root; // Json::Value是一种很重要的类型，可以代表任意类型。如int, string, object, array
 
-    std::ifstream is;  
-    is.open (filename, std::ios::binary );    
-    if (reader.parse(is, root))  
-    {  
-        Json::Value arrayObj;   // 构建对象  
-        Json::Value new_item, new_item1;  
-        new_item["date"] = "2011-11-11";  
-        new_item1["time"] = "11:11:11";  
-        arrayObj.append(new_item);  // 插入数组成员  
-        arrayObj.append(new_item1); // 插入数组成员  
-        int file_size = root["files"].size();  
-        for(int i = 0; i < file_size; ++i)  
-            root["files"][i]["exifs"] = arrayObj;   // 插入原json中 
-        std::string out = root.toStyledString();  
-        // 输出无格式json字符串  
-        Json::FastWriter writer;  
+    std::ifstream is;
+    is.open (filename, std::ios::binary );
+    if (reader.parse(is, root))
+    {
+        Json::Value arrayObj;   // 构建对象
+        Json::Value new_item, new_item1;
+        new_item["date"] = "2011-11-11";
+        new_item1["time"] = "11:11:11";
+        arrayObj.append(new_item);  // 插入数组成员
+        arrayObj.append(new_item1); // 插入数组成员
+        int file_size = root["files"].size();
+        for(int i = 0; i < file_size; ++i)
+            root["files"][i]["exifs"] = arrayObj;   // 插入原json中
+        std::string out = root.toStyledString();
+        // 输出无格式json字符串
+        Json::FastWriter writer;
         std::string strWrite = writer.write(root);
         std::ofstream ofs;
         ofs.open("test_write.json");
         ofs << strWrite;
         ofs.close();
-    }  
+    }
 
-    is.close();  
+    is.close();
 }
 
 void test()
 {
-    std::string str = "{\"uploadid\": \"UP000000\",\"code\": 100,\"msg\": \"\",\"files\": \"\"}";  
+    std::string str = "{\"uploadid\": \"UP000000\",\"code\": 100,\"msg\": \"\",\"files\": \"\"}";
 
-    Json::Reader reader;  
-    Json::Value root;  
-    if (reader.parse(str, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素  
-    {  
-        // std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"  
+    Json::Reader reader;
+    Json::Value root;
+    if (reader.parse(str, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素
+    {
+        // std::string upload_id = root["uploadid"].asString();  // 访问节点，upload_id = "UP000000"
         // cout << "uploadid = " << upload_id << endl;
-        // int code = root["code"].asInt();    // 访问节点，code = 100 
+        // int code = root["code"].asInt();    // 访问节点，code = 100
         // cout << "code = " << code << endl;
-    }  
+    }
 
     for (auto it = root.begin(); it != root.end(); ++it)
         cout << it.key().asString() << " : " << (*it).asString() << endl;
@@ -119,8 +121,9 @@ void test2()
     Json::Value root;
     root["multi"] = false;
     root["sep"] = ":";
+    root["key1"]["key2"] = 123;
 
-    Json::StyledWriter writer;  
+    Json::StyledWriter writer;
     string outStr = writer.write(root);
     cout << outStr << endl;
 }
@@ -140,16 +143,16 @@ int main()
  *     Json::Reader    reader;
  *     Json::Value     root;
  *     int             n = 0;
- * 
+ *
  *     // DLOG(INFO) << "KnnService received request: " << request;
- * 
+ *
  *     typedef std::vector<std::string> StringArray;
  *     typedef std::map< std::string, StringArray> Query;
  *     Query           query;
- * 
+ *
  *     if (!reader.parse(request, root))
  *         THROW_INVALID_REQUEST("Json parse fail!");
- * 
+ *
  *     // get n
  *     try {
  *         n = root["n"].asInt();
@@ -158,12 +161,12 @@ int main()
  *     } catch (const std::exception &ex) {
  *         THROW_INVALID_REQUEST("Json parse fail! " << ex.what());
  *     } // try
- * 
+ *
  *     // get query items
  *     auto items = root["items"];
  *     if (items.isNull())
  *         THROW_INVALID_REQUEST("Bad request format!");
- * 
+ *
  *     if (items.isArray()) {
  *         for (auto it = items.begin(); it != items.end(); ++it) {
  *             try {
@@ -182,13 +185,13 @@ int main()
  *             THROW_INVALID_REQUEST("Json parse fail! " << ex.what());
  *         } // try
  *     } // if
- * 
+ *
  *     if (query.empty())
  *         THROW_INVALID_REQUEST("Bad request format! no valid query item");
- * 
+ *
  *     for (auto &v : query)
  *         queryByItemNoWeight(v.second, v.first, n);
- * 
+ *
  *     Json::Value     outRoot; // array of record
  *     for (auto &v : query) {
  *         Json::Value record, mostLike;
@@ -199,7 +202,7 @@ int main()
  *         outRoot.append(Json::Value());
  *         outRoot[ outRoot.size()-1 ].swap(record);
  *     } // for
- *     Json::FastWriter writer;  
+ *     Json::FastWriter writer;
  *     _return = writer.write(outRoot);
  * }
  */

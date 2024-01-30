@@ -1,33 +1,22 @@
 #include <iostream>
-#include <sys/time.h>
-#include <ctime>
+using namespace std;
 
-void test() {
-    std::cout << "test" << std::endl;
+class A {
+public:
+    static A& Instance() {
+        static A inst;
+        return inst;
+    }
 
-    auto fn_get_timezone = [](void)->const char* {
-        static char buf[8] = {0};
-        struct timeval tv;
-        struct timezone tz;
-        ::gettimeofday(&tv, &tz);
-        snprintf(buf, sizeof(buf), "%s%02d%02d",
-                tz.tz_minuteswest < 0 ? "+" : "-",
-                std::abs(tz.tz_minuteswest) / 60, std::abs(tz.tz_minuteswest) % 60);
-        std::cerr << "GET TIME ZONE" << std::endl;
-        return buf;
-    };
-    static const char* str_tz = fn_get_timezone();  // 在第一次调用时执行，c++11保证线程安全
+    void Greet()
+    { cout << "hello" << endl; }
+private:
+    ~A(){
+        cout << "destructor is called" << endl;
+    }
+};
 
-    std::cout << str_tz << std::endl;
+int main(){
+    A::Instance().Greet();
+   return 0;
 }
-
-int main(int argc, char **argv) {
-    test();
-
-    return 0;
-}
-
-/*
- * 0.331034481525421142578125
- * 0.331034480000000019828121367027051746845245361328125
- */

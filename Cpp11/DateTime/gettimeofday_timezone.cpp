@@ -9,8 +9,8 @@ void test() {
         struct timeval tv;
         struct timezone tz;
         ::gettimeofday(&tv, &tz);
-        snprintf(buf, sizeof(buf), "%s%02d%02d",
-                tz.tz_minuteswest < 0 ? "+" : "-",
+        snprintf(buf, sizeof(buf), "%c%02d%02d",
+                tz.tz_minuteswest < 0 ? '+' : '-',
                 std::abs(tz.tz_minuteswest) / 60, std::abs(tz.tz_minuteswest) % 60);
         std::cerr << "GET TIME ZONE" << std::endl;
         return buf;
