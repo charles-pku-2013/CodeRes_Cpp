@@ -16,6 +16,11 @@ void print_reverse(int *a, size_t n)
         cout << a[n] << " ";
     cout << endl;
     cout << n << endl; // Here n is npos
+
+    // OK but size_t WRONG
+    // for (int64_t j = n-1; j >= 0; --j)
+        // cout << a[j] << " ";
+    // cout << endl;
 }
 
 

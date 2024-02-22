@@ -1,5 +1,7 @@
 #include <iostream>
 #include <thread>
+#include <string>
+#include <memory>
 
 class A {
  public:
@@ -8,8 +10,10 @@ class A {
 
   void test(const std::string &name) {
     thread_local int count = 0;  // like static
+    thread_local std::string info;  // OK
     ++count;
-    std::cout << name << ": " <<  count << std::endl;
+    info.append(".");
+    std::cout << name << ": " <<  count << info << std::endl;
   }
 };
 

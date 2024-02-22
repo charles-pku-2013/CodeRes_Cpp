@@ -5,7 +5,6 @@
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <glog/logging.h>
 
 
 #define THIS_THREAD_ID        std::this_thread::get_id()
