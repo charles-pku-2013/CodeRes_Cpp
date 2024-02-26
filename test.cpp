@@ -1,31 +1,12 @@
 #include <iostream>
-#include <thread>
-
-class A {
- public:
-  A() {}
-  ~A() {}
-
-  void test(const std::string &name) {
-    thread_local int count = 0;  // like static
-    ++count;
-    std::cout << name << ": " <<  count << std::endl;
-  }
-};
-
-void func(const std::string &name) {
-  A a1;
-  a1.test(name);
-  a1.test(name);
-  A a2;
-  a2.test(name);
-  a2.test(name);
-}
+#include <string>
+// #include <string_view>
 
 int main(int argc, char* argv[]) {
-  std::thread t1(func, "t1");
-  t1.join();
-  std::thread t2(func, "t2");
-  t2.join();
-  return 0;
+    // std::string s = "9d1b5f49b32940f19c56d648b09a433f";
+    std::string s = "8b09a433f";
+    long n = std::stol(s.substr(0, 500), nullptr, 16);
+    std::cout << n << std::endl;
+
+    return 0;
 }
