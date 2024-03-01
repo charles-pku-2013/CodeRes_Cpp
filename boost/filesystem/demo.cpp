@@ -78,6 +78,23 @@ void test1(const char *filepath)
     // cout << pp << endl;
 }
 
+void NOTE() {
+    fs::path p("/mnt/xxxxxx_data/xxxxxx_component/pppp_xxxxxx/v20220602092308/data/20240223031410");
+    cout << p.size() << endl;       // 81  NOTE n chars
+    cout << p.string().size() << endl;   // 81
+    cout << std::distance(p.begin(), p.end()) << endl;   // 8 用这种方法获取 n_components
+    cout << p.rbegin()->string() << endl;
+    *(real_path.rbegin()) = fs::path("123456");  // WRONG!!! path iterator 返回都是const path& begin() end() 都是const
+
+    // NOTE 用这种方法得到path components, leading "/" is a single component
+    std::size_t n_path_parts = std::distance(real_path.begin(), real_path.end());
+    std::vector<std::string> path_parts(n_path_parts);
+    std::transform(real_path.begin(), real_path.end(), path_parts.begin(),
+        [](const fs::path& p)->std::string { return p.string(); }
+    );
+    std::cout << absl::StrJoin(path_parts, ",") << endl;
+}
+
 /*
  * 若是目录，判断是否是空目录
  * 若是文件，返回内容是否是空（0字节）
