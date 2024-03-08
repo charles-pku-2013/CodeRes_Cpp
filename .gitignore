@@ -16,6 +16,7 @@
 !*.rsp
 !*.proto
 !*.md
+!*.py
 !.gitignore
 !Makefile
 !CmakeLists.txt

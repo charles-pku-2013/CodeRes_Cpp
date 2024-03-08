@@ -61,6 +61,7 @@ void test1(const char *filepath)
     cout << "relative_path: " << p1.relative_path() << endl;
     cout << "is_directory: " << fs::is_directory(p1) << endl;
     cout << "is_regular_file: " << fs::is_regular_file(p1) << endl;
+    // NOTE is_symlink 路径末尾不能是'/'
     cout << "is_symlink: " << fs::is_symlink(p1) << endl;  // regular file 也可以同时是 sym_link
     cout << "exists: " << fs::exists(p1) << endl;
     cout << "root_path:  " << p1.root_path() << endl;
