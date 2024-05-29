@@ -6,7 +6,6 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/strip.h"
-#include "absl/time/time.h"
 #include "absl/time/clock.h"
 
 using namespace std;
@@ -103,9 +102,10 @@ void test_time() {
     absl::TimeZone tz = absl::LocalTimeZone();
     cout << tz.name() << endl;         // Asia/Shanghai
     absl::Time now = absl::Now();
-    cout << now << endl;   // or absl::FormatTime(now)   2024-05-28T21:14:28.285157005+08:00
+    cout << now << endl;   // or absl::FormatTime(now)   2024-05-28T21:14:28.285157005+08:00 默认纳秒级
     cout << tz.At(now).zone_abbr << endl;   // CST
     cout << absl::FormatTime("%Y-%m-%dT%H:%M:%E3S%z", now, absl::LocalTimeZone()) << endl;  // 2024-05-28T21:36:28.901+0800
+                                                                                            // E3S  毫秒级时间戳 timestamp
                                                                                             // %Ez +08:00
 }
 
