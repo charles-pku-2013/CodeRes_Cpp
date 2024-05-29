@@ -6,6 +6,8 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/strip.h"
+#include "absl/time/time.h"
+#include "absl/time/clock.h"
 
 using namespace std;
 
@@ -96,9 +98,21 @@ void test_Strip_Trim() {
     cout << test2 << endl;
 }
 
+void test_time() {
+    // print time with timezone offset and tz name like CST
+    absl::TimeZone tz = absl::LocalTimeZone();
+    cout << tz.name() << endl;         // Asia/Shanghai
+    absl::Time now = absl::Now();
+    cout << now << endl;   // or absl::FormatTime(now)   2024-05-28T21:14:28.285157005+08:00
+    cout << tz.At(now).zone_abbr << endl;   // CST
+    cout << absl::FormatTime("%Y-%m-%dT%H:%M:%E3S%z", now, absl::LocalTimeZone()) << endl;  // 2024-05-28T21:36:28.901+0800
+                                                                                            // %Ez +08:00
+}
+
 int main() {
+    test_time();
     // test_StrAppend();
-    test_StrJoin_map();
+    // test_StrJoin_map();
     // test_StrSplit_1();
     // test_StrSplit_2();
     // test_Strip_Trim();

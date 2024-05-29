@@ -58,6 +58,14 @@ void demo1() {
 }
 
 int main() {
+    std::time_t result = std::time(nullptr);
+    std::cout << std::ctime(&result) << std::endl;
+    // const std::chrono::zoned_time cur_time{ std::chrono::current_zone(),
+                                            // std::chrono::system_clock::now() };
+    // std::cout << cur_time << '\n';
+    std::cout << std::chrono::system_clock::now() << std::endl;
+    return 0;
+
     demo1();
     cout << std::chrono::system_clock::now() << endl;  // Fri Jun  4 17:43:02 2021
     gettimeofday_test();  // 20210604 17:43:02_156937
