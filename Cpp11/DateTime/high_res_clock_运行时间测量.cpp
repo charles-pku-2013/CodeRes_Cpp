@@ -36,8 +36,9 @@ void test1()
 static
 void test2()
 {
-    // std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
-    auto start = std::chrono::high_resolution_clock::now();
+    // high_resolution_clock may be an alias of std::chrono::system_clock or std::chrono::steady_clock, or a third, independent clock.
+    std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
+    cout << typeid(start).name() << endl;  // NSt3__16chrono10time_pointINS0_12steady_clockENS0_8durationIxNS_5ratioILl1ELl1000000000EEEEEEE
 
     int sum = 0;
     for (int i = 1; i <= 10000000; ++i)

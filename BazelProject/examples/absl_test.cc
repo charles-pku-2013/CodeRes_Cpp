@@ -21,8 +21,9 @@ void test_StrAppend() {
 void test_StrJoin_map() {
     std::map<std::string, double> mm = {{"abc",3.14}, {"def",7.62}, {"canon",5.56}};
 
-    // NOTE 如果decltype对象是指针类型，应该这样写:
-    // const std::remove_reference<decltype(*mm)>::type::value_type
+    // NOTE 如果decltype对象是指针类型或引用类型，应该这样写:
+    // const std::remove_reference<decltype(*mm)>::type::value_type& val
+    // 如果容器内容是std::reference_wrapper, 应该调用get()获取原始对象
     // fully customize how to print value
     std::string str_map_value = absl::StrJoin(mm, " ",
                 [](std::string *out, const decltype(mm)::value_type &val){

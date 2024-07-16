@@ -34,9 +34,9 @@ int main()
     snprintf(buf, 17, "%016ld", microseconds.count());
     cout << buf << endl;
 
-    cout << typeid(now).name() << endl;
-    cout << typeid(d).name() << endl;
-    cout << typeid(seconds).name() << endl;
+    cout << typeid(now).name() << endl;  // NSt3__16chrono10time_pointINS0_12system_clockENS0_8durationIxNS_5ratioILl1ELl1000000EEEEEEE
+    cout << typeid(d).name() << endl;  // NSt3__16chrono8durationIxNS_5ratioILl1ELl1000000EEEEE
+    cout << typeid(seconds).name() << endl;  // NSt3__16chrono8durationIxNS_5ratioILl1ELl1EEEEE
 
     return 0;
 }

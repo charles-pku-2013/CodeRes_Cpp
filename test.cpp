@@ -1,18 +1,36 @@
 #include <iostream>
-#include <vector>
-#include <map>
-#include <type_traits>
+#include <memory>
+#include <thread>
+
+using namespace std;
+
+struct Foo {
+    Foo()
+    { cout << "Foo construct" << endl; }
+    ~Foo()
+    { cout << "Foo destruct" << endl; }
+    void greet() const
+    { cout << "Hello" << endl; }
+};
+
+void test() {
+    [] {
+        cout << "ANNO" << endl;
+    }();
+}
 
 int main() {
-    using namespace std;
+    test();
 
-    std::cout << std::boolalpha;
-    std::cout << is_trivial_v<std::vector<double>> << '\n';
-    std::cout << is_trivial_v<std::map<int, double>> << '\n';
-    std::cout << is_trivial_v<std::string> << '\n';
-    std::cout << is_trivial_v<double> << '\n';
-    struct A { int a; };
-    std::cout << is_trivial_v<A> << '\n';
-
+    cout << "main terminates" << endl;
     return 0;
 }
+
+/*
+Test begin
+Foo construct
+Hello
+Test end
+main terminates
+Foo destruct
+*/
