@@ -19,6 +19,8 @@
 #include <set>
 #include <boost/detail/lightweight_test.hpp>
 
+#define RANDOM_STR    boost::uuids::to_string(boost::uuids::random_generator()())
+
 typedef boost::uuids::uuid  uuid_t;
 
 inline

@@ -9,9 +9,20 @@
 #include <sstream>
 #include <chrono>
 #include <typeinfo>
+#include "absl/time/clock.h"
 
 
 using namespace std;
+
+// absl time format
+// "@com_google_absl//absl/time:time",
+void absl_time_format() {
+    static absl::TimeZone tz = absl::LocalTimeZone();
+    absl::Time now = absl::Now();
+    std::cout << absl::StrFormat("[server started at %s (%s)]",
+                            absl::FormatTime(now), tz.At(now).zone_abbr) << std::endl;
+    std::cout << absl::FormatTime("%Y-%m-%dT%H:%M:%E3S%z", absl::Now(), tz) << std::endl;
+}
 
 
 int main()
