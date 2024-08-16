@@ -80,6 +80,7 @@ class BThreadTest {
             }
             bthread_t tid = finished_threads_.front();
             finished_threads_.pop_front();
+            lck.unlock();  // NOTE!!! must unlock, for join is long time op
             bthread_join(tid, nullptr);
             LOG(INFO) << "Thread " << tid << " done.";
         }
