@@ -27,3 +27,4 @@
 !*.bzl
 !*.conf
 !*.gflags
+!*.zip
