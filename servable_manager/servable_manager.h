@@ -14,7 +14,7 @@
 #include <boost/thread.hpp>
 #include <iostream>
 
-namespace common {
+namespace demo {
 
 class ServableManager : public boost::shared_lockable_adapter<boost::shared_mutex>,
                         public TimerTask {
@@ -212,5 +212,5 @@ class ServableManager : public boost::shared_lockable_adapter<boost::shared_mute
     static bool _REGISTER_MACRO_HELPER(_register_servable_checker_dummy, __LINE__) = \
         common::ServableManager::Instance().RegisterChecker(class_name, checker);
 
-}  // namespace common
+}  // namespace demo
 

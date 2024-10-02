@@ -7,7 +7,7 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/str_format.h"
 
-namespace common {
+namespace demo {
 
 struct ServableId {
     ServableId() = default;
@@ -89,5 +89,5 @@ class ServableHandle : public Servable {
     std::shared_ptr<T> obj_;
 };
 
-}  // namespace common
+}  // namespace demo
 

@@ -9,7 +9,7 @@
 #include <fstream>
 #include <glog/logging.h>
 
-namespace common {
+namespace demo {
 
 class ConfigReader final {
  public:
@@ -96,4 +96,4 @@ bool ConfigReader::load_config(const std::string &fname) {
     return true;
 }
 
-}  // namespace common
+}  // namespace demo

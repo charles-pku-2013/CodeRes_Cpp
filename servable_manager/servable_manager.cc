@@ -9,7 +9,7 @@
 #include <boost/chrono.hpp>
 #include <glog/logging.h>
 
-namespace common {
+namespace demo {
 
 namespace fs = boost::filesystem;
 
@@ -450,5 +450,5 @@ std::string ServableManager::DebugString() const {
             str_creators, str_servables, str_monitor_paths, num_load_thread_, str_groups);
 }
 
-}  // namespace common
+}  // namespace demo
 
