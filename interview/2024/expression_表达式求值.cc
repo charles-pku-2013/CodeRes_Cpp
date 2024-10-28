@@ -14,9 +14,7 @@ int solve(const std::string& expr) {
         throw std::runtime_error("Invalid expression!");
     }
 
-    std::deque<int> oprand;
-    std::deque<char> optr;
-    std::unordered_map<char, int> op_priority = {
+    static std::unordered_map<char, int> op_priority = {
         {'+', 20},
         {'-', 20},
         {'*', 50},
@@ -24,6 +22,9 @@ int solve(const std::string& expr) {
         {'(', 10},  // 左括号优先级最小，但无条件入栈
         {')', 10},
     };
+
+    std::deque<int> oprand;
+    std::deque<char> optr;
 
     auto DEBUG = [&] {
         cout << "oprand: ";
