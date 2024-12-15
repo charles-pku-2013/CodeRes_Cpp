@@ -54,7 +54,7 @@ int solve(const std::string& expr) {
             { continue; }
             if (oprand.size() < 2)
             { return; }
-            int op2 = oprand.back();
+            int op2 = oprand.back();  // NOTE!!!
             oprand.pop_back();
             int op1 = oprand.back();
             oprand.pop_back();
