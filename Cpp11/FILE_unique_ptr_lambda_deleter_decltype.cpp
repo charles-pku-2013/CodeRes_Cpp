@@ -9,22 +9,22 @@ using namespace std;
 // using DelType = int( FILE* ); 这样是不可以的
 // invalid initialization of reference of type ‘int (&)(_IO_FILE*)’ from expression of type ‘int (*)(_IO_FILE*)’
 int main()
-{	
-	auto del = []( FILE *fp ) {
-					cout << "customized FILE closer" << endl;
-					fclose(fp);
-				};
-				
-	unique_ptr< FILE, decltype(del)> pFILE( 
-					fopen("/tmp/test.txt", "w"),
-					del
-				);
-				
-	fprintf( pFILE.get(), "This is a test." );
-	
-	getchar();
-	
-	return 0;
+{   
+    auto del = []( FILE *fp ) {
+                    cout << "customized FILE closer" << endl;
+                    fclose(fp);
+                };
+                
+    unique_ptr< FILE, decltype(del)> pFILE( 
+                    fopen("/tmp/test.txt", "w"),
+                    del
+                );
+                
+    fprintf( pFILE.get(), "This is a test." );
+    
+    getchar();
+    
+    return 0;
 }
 
 
