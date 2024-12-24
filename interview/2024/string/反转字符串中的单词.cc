@@ -6,6 +6,7 @@ public:
     void reverseWords(vector<char>& s) {
         string str(s.begin(), s.end());
         vector<string> result;
+        // NOTE 单词分割
         auto w_beg = str.find_first_not_of(" ");
         while (w_beg != string::npos) {
             auto w_end = str.find_first_of(" ", w_beg);

@@ -1,36 +1,29 @@
 class Solution {
 public:
-    bool isMatch(string s, string p) {
-        int m = s.size();
-        int n = p.size();
+    int subarraySum(vector<int>& nums, int k) {
+        // std::sort(nums.begin(), nums.end());
+        // auto it = std::lower_bound(nums.begin(), nums.end(), k);
 
-        auto matches = [&](int i, int j) {
-            if (i == 0) {
-                return false;
+        auto sum_range = [&](int i, int j)->int {
+            int sum = 0;
+            for (int q = i; q < j; ++q) {
+                sum += nums[q];
             }
-            if (p[j - 1] == '.') {
-                return true;
-            }
-            return s[i - 1] == p[j - 1];
+            return sum;
         };
 
-        vector<vector<int>> f(m + 1, vector<int>(n + 1));
-        f[0][0] = true;
-        for (int i = 0; i <= m; ++i) {
-            for (int j = 1; j <= n; ++j) {
-                if (p[j - 1] == '*') {
-                    f[i][j] |= f[i][j - 2];
-                    if (matches(i, j - 1)) {
-                        f[i][j] |= f[i - 1][j];
-                    }
+        int count = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i + 1; j < nums.size(); ++j) {
+                int sum = sum_range(i, j);
+                if (sum == k) {
+                    cout << i << " " << j << endl;
+                    ++count;
+                    // break;
                 }
-                else {
-                    if (matches(i, j)) {
-                        f[i][j] |= f[i - 1][j - 1];
-                    }
-                }
-            }
-        }
-        return f[m][n];
+            } // for j
+        } // for i
+
+        return count;
     }
 };
