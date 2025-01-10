@@ -1,0 +1,14 @@
+// protoc --cpp_out=. --proto_path=. restful.proto
+
+syntax="proto2";
+package ai_matrix;
+
+option cc_generic_services = true;
+
+message HttpRequest {};
+message HttpResponse {};
+
+service RestfulService {
+    rpc HandleRequest(HttpRequest) returns (HttpResponse);
+};
+
