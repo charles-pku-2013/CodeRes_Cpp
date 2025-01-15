@@ -15,6 +15,9 @@ int main()
     cout << boost::format("Student %s whose age is %d whose score is %0.2f")
             % name.c_str() % age % score << endl;
 
+    std::string s = boost::str(boost::format("Student %s whose age is %d whose score is %0.2f")
+            % name.c_str() % age % score);
+
     cout << boost::format("x = %0.lf") % x << endl;
     // cout 不会输出3.0
     cout << "x = " << x << endl;

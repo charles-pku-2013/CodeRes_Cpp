@@ -3,6 +3,11 @@
 
 namespace ai_matrix {
 
+RestfulServiceImpl& RestfulServiceImpl::Instance() {
+    static RestfulServiceImpl inst;
+    return inst;
+}
+
 void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base,
                                        const HttpRequest*,
                                        HttpResponse*,
@@ -60,10 +65,20 @@ void RestfulServiceImpl::RegisterHandler(const std::string& name, Handler handle
     handlers_[name] = std::move(handler);
 }
 
+bool RestfulServiceImpl::Build(brpc::Server* server) {
+    if (server->AddService(this,
+                          brpc::SERVER_DOESNT_OWN_SERVICE,
+                          "/api/* => HandleRequest") != 0) {
+        return false;
+    }
+    return true;
+}
+
 std::string RestfulServiceImpl::DebugString() const {
     return "RestfulServiceImpl"; // TODO
 }
 
+#if 0
 bool RestfulServer::Start(int port) {
     if (server_.AddService(&impl_,
                           brpc::SERVER_DOESNT_OWN_SERVICE,
@@ -81,5 +96,6 @@ void RestfulServer::Stop() {
     server_.Stop(-1);
     server_.Join();
 }
+#endif
 
 }  // namespace ai_matrix

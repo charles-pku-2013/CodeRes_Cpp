@@ -16,6 +16,9 @@ public:
     using HandlerTable = std::unordered_map<std::string, Handler>;
 
 public:
+    // singleton
+    static RestfulServiceImpl& Instance();
+
     void HandleRequest(google::protobuf::RpcController* cntl_base,
                        const HttpRequest*,
                        HttpResponse*,
@@ -23,12 +26,19 @@ public:
 
     void RegisterHandler(const std::string& name, Handler handler);
 
+    bool Build(brpc::Server* server);
+
     std::string DebugString() const;
 
 private:
+    RestfulServiceImpl() = default;
+    RestfulServiceImpl(const RestfulServiceImpl&) = delete;
+    RestfulServiceImpl& operator=(const RestfulServiceImpl&) = delete;
+
     HandlerTable handlers_;
 };
 
+#if 0
 class RestfulServer final {
 public:
     explicit RestfulServer(brpc::ServerOptions options)
@@ -49,6 +59,7 @@ private:
     RestfulServiceImpl impl_;
     // std::unique_ptr<RestfulServiceImpl> impl_;
 };
+#endif
 
 }  // namespace ai_matrix
 
