@@ -9,6 +9,24 @@
 #include <string>
 #include <cassert>
 
+#if 0
+// NOTE
+// 新版本 write
+Json::Value jvResult;
+// ...
+Json::StreamWriterBuilder jswBuilder;
+std::string out = Json::writeString(jswBuilder, jvResult);
+// read
+Json::CharReaderBuilder readerBuilder;
+std::shared_ptr<Json::CharReader> reader(readerBuilder.newCharReader());
+Json::Value jvFtpData;
+JSONCPP_STRING errs;
+if (!reader->parse(strLine.data(), strLine.data() + strLine.size(), &jvFtpData, &errs)) {
+    LogError << "json parse fail content:" << strLine;
+}
+#endif
+
+
 using namespace std;
 
 // #if 0
