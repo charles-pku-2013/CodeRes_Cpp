@@ -4,6 +4,26 @@
 #include <cstdio>
 #include <boost/format.hpp>
 
+std::unique_ptr<void, std::function<void(void*)>> _cleanup((void*)1, [&](void*){
+    response.set_src_id(request.src_id());
+    response.set_message_id(request.message_id());
+    response.set_rev_time(gen_timestamp("%Y%m%d%H%M%S"));
+    if (out) {
+        JsonPrintOptions opts;
+        opts.add_whitespace = true;
+        opts.always_print_primitive_fields = true;
+        // NOTE! 析构函数不可以抛出异常
+        try {
+            auto status = MessageToJsonString(response, out, opts);
+            if (!status.ok()) {
+                *out = boost::str(boost::format("Failed to build response json: %s") % status.ToString());
+            }
+        } catch (const std::exception& ex) {
+            *out = boost::str(boost::format("Failed to build response json: %s") % ex.what());
+        }
+    }
+});
+
 #define ON_FINISH(name, deleter) \
     std::unique_ptr<void, std::function<void(void*)> > \
         name((void*)-1, [&](void*) deleter )
