@@ -42,6 +42,25 @@ struct MoveDemo2 {
     MoveDemo2()
     { cout << "MoveDemo2 default constructor" << endl; }
 
+    /*
+     * MoveDemo1 move constructor   // arg
+     * MoveDemo1 move constructor   // m_MoveDemo1
+     */
+    // MoveDemo2(MoveDemo1 arg) : m_MoveDemo1(std::move(arg))
+    // { cout << "MoveDemo2 arg constructor" << endl; }
+
+    /*
+     * MoveDemo1 move constructor  // only one
+     */
+    // MoveDemo2(MoveDemo1&& arg) : m_MoveDemo1(std::move(arg))
+    // { cout << "MoveDemo2 arg constructor" << endl; }
+
+    /*
+     * MoveDemo1 copy constructor
+     */
+    MoveDemo2(const MoveDemo1& arg) : m_MoveDemo1(arg)
+    { cout << "MoveDemo2 arg constructor" << endl; }
+
 /*
  *     MoveDemo2( const MoveDemo2 &rhs )
  *     { cout << "MoveDemo2 copy constructor" << endl; }
@@ -74,13 +93,16 @@ struct MoveDemo2 {
 
 int main()
 {
-    // MoveDemo1 val = std::move(func());
-    MoveDemo1 val = func();
-    cout << val.val << endl;
+    // MoveDemo1 val = std::move(func());      // MoveDemo1 default constructor
+                                            // MoveDemo1 move constructor
+    MoveDemo1 val = func();  // MoveDemo1 default constructor  应该用这个
+    // cout << val.val << endl;
+    cin.get();
+    MoveDemo2 md2(std::move(val));
 
     // MoveDemo2 md2;
 
-    // MoveDemo1 md1 = md2.getMember();
+    // MoveDemo1 md1 = md2.getMember();  // MoveDemo1 copy constructor
 
     //!! 由于原函数是返回值类型，这里先生成一个临时对象，然后再move
     /*
