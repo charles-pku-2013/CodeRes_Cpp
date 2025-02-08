@@ -66,7 +66,14 @@ bool ValidatePort(const char* flagname, gflags::int32 value)
     return false;
 }
 // 定义port_dummy为了保证RegisterFlagValidator先于main函数执行
-const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &ValidatePort);
+// const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &ValidatePort);
+bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, [](const char* flagname, gflags::int32 value)->bool {
+    cout << "ArgValidator() flagname = " << flagname << " value = " << value << endl;
+    // if (value > 1024 && value < 32768)   // value is ok
+        // return true;
+    printf("Invalid value for --%s: %d\n", flagname, (int)value);
+    return false;
+});
 } // namespace
 
 
