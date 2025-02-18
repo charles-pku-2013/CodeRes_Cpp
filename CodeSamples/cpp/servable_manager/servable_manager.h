@@ -66,7 +66,7 @@ class ServableManager : public boost::shared_lockable_adapter<boost::shared_mute
     }
 
     template<typename T>
-    std::shared_ptr<T> GetServable(const std::string &name, int64_t version = 0) {
+    std::weak_ptr<T> GetServable(const std::string &name, int64_t version = 0) {
         boost::shared_lock<ServableManager> lck(*this);
         auto it1 = servables_.find(name);
         if (it1 == servables_.end()) { return nullptr; }
