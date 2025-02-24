@@ -9,6 +9,8 @@
 
 namespace demo {
 
+    /modelname/version
+
 struct ServableId {
     ServableId() = default;
     ServableId(const std::string _name, int64_t _version)

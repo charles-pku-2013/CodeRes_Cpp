@@ -102,6 +102,7 @@ CheckDemoDict(const std::string& path) {
  * 格式: REGISTER_SERVABLE_CREATOR(class_name, type, creator_function)
  * 其中class_name要与meta文件中的class_name一致
  */
+class_name = DemoDict
 REGISTER_SERVABLE_CREATOR("DemoDict", DemoDict, CreateDemoDict)
 // REGISTER_SERVABLE_CHECKER("DemoDict", CheckDemoDict)
 
