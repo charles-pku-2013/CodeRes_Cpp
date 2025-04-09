@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include <type_traits>
 
 using namespace std;
@@ -69,6 +70,7 @@ int main() {
 
     std::vector<int> arr{1,2,3};
     cout << has_size<decltype(arr), std::size_t(void)>::value << endl;
+    cout << has_size<std::stringstream, std::size_t(void)>::value << endl;
     cout << has_size<Y, std::size_t(void)>::value << endl;
 
     if (has_size<decltype(arr), std::size_t(void)>::value) {
