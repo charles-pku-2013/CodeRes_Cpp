@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 using namespace std;
 
@@ -8,49 +8,53 @@ using namespace std;
 // for a meaningful error message
 // if it ever gets instantiated.
 // We could leave it undefined if we didn't care.
-template <typename, typename T> struct has_serialize {
+template <typename, typename T>
+struct has_serialize {
     static_assert(std::integral_constant<T, false>::value,
-            "Second template parameter needs to be of function type.");
+                  "Second template parameter needs to be of function type.");
 };
 
 // specialization that does the checking
 template <typename C, typename Ret, typename... Args>
 struct has_serialize<C, Ret(Args...)> {
-private:
+ private:
     template <typename T>
-        static constexpr auto check(T *) -> typename std::is_same<
-        decltype(std::declval<T>().serialize(std::declval<Args>()...)),
-        Ret      // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        >::type; // attempt to call it and see if the return type is correct
+    static constexpr auto check(T *) ->
+        typename std::is_same<decltype(std::declval<T>().serialize(std::declval<Args>()...)),
+                              Ret       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              >::type;  // attempt to call it and see if the return type is correct
 
-    template <typename> static constexpr std::false_type check(...);
+    template <typename>
+    static constexpr std::false_type check(...);
 
     typedef decltype(check<C>(0)) type;
 
-public:
+ public:
     static constexpr bool value = type::value;
 };
 
-template <typename, typename T> struct has_size {
+template <typename, typename T>
+struct has_size {
     static_assert(std::integral_constant<T, false>::value,
-            "Second template parameter needs to be of function type.");
+                  "Second template parameter needs to be of function type.");
 };
 
 // specialization that does the checking
 template <typename C, typename Ret, typename... Args>
 struct has_size<C, Ret(Args...)> {
-private:
+ private:
     template <typename T>
-        static constexpr auto check(T *) -> typename std::is_same<
-        decltype(std::declval<T>().size(std::declval<Args>()...)),
-        Ret      // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        >::type; // attempt to call it and see if the return type is correct
+    static constexpr auto check(T *) ->
+        typename std::is_same<decltype(std::declval<T>().size(std::declval<Args>()...)),
+                              Ret       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                              >::type;  // attempt to call it and see if the return type is correct
 
-    template <typename> static constexpr std::false_type check(...);
+    template <typename>
+    static constexpr std::false_type check(...);
 
     typedef decltype(check<C>(0)) type;
 
-public:
+ public:
     static constexpr bool value = type::value;
 };
 
@@ -60,14 +64,14 @@ struct X {
 };
 
 struct Y : X {
-    std::string serialize() const; // const doesn't make diff
+    std::string serialize() const;  // const doesn't make diff
 };
 
 int main() {
     // std::cout << has_serialize<Y, int(const std::string &)>::value << std::endl; // will print 1
     // std::cout << has_serialize<Y, std::string(void)>::value << std::endl;
 
-    std::vector<int> arr{1,2,3};
+    std::vector<int> arr{1, 2, 3};
     cout << has_size<decltype(arr), std::size_t(void)>::value << endl;
     cout << has_size<Y, std::size_t(void)>::value << endl;
 

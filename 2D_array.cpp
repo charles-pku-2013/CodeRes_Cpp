@@ -1,81 +1,54 @@
-#include <iostream>
-#include <cstring>
+#include <algorithm>
 #include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <iterator>
 #include <list>
 #include <vector>
-#include <iterator>
-#include <algorithm>
-#include <ctime>
 
 using namespace std;
 
-template<typename Iter>
-void PrintContainer(std::ostream &os, Iter beg, Iter end)
-{
+template <typename Iter>
+void PrintContainer(std::ostream &os, Iter beg, Iter end) {
     typedef typename Iter::value_type Type;
     std::copy(beg, end, std::ostream_iterator<Type>(os, " "));
     os << std::endl;
 }
 
-template < typename T >
-void PrintContainer( const T &c )
-{
+template <typename T>
+void PrintContainer(const T &c) {
     typedef typename T::value_type Type;
-    copy( c.begin(), c.end(), ostream_iterator<Type>(cout, " ") );
+    copy(c.begin(), c.end(), ostream_iterator<Type>(cout, " "));
     cout << endl;
 }
 
+typedef vector<int>      IntArray;
+typedef vector<IntArray> IntMatrix;
 
-typedef vector<int>     IntArray;
-typedef vector<IntArray>    IntMatrix;
-
-template< typename T >
-void Print2DContainer( const T &c )
-{
-    typedef typename T::value_type          RowType;       //!!
-    typedef typename RowType::value_type    ElemType;
-    for( typename T::const_iterator it1 = c.begin(); it1 != c.end(); ++it1 ) {
+template <typename T>
+void Print2DContainer(const T &c) {
+    typedef typename T::value_type       RowType;  //!!
+    typedef typename RowType::value_type ElemType;
+    for (typename T::const_iterator it1 = c.begin(); it1 != c.end(); ++it1) {
         const RowType &row = *it1;
-        copy( row.begin(), row.end(), ostream_iterator<ElemType>(cout, " ") );
+        copy(row.begin(), row.end(), ostream_iterator<ElemType>(cout, " "));
         cout << endl;
-    } // for
+    }  // for
 }
 
-
-int main()
-{
+int main() {
     const int n = 5;
 
     IntMatrix m(n, IntArray(n, 0));
     Print2DContainer(m);
 
-    srand( time(0) );
-    for( int i = 0; i < n; ++i ) {
-        for( int j = 0; j < n; ++j )
-            m[i][j] = rand()%10;
-    } // for
+    srand(time(0));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) m[i][j] = rand() % 10;
+    }  // for
 
     Print2DContainer(m);
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
