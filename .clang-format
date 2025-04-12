@@ -3,7 +3,10 @@ TabWidth:        4
 IndentWidth:     4
 UseTab:          Never
 ColumnLimit:     100
+
+Languange:       Cpp
 Standard:        Cpp11
+PointerAlignment: Left
 AlignConsecutiveDeclarations: true
 # public private
 AccessModifierOffset: -3
