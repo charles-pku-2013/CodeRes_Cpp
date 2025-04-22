@@ -1,3 +1,4 @@
+#pragma once
 #include <memory>
 
 class Widget {
@@ -11,7 +12,12 @@ class Widget {
     Widget(Widget&& rhs);
     Widget& operator=(Widget&& rhs);
 
- private:
+    void greet(const std::string& name, int n);
+
+ protected:
     struct Impl;
     std::unique_ptr<Impl> pImpl_;
+
+    template<typename... Args>
+    void _greet(Args&&... args);
 };

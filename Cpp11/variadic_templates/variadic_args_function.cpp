@@ -10,7 +10,7 @@ template <typename Func, typename... Args>
 void call_func( Func &&f, Args&&... args )
 {
     // cout << "In call func()" << endl;
-    f(args...);
+    f(std::forward<Args>(args)...);
 }
 
 int add( int a, int b )
@@ -35,7 +35,7 @@ void print_string( const std::string &s )
 template <typename... Args>
 void test(Args&&... args)
 {
-    auto ret = add(args...);
+    auto ret = add(std::forward<Args>(args)...);
     cout << ret << endl;
 }
 
