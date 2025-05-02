@@ -9,7 +9,7 @@ void print_range(Iter beg, Iter end) {
     std::copy(beg, end, std::ostream_iterator<T>(cout, " "));
     cout << endl;
 }
- 
+
 template<class BidirIt>
 void my_reverse(BidirIt first, BidirIt last)
 {
@@ -21,7 +21,7 @@ void my_reverse(BidirIt first, BidirIt last)
         *last = tmp;
     }
 }
- 
+
 int main()
 {
     std::vector<int> v{1, 2, 3, 4, 5};
@@ -29,19 +29,19 @@ int main()
     for (int n : v)
         std::cout << n << ' ';
     std::cout << '\n';
- 
+
     std::list<int> l{1, 2, 3, 4, 5};
     my_reverse(l.begin(), l.end());
     for (int n : l)
         std::cout << n << ' ';
     std::cout << '\n';
- 
+
     int a[]{1, 2, 3, 4, 5};
     my_reverse(a, a + std::size(a));
     for (int n : a)
         std::cout << n << ' ';
     std::cout << '\n';
- 
+
 //  std::istreambuf_iterator<char> i1(std::cin), i2;
 //  my_reverse(i1, i2); // compilation error: i1, i2 are input iterators
 }
