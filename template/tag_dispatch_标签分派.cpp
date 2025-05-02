@@ -23,7 +23,7 @@ void logAndAddImpl(int idx, std::true_type) {
 template<typename T>
 void logAndAdd(T&& name) {
     logAndAddImpl(
-        std::forward<T>(name), 
+        std::forward<T>(name),
         std::is_integral<typename std::remove_reference<T>::type>()
     );
 }
