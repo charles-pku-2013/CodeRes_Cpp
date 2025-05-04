@@ -1,3 +1,8 @@
+/*
+ * https://stackoverflow.com/questions/11983875/what-does-the-thread-local-mean-in-c11
+ * Examples:
+ * errno, strtok
+ */
 #include <iostream>
 #include <thread>
 #include <string>

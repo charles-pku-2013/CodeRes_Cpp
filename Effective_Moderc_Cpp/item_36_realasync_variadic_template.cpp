@@ -15,7 +15,7 @@ inline
 std::future<typename std::result_of<F(Ts...)>::type>    // 返回类型
 realasync(F&& f, Ts&&... params)
 {
-    return std::async(std::launch::async, 
+    return std::async(std::launch::async,
                       std::forward<F>(f),
                       std::forward<Ts>(params)...);
 }
@@ -26,7 +26,6 @@ int add( int a, int b )
     cout << "Running add in thread: " << THIS_THREAD_ID << endl;
     return a + b;
 }
-
 
 int main()
 {
