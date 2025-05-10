@@ -94,7 +94,7 @@ std::string ServableManager::_ServableTable2String(const ServableTable &in) {
 }
 
 std::string ServableManager::_ServableStateTable2String(const ServableStateTable &in) {
-    auto state_2_string = [](ServableState state) {
+    auto state_2_string = [](int state) {
         switch (state) {
             case ONLINE: return "online";
             case OFFLINE: return "offline";

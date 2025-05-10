@@ -103,7 +103,7 @@ class ServableHandle : public Servable {
             : obj_(std::move(pobj)) {}
 
     T* get() const { return obj_.get(); }
-    std::shared_ptr<T> get_shared() const { return obj_; }
+    std::shared_ptr<T> GetServable() const { return obj_; }
 
     /**
      * @brief  重载指针运算符，可直接用Handle调用T的API

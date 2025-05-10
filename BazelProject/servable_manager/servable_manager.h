@@ -54,7 +54,7 @@ class ServableManager : public boost::shared_lockable_adapter<boost::shared_mute
     using ServableCheckerTable = std::unordered_map<std::string, ServableChecker>;
 
     // state during updating
-    enum class ServableState : int {
+    enum ServableState : int {
         OFFLINE,   // 扫描到但是还未加载
         ONLINE,    // 已经完成加载的或者原本存在的
         FAIL       // 加载失败的
@@ -93,12 +93,12 @@ class ServableManager : public boost::shared_lockable_adapter<boost::shared_mute
     std::weak_ptr<T> GetServable(const std::string &name, int64_t version = 0) {
         boost::shared_lock<ServableManager> lck(*this);
         auto it1 = servables_.find(name);
-        if (it1 == servables_.end()) { return nullptr; }
+        if (it1 == servables_.end()) { return std::weak_ptr<T>(); }
         auto& inner_map = it1->second.versions;
         auto it2 = (version <= 0 ? inner_map.begin() : inner_map.find(version));
-        if (it2 == inner_map.end()) { return nullptr; }
+        if (it2 == inner_map.end()) { return std::weak_ptr<T>(); }
         auto handle = dynamic_cast<ServableHandle<T>*>(it2->second.get());
-        return (handle ? handle->get_shared() : nullptr);
+        return (handle ? handle->GetServable() : std::weak_ptr<T>());
     }
 
     /**

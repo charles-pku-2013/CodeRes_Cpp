@@ -3,9 +3,12 @@ build --spawn_strategy=standalone
 build --genrule_strategy=standalone
 
 # build --define=with_glog=true
+build --copt=-std=c++17
 build --cxxopt=-std=c++17
 build --host_cxxopt=-std=c++17
 build:nativeopt --copt=-O3
+
+build --cxxopt=-Dunary_function=__unary_function
 
 # build --copt="-Wno-error"
 # build --copt="-Wno-error=sign-compare"

@@ -1,42 +1,36 @@
 #include <iostream>
-#include <string>
-#include <utility>
+#include <iterator>
+#include <algorithm>
 #include <vector>
-#include <chrono>
 
 using namespace std;
 
-void test1(int cnt) {
-    int sum = 0;
-    for (int i = 0; i < cnt; ++i) {
-        sum += i;
-    }
-}
+std::vector<int> TopRange(const std::vector<float>& v) {
+    std::vector<int> result(v.size(), 1);
+    std::vector<float> stk;
 
-void test2(int i, int j) {
-    int result = 1;
-    for (int k = 0; k < j; ++k) {
-        result *= i;
-    }
+    for (std::size_t i = 1; i < v.size(); ++i) {
+        while (!stk.empty() && stk.back() <= v[i]) {
+            stk.pop_back();
+        }
+        if (stk.empty()) {
+            result.push_back(i + 1);
+        } else {
+            result.push_back(i - stk.back());
+        }
+    } // for i
+
+    return result;
 }
 
 int main() {
-    auto timeFuncInvocation =
-        [](auto&& func, auto&&... params) {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            // NOTE!!! 函数名也需要和参数同样的处理
-            std::forward<decltype(func)>(func)(
-                std::forward<decltype(params)>(params)...
-            );
-
-            auto end = std::chrono::high_resolution_clock::now();
-            cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << endl;
-        };
-
-    timeFuncInvocation(test1, 1000000);
-    timeFuncInvocation(test2, 100, 50);
+    std::vector<float> v{13.5,13.6,13.4,13.3,13.5,13.9,13.1,20.1,20.2,20.3};
+    auto result = TopRange(v);
+    std::copy(result.begin(), result.end(), std::ostream_iterator<int>(cout, " "));
+    cout << endl;
 
     return 0;
 }
 
+// 时间复杂度O(n^2)
+// 应该有效率更高的解决方法比如动态规划
