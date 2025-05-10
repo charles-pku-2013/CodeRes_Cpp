@@ -29,10 +29,12 @@ for i in "${filelist[@]}"; do
     if (($(caculate "$width >= 2160"))); then
         filter_args+=("scale=iw/2:ih/2")
     fi
-    fps=$(mediainfo --Inform="General;%FrameRate%" "$i")
-    if (($(caculate "$fps > 40"))); then
-        filter_args+=("fps=30")
-    fi
+    # Optional downgrade fps
+    # fps=$(mediainfo --Inform="General;%FrameRate%" "$i")
+    # if (($(caculate "$fps > 40"))); then
+        # filter_args+=("fps=30")
+    # fi
+    # NOTE join list with seperator
     if [ ${#filter_args[@]} -gt 0 ]; then
         # print array with custom delimiter seperator
         vf_arg=$(IFS=','; echo "${filter_args[*]}")

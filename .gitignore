@@ -1,30 +1,40 @@
+.DS_Store
+.tags
+.vscode
+.sess.vim
+*.lock
+bazel-BazelProject
+bazel-bin
+bazel-out
+bazel-testlogs
+
 # Blacklist everything
-*
+# *
 # Whitelist all directories
-!*/
+# !*/
 # Whitelist the file you're interested in.
-!*.h
-!*.hpp
-!*.c
-!*.cc
-!*.cpp
-!*.sh
-!*.cu
-!*.cs
-!*.cin
-!*.cfg
-!*.rsp
-!*.proto
-!*.md
-!*.py
-!.gitignore
-!Makefile
-!CmakeLists.txt
-!WORKSPACE
-!.bazelrc
-!BUILD
-!*.BUILD
-!*.bzl
-!*.conf
-!*.gflags
-!*.zip
+# !*.h
+# !*.hpp
+# !*.c
+# !*.cc
+# !*.cpp
+# !*.sh
+# !*.cu
+# !*.cs
+# !*.cin
+# !*.cfg
+# !*.rsp
+# !*.proto
+# !*.md
+# !*.py
+# !.gitignore
+# !Makefile
+# !CmakeLists.txt
+# !WORKSPACE
+# !.bazelrc
+# !BUILD
+# !*.BUILD
+# !*.bzl
+# !*.conf
+# !*.gflags
+# !*.zip

@@ -12,11 +12,11 @@ http_archive(
     ],
 )
 
-# git_repository(
-    # name = "com_github_nelhage_rules_boost",
-    # commit = "11f0851ace21b791657ef5e1accbecf6034fdd63",
-    # remote = "git@github.com:charles-pku-2013/bazel_boost.git",
-# )
+git_repository(
+    name = "com_github_nelhage_rules_boost",
+    commit = "0968b98ee93869cc39364e6aff332fe7451f59e4",
+    remote = "git@github.com:charles-pku-2013/bazel_boost.git",
+)
 # git_repository(
     # name = "com_github_nelhage_rules_boost",
     # remote = "git@coding.jd.com:jd_search/bazel_boost.git",
@@ -24,16 +24,16 @@ http_archive(
 # )
 # local_repository(
     # name = "com_github_nelhage_rules_boost",
-    # path = "/Users/sunchao11/Documents/Devel/jd/bazel_boost",
+    # path = "/Users/sunchao/Documents/jd/bazel_boost",
 # )
-# load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-# boost_deps()
+load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+boost_deps()
 
 # absl
 http_archive(
-  name = "rules_cc",
-  urls = ["https://github.com/bazelbuild/rules_cc/archive/262ebec3c2296296526740db4aefce68c80de7fa.zip"],
-  strip_prefix = "rules_cc-262ebec3c2296296526740db4aefce68c80de7fa",
+    name = "rules_cc",
+    urls = ["https://github.com/bazelbuild/rules_cc/archive/262ebec3c2296296526740db4aefce68c80de7fa.zip"],
+    strip_prefix = "rules_cc-262ebec3c2296296526740db4aefce68c80de7fa",
 )
 http_archive(
   name = "com_google_absl",
@@ -88,7 +88,7 @@ http_archive(
 #     strip_prefix = "jsoncpp-1.8.4",
 #     build_file = "//thirdparty:jsoncpp.BUILD",
 # )
-# 
+#
 # git_repository(
 #     name = "jd_hocon",
 #     remote = "git@coding.jd.com:rank_common/cpp-hocon.git",

@@ -1,42 +1,19 @@
-#include <iostream>
-#include <string>
+
+#include <tuple>
 #include <utility>
-#include <vector>
-#include <chrono>
-
-using namespace std;
-
-void test1(int cnt) {
-    int sum = 0;
-    for (int i = 0; i < cnt; ++i) {
-        sum += i;
-    }
+template<typename... T>
+void func(T&&... obj) {
+    g(std::forward<T>(obj)...);
 }
 
-void test2(int i, int j) {
-    int result = 1;
-    for (int k = 0; k < j; ++k) {
-        result *= i;
-    }
-}
+auto func = [](auto&&... arg) {
+    g(std::forward<decltype(arg)>(arg)...);
+};
 
-int main() {
-    auto timeFuncInvocation =
-        [](auto&& func, auto&&... params) {
-            auto start = std::chrono::high_resolution_clock::now();
+vector<int> ret = func();
 
-            // NOTE!!! 函数名也需要和参数同样的处理
-            std::forward<decltype(func)>(func)(
-                std::forward<decltype(params)>(params)...
-            );
+Foo a; ...
+Foo b; ...
 
-            auto end = std::chrono::high_resolution_clock::now();
-            cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << endl;
-        };
-
-    timeFuncInvocation(test1, 1000000);
-    timeFuncInvocation(test2, 100, 50);
-
-    return 0;
-}
-
+b = a;
+b = std::move(a);

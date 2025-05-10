@@ -1,7 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # set -x
-#
-# https://blog.csdn.net/chaosun2012/article/details/142455231?spm=1001.2014.3001.5501
 
 raw_types="-name '*.RAF' -o -name '*.DNG' -o -name '*.NEF'"
 
