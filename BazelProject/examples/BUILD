@@ -7,6 +7,7 @@ cc_binary(
     ],
     deps = [
         # "@boost//:lexical_cast",
+        "//tools:thread_pool",
         "@com_google_absl//absl/strings:strings",
         "@com_google_absl//absl/strings:str_format",
         "@com_github_google_glog//:glog",

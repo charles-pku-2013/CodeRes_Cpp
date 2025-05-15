@@ -49,11 +49,20 @@ struct Container {
 };
 
 int main() {
+    using namespace std;
+
+    auto cleanup = [](void*) {
+        cout << "Cleaning up" << endl;
+    };
+
+    // std::unique_ptr<void, decltype(cleanup)> holder(nullptr, cleanup); // WRONG!!! cannot use nullptr here
+    std::unique_ptr<void, decltype(cleanup)> holder((void*)1, cleanup);
+
     // test1();
     // test2();
 
-    Container c;
-    std:: cout << "main terminate..." << std::endl;
+    // Container c;
+    // std:: cout << "main terminate..." << std::endl;
 
     return 0;
 }
