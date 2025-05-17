@@ -4,9 +4,13 @@ IndentWidth:     4
 UseTab:          Never
 ColumnLimit:     100
 
-Languange:       Cpp
+# Languange:       Cpp
 Standard:        Cpp11
 PointerAlignment: Left
 AlignConsecutiveDeclarations: true
 # public private
 AccessModifierOffset: -3
+# 函数不要写成一行
+AllowShortFunctionsOnASingleLine: Empty
+# 定义之间空行隔开
+SeparateDefinitionBlocks: Always

@@ -27,6 +27,20 @@ void BubbleSort(Iter beg, Iter end)
     } // while
 }
 
+void BubbleSort(int *a, std::size_t n) {
+    if (!a || n <= 1) {
+        return;
+    }
+
+    for (size_t j = 1; j < n; ++j) {
+        for (size_t i = 0; i < n - j; ++i) {
+            if (a[i] > a[i + 1]) {
+                std::swap(a[i], a[i + 1]);
+            }
+        } // for i
+    } // for j
+}
+
 
 void test1()
 {
@@ -36,7 +50,8 @@ void test1()
 void test2()
 {
     vector<int> a{ 5, 7, 4, 2, 8, 6, 1, 9, 0, 3 };
-    BubbleSort(a.begin(), a.end());
+    // BubbleSort(a.begin(), a.end());
+    BubbleSort(a.data(), a.size());
     copy(a.begin(), a.end(), ostream_iterator<int>(cout, " "));
     cout << endl;
 }
