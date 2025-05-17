@@ -45,7 +45,9 @@ public:
                     p = q->right;
                     flag.back() = true;
                 } else {
+                    // put your logic here
                     if (!q->left && !q->right) {
+                        // a leaf node
                         int sum = sum_path();
                         if (sum == targetSum)
                         { return true; }

@@ -1,59 +1,26 @@
 #include <iostream>
 #include <memory>
-using namespace std;
-class B;
 
-class A {
-    shared_ptr<B> sP1;  // use weak_ptr instead to avoid CD
+template<typename D>
+struct Holder {
+    template<typename F>
+    explicit Holder(F&& f)
+        : deleter_(std::forward<F>(f)) {}
 
- public:
-    A() {
-        cout << "A()" << endl;
+    ~Holder() {
+        deleter_();
     }
 
-    ~A() {
-        cout << "~A()" << endl;
-    }
-
-    void setShared(shared_ptr<B>& p) {
-        sP1 = p;
-    }
-
-    void report() const {
-        cout << sP1.use_count() << endl;
-    }
-};
-
-class B {
-    shared_ptr<A> sP1;
-
- public:
-    B() {
-        cout << "B()" << endl;
-    }
-
-    ~B() {
-        cout << "~B()" << endl;
-    }
-
-    void setShared(shared_ptr<A>& p) {
-        sP1 = p;
-    }
-
-    void report() const {
-        cout << sP1.use_count() << endl;
-    }
+    D deleter_;
 };
 
 int main() {
-    shared_ptr<A> aPtr(new A);
-    shared_ptr<B> bPtr(new B);
+    using namespace std;
 
-    aPtr->setShared(bPtr);
-    bPtr->setShared(aPtr);
+    Holder holder([]{
+        cout << "done" << endl;
+    });
 
-    aPtr->report();  // 2
-    bPtr->report();  // 2
 
     return 0;
 }
