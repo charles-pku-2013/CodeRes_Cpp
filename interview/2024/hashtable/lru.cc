@@ -2,35 +2,45 @@
 https://leetcode.cn/problems/lru-cache/
  */
 class LRUCache {
-public:
+ public:
     struct Data {
         Data() = default;
+
         Data(int k, int v) : key(k), value(v) {}
+
         int key;
         int value;
     };
+
     using DataList = std::list<Data>;
     using DataTable = std::unordered_map<int, DataList::iterator>;
 
     LRUCache(int capacity) {
         capacity_ = capacity;
     }
-    
+
     int get(int key) {
+        // find item in table
         auto it = data_table_.find(key);
-        if (it == data_table_.end())
-        { return -1; }
+        if (it == data_table_.end()) {
+            return -1;
+        }
         auto old_list_it = it->second;
+
+        // relocate the item in list
         data_list_.emplace_front(std::move(*old_list_it));
         data_list_.erase(old_list_it);
+
+        // update the table item
         it->second = data_list_.begin();
+
         return data_list_.front().value;
     }
-    
+
     void put(int key, int value) {
         auto it = data_table_.find(key);
         if (it == data_table_.end()) {
-            // new insersion
+            // new insersion in list
             data_list_.emplace_front(key, value);
             data_table_[key] = data_list_.begin();
             if (data_table_.size() > capacity_) {
@@ -45,9 +55,9 @@ public:
         }
     }
 
-    DataList data_list_;
+    DataList  data_list_;
     DataTable data_table_;
-    int capacity_ = 0;
+    int       capacity_ = 0;
 };
 
 /**

@@ -1,50 +1,53 @@
 #include <iostream>
-#include <memory>
-#include <thread>
-#include <chrono>
 
 using namespace std;
 
-struct Base {
-    Base()
-    { 
-        cout << "Base constructor." << endl;
-        print(); //!! 在构造函数中调用虚函数不会调用派生类的版本
+class Base {
+public:
+    Base() {
+        foo();
     }
 
-    virtual ~Base()
-    { 
-        cout << "Base destructor." << endl; 
-        print(); //!! 在析构函数中调用虚函数不会调用派生类的版本
+    virtual ~Base() {
+        foo();
     }
 
-    virtual void print()
-    { cout << "Hi, Base." << endl; }
+    virtual void foo() {
+        cout << "Base foo" << endl;
+    }
 };
 
+class Derived : public Base {
+public:
+    Derived() {
+        foo();
+    }
 
-struct Derived : public Base {
-    Derived()
-    { cout << "Derived constructor." << endl; }
-    ~Derived()
-    { cout << "Derived destructor." << endl; }
+    ~Derived() {
+        foo();
+    }
 
-    void print()
-    { cout << "Hi, Derived." << endl; }
+    void foo() override {
+        cout << "Derived foo" << endl;
+    }
 };
 
 
 int main()
 {
-    std::shared_ptr<Base> p = std::make_shared<Derived>();
+    Base *p = new Derived;
+    cout << "\nprocessing...\n" << endl;
+    delete p;
+
     return 0;
 }
 
-/*
- * Base constructor.
- * Hi, Base.
- * Derived constructor.
- * Derived destructor.
- * Base destructor.
- * Hi, Base.
- */
+#if 0
+Base foo
+Derived foo
+
+processing...
+
+Derived foo
+Base foo
+#endif

@@ -35,14 +35,17 @@ private:
 struct Base;
 struct Derived;
 
+// 格式: parent_vtable
+//       virtual func ptr list
+//       虚表只有这一个，没有 Derived_vtable
 typedef struct Base_vtable {
     const void *parentVtable;
-    void (*greet)(struct Base*);
-    void (*destruct)(struct Base*);
-} Base_vtable;
+    void (*greet)(struct Base*);       // 虚函数指针
+    void (*destruct)(struct Base*);    // 虚函数指针
+} Base_vtable;  // 生成了两个对象 vtableBase and vtableDerived
 
 typedef struct Base {
-    const Base_vtable *vtable;
+    const Base_vtable *vtable;  // vtable指针放到Base类成员里，或Derived的Base部分里
     int x;
 } Base;
 
@@ -53,8 +56,12 @@ void Base_greet(Base *self)
 void destructBase(Base *self)
 { printf("Base destructor\n"); }
 
-// init Base vtable
-const Base_vtable vtableBase = {NULL, Base_greet, destructBase};
+// init Base vtable object （之前Base类里的vtable指针指向这里）给虚表指针赋值
+const Base_vtable vtableBase = {
+    NULL,               // parent vtable
+    Base_greet,         // void (*greet)(struct Base*)
+    destructBase        // void (*destruct)(struct Base*)
+};
 
 // Base non-virtual functions
 void constructBase(Base *self, int _X)
@@ -63,12 +70,13 @@ void constructBase(Base *self, int _X)
     self->x = _X;
 }
 
+// 一般(no-virtual)函数的实现
 void Base_printX(const Base *self)
 { printf("x = %d\n", self->x); }
 
 
 typedef struct Derived {
-    Base inherited;
+    Base inherited;  // Derived 里的 Base 部分 Derived的vtable在其Base部分里
     int y;
 } Derived;
 
@@ -77,16 +85,17 @@ void Derived_greet(Derived *self)
 { printf("Derived::greet() x = %d, y = %d\n", self->inherited.x, self->y); }
 
 void destructDerived(Derived *self)
-{ 
+{
     destructBase(&(self->inherited));
-    printf("Derived destructor\n"); 
+    printf("Derived destructor\n");
 }
 
-// init derived vtable
+// init derived vtable object
 const Base_vtable vtableDerived = {
-    &vtableBase, 
-    (void(*)(Base*)) Derived_greet,     // 🔴🔴 类型转换是要有的
-    (void(*)(Base*)) destructDerived
+    &vtableBase,                        // parent vtable
+    // Derived override func ptrs
+    (void(*)(Base*)) Derived_greet,     // void (*greet)(struct Base*) 🔴🔴 类型转换是要有的
+    (void(*)(Base*)) destructDerived    // void (*destruct)(struct Base*)
 };
 
 // Derived non-virtual functions
