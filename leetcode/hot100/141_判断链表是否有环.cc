@@ -17,4 +17,27 @@ public:
         }
         return true;
     }
+
+    bool hasCycle(ListNode* head) {
+        if (!head || !head->next) {
+            return false;
+        }
+
+        ListNode *slow = head, *fast = head;
+        do {
+            slow = slow->next;
+            if (fast) {
+                fast = fast->next;
+            } else {
+                return false;
+            }
+            if (fast) {
+                fast = fast->next;
+            } else {
+                return false;
+            }
+        } while (slow != fast);
+
+        return true;
+    }
 };
