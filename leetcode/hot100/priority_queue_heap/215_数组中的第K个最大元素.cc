@@ -41,7 +41,7 @@ class Solution {
         // 小根堆中存储数组中k个最大的元素
         priority_queue<int, vector<int>, greater<int>> heap;
         int                                            n = nums.size();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; ++i) {
             // 堆的大小小于k，向堆内添加一个元素
             if (heap.size() < k) {
                 heap.push(nums[i]);

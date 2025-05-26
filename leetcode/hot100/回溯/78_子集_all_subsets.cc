@@ -4,11 +4,24 @@ https://leetcode.cn/problems/subsets/description/?envType=problem-list-v2&envId=
 输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
 #endif
 
+#include <iostream>
+#include <string>
+#include <chrono>
+#include <vector>
+#include <map>
+#include <fmt/base.h>
+#include <fmt/format.h>
+#include <fmt/chrono.h>
+#include <fmt/ranges.h>
+
+using namespace std;
+
 class Solution {
 public:
     void subsets(const vector<int>& nums, vector<int>& tmp, int step, vector<vector<int>>& result) {
         if (step == nums.size()) {
             result.emplace_back(tmp);
+            fmt::print("{}\n", tmp);
             return;
         }
 
@@ -18,10 +31,17 @@ public:
         subsets(nums, tmp, step + 1, result);
     }
 
-    vector<vector<int>> subsets(vector<int>& nums) {
+    vector<vector<int>> subsets(const vector<int>& nums) {
         vector<vector<int>> result;
         vector<int> tmp;
         subsets(nums, tmp, 0, result);
         return result;
     }
 };
+
+int main() {
+    Solution sln;
+    sln.subsets({1,2,3});
+
+    return 0;
+}

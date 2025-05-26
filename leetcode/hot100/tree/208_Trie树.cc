@@ -22,6 +22,7 @@ class Trie {
         for (char ch : word) {
             node = node->addChild(new Trie(ch));
         }
+        node->isEnd = true;
     }
 
     bool search(string word) {
@@ -57,10 +58,11 @@ class Trie {
     }
 
     bool isEnd() const {
-        return children.empty();
+        return isEnd;
     }
 
  private:
     char                            data = 0;
+    bool isEnd = false;
     std::unordered_map<char, Trie*> children;
 };

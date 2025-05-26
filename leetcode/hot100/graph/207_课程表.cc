@@ -38,6 +38,7 @@ class Solution {
                     return;
                 }
             } else if (visited[v] == 1) {
+                // 图中有环
                 valid = false;
                 return;
             }

@@ -18,13 +18,14 @@ https://leetcode.cn/problems/coin-change/solutions/132979/322-ling-qian-dui-huan
 输出：0
  */
 class Solution {
-    vector<int>count;
+    vector<int> count;
+
     int dp(vector<int>& coins, int rem) {
         if (rem < 0) return -1;
         if (rem == 0) return 0;
         if (count[rem - 1] != 0) return count[rem - 1];
         int Min = INT_MAX;
-        for (int coin:coins) {
+        for (int coin : coins) {
             int res = dp(coins, rem - coin);
             if (res >= 0 && res < Min) {
                 Min = res + 1;
@@ -33,7 +34,8 @@ class Solution {
         count[rem - 1] = Min == INT_MAX ? -1 : Min;
         return count[rem - 1];
     }
-public:
+
+ public:
     int coinChange(vector<int>& coins, int amount) {
         if (amount < 1) return 0;
         count.resize(amount);

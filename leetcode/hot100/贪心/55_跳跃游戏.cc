@@ -29,18 +29,20 @@ using namespace std;
 class Solution {
 public:
     bool canJump(const vector<int>& nums) {
-        fmt::print("nums: {}\n", nums);
+        // fmt::print("nums: {}\n", nums);
 
         int n = nums.size();
         int rightmost = 0;
         for (int i = 0; i < n; ++i) {
-            if (i <= rightmost) {
-                rightmost = std::max(rightmost, i + nums[i]);
-                fmt::print("i = {} rightmost = {}\n", i, rightmost);
-                // 贪心法 能力达到了就行，不要求精确匹配
-                if (rightmost >= n - 1) {
-                    return true;
-                }
+            if (i > rightmost) {
+                // 当前位置i已无法到达
+                break;
+            }
+            rightmost = std::max(rightmost, i + nums[i]);
+            // fmt::print("i = {} rightmost = {}\n", i, rightmost);
+            // 贪心法 能力达到了就行，不要求精确匹配
+            if (rightmost >= n - 1) {
+                return true;
             }
         }
 
