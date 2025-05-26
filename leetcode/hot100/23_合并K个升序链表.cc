@@ -53,6 +53,13 @@ public:
         ListNode* retList = nullptr;
         ListNode* retListCur = nullptr;
 
+        lists.erase(
+            std::remove_if(lists.begin(), lists.end(), [](ListNode *p)->bool {
+                return (p == nullptr);
+            }),
+            lists.end()
+        );
+
         if (lists.empty()) {
             return retList;
         }
@@ -66,7 +73,7 @@ public:
                 break;
             }
 
-            auto& node = *it;
+            auto& node = *it;  // NOTE 需要修改lists数组内容
             if (!retList) {
                 retList = retListCur = node;
             } else {
@@ -74,11 +81,13 @@ public:
                 retListCur = node;
             }
             node = node->next;
-            *it = node;
 
-            std::remove_if(lists.begin(), lists.end(), [](ListNode *p)->bool {
-                return (p == nullptr);
-            });
+            lists.erase(
+                std::remove_if(lists.begin(), lists.end(), [](ListNode *p)->bool {
+                    return (p == nullptr);
+                }),
+                lists.end()
+            );
         }
 
         return retList;
