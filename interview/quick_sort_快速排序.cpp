@@ -9,6 +9,10 @@
 #include <thread>
 #include <memory>
 
+/*
+ * 选择排序、快速排序、希尔排序、堆排序不是稳定的排序算法。
+ * 冒泡排序、插入排序、归并排序、基数排序是稳定的排序算法。
+ */
 
 using namespace std;
 

@@ -13,7 +13,7 @@ bool ip2bit(const string& ip, bitset<32>& bits) {
     vector<string> arr;
     while (getline(ss, seg, '.')) {
         // cout << seg << endl;
-        arr.emplace_back(std::move(seg));       
+        arr.emplace_back(std::move(seg));
     }
     if (arr.size() != 4)
     { return false; }
@@ -22,7 +22,7 @@ bool ip2bit(const string& ip, bitset<32>& bits) {
     for (string& part : arr) {
         int n = stoi(part);
         // cout << n << endl;
-        if (n > 255 || n < 0) 
+        if (n > 255 || n < 0)
         { return false; }
         bitset<8> b_part(n); // NOTE!!! ipv4地址分4段，每段8位
         // cout << b_part.to_string() << endl;

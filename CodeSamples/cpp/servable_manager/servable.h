@@ -96,7 +96,7 @@ class Servable {
  * @tparam T  Servable class like model or dict (DemoDict, KnnModel),
  *            any class type canbe wrapped into ServableHandle
  */
-template<typename T>
+template<typename T>   // DemoDict
 class ServableHandle : public Servable {
  public:
     ServableHandle(std::shared_ptr<T> pobj)

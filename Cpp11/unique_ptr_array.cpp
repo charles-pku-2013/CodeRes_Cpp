@@ -29,10 +29,12 @@ struct Foo {
 
 int main() {
     // std::unique_ptr<Foo[]> ptr(new Foo[10]{[0 ... 9] = {5}});
-    std::unique_ptr<Foo[]> ptr(new Foo[10]{1,2,3,4,5,0});   // only init first elem
+    std::unique_ptr<Foo[]> ptr(new Foo[10]{1,2,3,4,5,0});
+    // std::shared_ptr<Foo[]> ptr(new Foo[10]{1,2,3,4,5,0});
 
     std::copy(ptr.get(), ptr.get() + 10, std::ostream_iterator<Foo>(cout, " "));
     cout << endl;
+    cout << ptr[4] << endl;
 
     return 0;
 }

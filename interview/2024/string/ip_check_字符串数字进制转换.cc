@@ -33,7 +33,7 @@ public:
                 }
             } catch (...) {
                 return false;
-            } 
+            }
             if (ip_num > 255 || ip_num <= 0) {
                 return false;
             }
