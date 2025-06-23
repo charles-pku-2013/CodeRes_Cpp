@@ -1,3 +1,4 @@
+// asio不需要链接
 #pragma once
 #include <glog/logging.h>
 #include <boost/asio.hpp>
@@ -48,6 +49,8 @@ void TimerTask::Stop() {
     if (!running_) { return; }
     running_ = false;
 
+    // NOTE cancel也会调用注册的handler，error_code值为125
+    // 正常超时调用handler error_code=0
     timer_->cancel();
     io_service_work_.reset();
     io_service_->stop();
@@ -56,8 +59,9 @@ void TimerTask::Stop() {
 }
 
 inline
-void TimerTask::_do_timer_job() {
-    if (!running_) { return; }
+void TimerTask::_do_timer_job(boost::system::error_code ec) {
+    // 不可以忽略ec
+    if (ec || !running_) { return; }
 
     try {
         OnTimer();

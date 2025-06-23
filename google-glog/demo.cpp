@@ -20,6 +20,7 @@ namespace {
  *    GLOG_max_log_size   --max_log_size (MB)
  *    GLOG_log_dir        --log_dir
  *    GLOG_logtostderr    --logtostderr (全部输出到stderr不会生成log文件)
+ *      <=> google::LogToStderr();
  */
 void init_log() {
     google::InitGoogleLogging(FLAGS_server_name.c_str());

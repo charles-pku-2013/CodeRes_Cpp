@@ -13,7 +13,15 @@ c++ -o /tmp/test test.cc -I/opt/homebrew/Cellar/fmt/11.2.0/include -L/opt/homebr
 
 using namespace std;
 
+/*
+ * 打印大括号
+ * fmt::format("TimeoutTaskQueue: {{size:{}, capacity:{}, timeout:{}}}",
+ *                 queue_.size(), queue_.capacity(), timeout_);
+ */
+
 int main() {
+    fmt::fprintf(stderr, "%s running...\n", argv[0]);
+    fmt::fprintf(std::cerr, "%s running...\n", argv[0]);
     fmt::print("Hello, world!\n");
 
     // strformat
