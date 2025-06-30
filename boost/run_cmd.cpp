@@ -1,5 +1,5 @@
 /*
-c++ -o /tmp/test run_cmd.cpp -lboost_iostreams -std=c++11 -g
+c++ -o /tmp/test run_cmd.cpp -lboost_iostreams -std=c++17 -g
  */
 #include <iostream>
 #include <cstdio>
@@ -8,13 +8,50 @@ c++ -o /tmp/test run_cmd.cpp -lboost_iostreams -std=c++11 -g
 #include <memory>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 /*
  * NOTE! popen 只是读取stdout，所以最好在cmd加上 2>&1
  */
-int run_cmd(const std::string &cmd, std::string *out)
+int run_cmd(const std::string &cmd, std::string *out) {
+    int retval = -1;
+
+    std::unique_ptr<FILE, std::function<void(FILE*)>> pp(
+        ::popen(cmd.c_str(), "r"),
+        [&retval](FILE* p) {
+            if(p) {
+                retval = ::pclose(p);
+                retval = WEXITSTATUS(retval);
+            }
+        }
+    );
+
+    if (!pp) {
+        if (out) {
+            *out = "popen error!";
+        }
+        return -1;
+    }
+    ::setlinebuf(pp.get());
+
+    using PipeStream = boost::iostreams::stream<boost::iostreams::file_descriptor_source>;
+    PipeStream stream(fileno(pp.get()), boost::iostreams::never_close_handle);
+
+    std::stringstream ss;
+    ss << stream.rdbuf();
+
+    if (out) {
+        *out = ss.str();
+        boost::trim(*out);
+    }
+
+    pp.reset();
+    return retval;
+}
+
+int run_cmd_obsolete(const std::string &cmd, std::string *out)
 {
 #if 0
     std::unique_ptr<FILE, std::function<void(FILE*)>> pp(
@@ -50,39 +87,9 @@ int run_cmd(const std::string &cmd, std::string *out)
     ss << stream.rdbuf();
 
     *out = ss.str();
+    boost::trim(*out);
 
     _on_finish.reset();
-    return retval;
-}
-
-// Use this one
-int run_cmd2(const std::string &cmd, std::string *out) {
-    int retval = -1;
-    std::unique_ptr<FILE, std::function<void(FILE*)>> pp(
-        ::popen(cmd.c_str(), "r"),
-        [&retval](FILE* p) {
-            if(p) {
-                retval = ::pclose(p);
-                retval = WEXITSTATUS(retval);
-            }
-        }
-    );
-    if (!pp) {
-        *out = "popen error!";
-        return -1;
-    }
-    ::setlinebuf(pp.get());
-    // ::setvbuf(pp.get(), NULL, _IOLBF, 0);
-
-    using PipeStream = boost::iostreams::stream<boost::iostreams::file_descriptor_source>;
-    PipeStream stream(fileno(pp.get()), boost::iostreams::never_close_handle);
-
-    std::stringstream ss;
-    ss << stream.rdbuf();
-
-    *out = ss.str();
-
-    pp.reset();   // must call it manually
     return retval;
 }
 

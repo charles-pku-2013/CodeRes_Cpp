@@ -358,7 +358,7 @@ bool ServableManager::_LoadServables() {
                     } catch (...) {
                         pServable = nullptr;
                         status = std::make_pair(false, "Unknown exception");
-                        throw;  // NOTE! 如果线程被pthread_kill杀死，必须rethrow exception 运行时报错 FATAL: exception not rethrown
+                        throw;  // NOTE! 如果当前线程被pthread_cancel杀死，必须rethrow exception 运行时报错 FATAL: exception not rethrown
                     }
                     if (status.first) {
                         pServable->SetId(name, version);

@@ -4,14 +4,14 @@
 
 using namespace std;
 
-inline 
+inline
 std::size_t file_size(std::istream &fin)
 {
-	std::size_t pos = fin.tellg();
-	fin.seekg(0, std::ios_base::end);
-	std::size_t sz = fin.tellg();
-	fin.seekg(pos);
-	return sz;
+    std::size_t pos = fin.tellg();
+    fin.seekg(0, std::ios_base::end);
+    std::size_t sz = fin.tellg();
+    fin.seekg(pos);
+    return sz;
 }
 
 void test1()
@@ -21,8 +21,8 @@ void test1()
     stream << ' ' << 'a';
     stream << " Hello world";
     stream.flush();
-    cout << stream.tellp() << endl;
-    cout << stream.tellg() << endl;
+    cout << stream.tellp() << endl;  // output indicator
+    cout << stream.tellg() << endl;  // input indicator
     // cout << stream.str() << endl;
     // cout << file_size(stream) << endl;
     auto sz = file_size(stream);
@@ -47,7 +47,7 @@ void test2()
     cout << "n = " << n << endl;;
     stream << ' ' << 300;
     cout << stream.str() << endl;
-    
+
     stream >> n;
     cout << "n = " << n << endl;;
 }
@@ -56,7 +56,7 @@ int main()
 {
     // test1();
     // return 0;
-    
+
     test2();
     return 0;
 
@@ -72,7 +72,7 @@ int main()
     stream >> n;
     cout << n << endl;
     //!! NOTE!!! 输出结果 100 200，stringstream 构造时拷贝了string
-    
+
     cout << stream.tellp() << endl;
     cout << stream.tellg() << endl;
 
