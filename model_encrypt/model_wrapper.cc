@@ -1,28 +1,28 @@
 /*
-c++ -o /tmp/test model_wrapper.cc model_header.pb.cc -std=c++17 -lprotobuf -lgflags -lboost_iostreams -g
+apt install -y libpstreams-dev libboost-all-dev libgflags-dev
+c++ -o model_wrapper model_wrapper.cc model_header.pb.cc -std=c++17 -lprotobuf -lgflags -g
 Example:
 encrypt:
 ./model_wrapper -e -i /tmp/model.gguf -o /tmp/enc_model.gguf -start 256 -expire_date 20250801 -model_concurrency 32
 decrypt:
-./model_wrapper -d -i /tmp/enc_model.gguf -o /tmp/model.gguf -start 256
+./model_wrapper -d -i /tmp/enc_model.gguf -o /tmp/model1.gguf -start 256
  */
 #include <gflags/gflags.h>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <filesystem>
-#include <memory>
-#include <string_view>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <pstreams/pstream.h>
+
 #include <boost/algorithm/string.hpp>
+#include <boost/beast/core/detail/base64.hpp>
+#include <boost/format.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/format.hpp>
-#include <boost/beast/core/detail/base64.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/file_descriptor.hpp>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string_view>
+
 #include "model_header.pb.h"
 
 using UUID = boost::uuids::uuid;
@@ -41,27 +41,28 @@ DEFINE_uint32(model_concurrency, 0, "set num of model concurrency");
 DEFINE_uint64(start, 0, "set start pos of original model data, i.e. model header length");
 
 class ModelWrapper final {
-public:
+ public:
     ModelWrapper();
 
     void encode();
     void decode();
 
-private:
-    static int sysCmd(const std::string &cmd, std::string *out);
-    static std::string getMD5(const std::string& file);
+ private:
+    static int         sysCmd(const std::string &cmd, std::string *out = nullptr,
+                              std::string *err = nullptr);
+    static std::string getMD5(const std::string &file);
 
     // base64 from boost libs/beast/test/beast/core/_detail_base64.cpp
-    static std::string base64_encode(std::uint8_t const* data, std::size_t len);
+    static std::string base64_encode(std::uint8_t const *data, std::size_t len);
     static std::string base64_encode(std::string_view s);
     static std::string base64_decode(std::string_view data);
 
-    std::string                     in_file_, out_file_;
-    std::unique_ptr<ModelHeader>    model_header_;
-    std::string                     model_id_;
-    std::string                     model_expire_date_;
-    uint32_t                        model_concurrency_;
-    uint64_t                        model_start_ = 0;
+    std::string                  in_file_, out_file_;
+    std::unique_ptr<ModelHeader> model_header_;
+    std::string                  model_id_;
+    std::string                  model_expire_date_;
+    uint32_t                     model_concurrency_;
+    uint64_t                     model_start_ = 0;
 };
 
 ModelWrapper::ModelWrapper() {
@@ -96,10 +97,12 @@ void ModelWrapper::encode() {
     std::ofstream ofs(out_file_, std::ios::out | std::ios::binary);
 
     if (!ifs) {
-        throw std::runtime_error(boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
     }
     if (!ofs) {
-        throw std::runtime_error(boost::str(boost::format("Failed to open file `%s` for output") % out_file_));
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to open file `%s` for output") % out_file_));
     }
     ifs.close();
 
@@ -121,14 +124,14 @@ void ModelWrapper::encode() {
     model_header_->set_end_pos(model_start_ + in_file_sz);
 
     if (model_header_->start_pos() >= model_header_->end_pos()) {
-        throw std::runtime_error(boost::str(
-            boost::format("Invalid `start_pos=%lu end_pos=%lu`")
-            % model_header_->start_pos() % model_header_->end_pos()));
+        throw std::runtime_error(boost::str(boost::format("Invalid `start_pos=%lu end_pos=%lu`") %
+                                            model_header_->start_pos() % model_header_->end_pos()));
     }
 
     std::string cksum = getMD5(in_file_);
     if (cksum.empty()) {
-        throw std::runtime_error(boost::str(boost::format("Failed to get checksum of input file `%s`") % in_file_));
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to get checksum of input file `%s`") % in_file_));
     }
     model_header_->set_checksum(cksum);
 
@@ -141,9 +144,10 @@ void ModelWrapper::encode() {
     std::string encoded_header = base64_encode(header_data);
 
     if (encoded_header.length() >= model_start_) {
-        throw std::runtime_error(boost::str(boost::format(
-            "Encoded header length `%lu` is larger than specified model start pos `%lu`, please reset the value with `-start`"
-        ) % (encoded_header.length() + 1) % model_start_));
+        throw std::runtime_error(
+            boost::str(boost::format("Encoded header length `%lu` is larger than specified model "
+                                     "start pos `%lu`, please reset the value with `-start`") %
+                       (encoded_header.length() + 1) % model_start_));
     }
     encoded_header.resize(model_start_, 0);
 
@@ -155,21 +159,26 @@ void ModelWrapper::encode() {
     ofs.close();
 
     std::cerr << "Copying original model to output file ..." << std::endl;
-    std::string cmd = boost::str(boost::format( "cat '%s' >> '%s'") % in_file_ % out_file_);
-    int retval = sysCmd(cmd, nullptr);
+    std::string cmd = boost::str(boost::format("cat '%s' >> '%s'") % in_file_ % out_file_);
+    std::string err;
+    int         retval = sysCmd(cmd, nullptr, &err);
 
     if (retval) {
-        throw std::runtime_error("Failed to copy original model to output file!");
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to copy original model to output file: %s") % err));
     }
 
-    std::cerr << boost::format("Successfully encoded model from `%s` to `%s`") % in_file_ % out_file_ << std::endl;
+    std::cerr << boost::format("Successfully encoded model from `%s` to `%s`") % in_file_ %
+                     out_file_
+              << std::endl;
     std::cerr << model_header_->DebugString() << std::endl;
 }
 
 void ModelWrapper::decode() {
     std::ifstream ifs(in_file_, std::ios::in | std::ios::binary);
     if (!ifs) {
-        throw std::runtime_error(boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
     }
 
     // read and decode model header
@@ -180,8 +189,8 @@ void ModelWrapper::decode() {
     }
     ifs.close();
 
-    std::string encoded_header(raw_header.data());
-    std::string decoded_header = base64_decode(encoded_header);
+    std::string        encoded_header(raw_header.data());
+    std::string        decoded_header = base64_decode(encoded_header);
     std::istringstream iss(decoded_header);
 
     model_header_.reset(new ModelHeader);
@@ -193,76 +202,66 @@ void ModelWrapper::decode() {
     std::cerr << model_header_->DebugString() << std::endl;
 
     if (model_header_->start_pos() >= model_header_->end_pos()) {
-        throw std::runtime_error(boost::str(boost::format("Invalid model file info `start_pos=%lu end_pos=%lu`")
-                % model_header_->start_pos() % model_header_->end_pos()));
+        throw std::runtime_error(
+            boost::str(boost::format("Invalid model file info `start_pos=%lu end_pos=%lu`") %
+                       model_header_->start_pos() % model_header_->end_pos()));
     }
 
     std::cerr << boost::format("Extracting original model to %s ...") % out_file_ << std::endl;
-    uint64_t sz = model_header_->end_pos() - model_header_->start_pos();
-    std::string cmd = boost::str(boost::format(
-        "tail -c +%lu '%s' | head -c %lu > '%s'"
-    ) % (model_header_->start_pos() + 1) % in_file_ % sz % out_file_);
+    uint64_t    sz = model_header_->end_pos() - model_header_->start_pos();
+    std::string cmd = boost::str(boost::format("tail -c +%lu '%s' | head -c %lu > '%s'") %
+                                 (model_header_->start_pos() + 1) % in_file_ % sz % out_file_);
 
-    int retval = sysCmd(cmd, nullptr);
+    std::string err;
+    int         retval = sysCmd(cmd, nullptr, &err);
     if (retval) {
-        throw std::runtime_error("Failed to extract original model!");
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to extract original model: %s") % err));
     }
 
     std::cerr << "Checking extracted file ..." << std::endl;
     std::string cksum = getMD5(out_file_);
     if (cksum != model_header_->checksum()) {
-        throw std::runtime_error(boost::str(
-              boost::format("Checksum comparation fail, which is %s but expected %s")
-              % cksum % model_header_->checksum()));
+        throw std::runtime_error(
+            boost::str(boost::format("Checksum comparation fail, which is %s but expected %s") %
+                       cksum % model_header_->checksum()));
     }
 
-    std::cerr << boost::format("Successfully extracted original model to %s") % out_file_ << std::endl;
+    std::cerr << boost::format("Successfully extracted original model to %s") % out_file_
+              << std::endl;
 }
 
-std::string ModelWrapper::getMD5(const std::string& file) {
+std::string ModelWrapper::getMD5(const std::string &file) {
     std::string cmd = boost::str(boost::format("md5sum '%s' | awk '{print $1}'") % file);
-    std::string out;
-    int retval = sysCmd(cmd, &out);
+    std::string out, err;
+    int         retval = sysCmd(cmd, &out, &err);
+    if (!err.empty()) {
+        std::cerr << boost::format("Get md5 of file `%s` error: %s") % file % err << std::endl;
+    }
     return retval == 0 ? out : "";
 }
 
-int ModelWrapper::sysCmd(const std::string &cmd, std::string *out) {
-    int retval = -1;
-
-    std::unique_ptr<FILE, std::function<void(FILE*)>> pp(
-        ::popen(cmd.c_str(), "r"),
-        [&retval](FILE* p) {
-            if(p) {
-                retval = ::pclose(p);
-                retval = WEXITSTATUS(retval);
-            }
-        }
-    );
-
-    if (!pp) {
-        if (out) {
-            *out = "popen error!";
-        }
-        return -1;
-    }
-    ::setlinebuf(pp.get());
-
-    using PipeStream = boost::iostreams::stream<boost::iostreams::file_descriptor_source>;
-    PipeStream stream(fileno(pp.get()), boost::iostreams::never_close_handle);
-
-    std::stringstream ss;
-    ss << stream.rdbuf();
+int ModelWrapper::sysCmd(const std::string &cmd, std::string *out, std::string *err) {
+    redi::pstream ps(cmd, redi::pstreams::pstdout | redi::pstreams::pstderr);
 
     if (out) {
+        std::stringstream ss;
+        ss << ps.out().rdbuf();
         *out = ss.str();
         boost::trim(*out);
     }
 
-    pp.reset();
-    return retval;
+    if (err) {
+        std::stringstream ss;
+        ss << ps.err().rdbuf();
+        *err = ss.str();
+        boost::trim(*err);
+    }
+
+    return ps.close();
 }
 
-std::string ModelWrapper::base64_encode(std::uint8_t const* data, std::size_t len) {
+std::string ModelWrapper::base64_encode(std::uint8_t const *data, std::size_t len) {
     std::string dest;
     dest.resize(base64::encoded_size(len));
     dest.resize(base64::encode(&dest[0], data, len));
@@ -270,14 +269,13 @@ std::string ModelWrapper::base64_encode(std::uint8_t const* data, std::size_t le
 }
 
 std::string ModelWrapper::base64_encode(std::string_view s) {
-    return base64_encode(reinterpret_cast<std::uint8_t const*>(s.data()), s.size());
+    return base64_encode(reinterpret_cast<std::uint8_t const *>(s.data()), s.size());
 }
 
 std::string ModelWrapper::base64_decode(std::string_view data) {
     std::string dest;
     dest.resize(base64::decoded_size(data.size()));
-    auto const result = base64::decode(
-        &dest[0], data.data(), data.size());
+    auto const result = base64::decode(&dest[0], data.data(), data.size());
     dest.resize(result.first);
     return dest;
 }
@@ -297,7 +295,7 @@ int main(int argc, char **argv) {
             return -1;
         }
 
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         std::cerr << ex.what() << std::endl;
         // remove any out file on failure
         std::error_code ec;

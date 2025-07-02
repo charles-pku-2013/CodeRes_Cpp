@@ -5,7 +5,7 @@ protoc --cpp_out=. --proto_path=. model_header.proto
 syntax = "proto3";
 
 package newtranx.ai_server;
-option cc_enable_arenas = true;
+option  cc_enable_arenas = true;
 
 message ModelHeader {
     string model_id = 10;       // 模型唯一标识，默认自动生成uuid
