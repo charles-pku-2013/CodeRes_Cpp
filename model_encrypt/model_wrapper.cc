@@ -39,6 +39,9 @@ DEFINE_string(model_id, "", "set model id, empty for using auto generated uuid")
 DEFINE_string(expire_date, "", "set model expire date");
 DEFINE_uint32(model_concurrency, 0, "set num of model concurrency");
 DEFINE_uint64(start, 0, "set start pos of original model data, i.e. model header length");
+DEFINE_string(key, "", "key file used for encryption or decryption");
+DEFINE_uint64(min_tail_len, 0, "用于混淆的随机数据文件尾最小长度");
+DEFINE_uint64(max_tail_len, 0, "用于混淆的随机数据文件尾最大长度");
 
 class ModelWrapper final {
  public:
@@ -57,12 +60,13 @@ class ModelWrapper final {
     static std::string base64_encode(std::string_view s);
     static std::string base64_decode(std::string_view data);
 
-    std::string                  in_file_, out_file_;
+    std::string                  in_file_, out_file_, key_file_;
     std::unique_ptr<ModelHeader> model_header_;
     std::string                  model_id_;
     std::string                  model_expire_date_;
     uint32_t                     model_concurrency_;
     uint64_t                     model_start_ = 0;
+    uint64_t                     min_tail_len_ = 0, max_tail_len_ = 0;
 };
 
 ModelWrapper::ModelWrapper() {
@@ -71,6 +75,7 @@ ModelWrapper::ModelWrapper() {
     // input and output file
     in_file_ = FLAGS_i;
     out_file_ = FLAGS_o;
+    key_file_ = FLAGS_key;
 
     if (in_file_.empty()) {
         throw std::runtime_error("input file `-i` must be specified!");
@@ -78,6 +83,10 @@ ModelWrapper::ModelWrapper() {
 
     if (out_file_.empty()) {
         throw std::runtime_error("output file `-o` must be specified!");
+    }
+
+    if (key_file_.empty()) {
+        throw std::runtime_error("key file `-key` must be specified!");
     }
 
     // parse model header args
@@ -89,6 +98,10 @@ ModelWrapper::ModelWrapper() {
     if (model_start_ == 0) {
         throw std::runtime_error("`-start` must be greater than 0");
     }
+
+    min_tail_len_ = FLAGS_min_tail_len;
+    max_tail_len_ = FLAGS_max_tail_len;
+    assert(min_tail_len_ <= max_tail_len_);
 }
 
 void ModelWrapper::encode() {
@@ -214,6 +227,7 @@ void ModelWrapper::decode() {
 
     std::string err;
     int         retval = sysCmd(cmd, nullptr, &err);
+
     if (retval) {
         throw std::runtime_error(
             boost::str(boost::format("Failed to extract original model: %s") % err));
@@ -221,6 +235,7 @@ void ModelWrapper::decode() {
 
     std::cerr << "Checking extracted file ..." << std::endl;
     std::string cksum = getMD5(out_file_);
+
     if (cksum != model_header_->checksum()) {
         throw std::runtime_error(
             boost::str(boost::format("Checksum comparation fail, which is %s but expected %s") %
@@ -235,9 +250,11 @@ std::string ModelWrapper::getMD5(const std::string &file) {
     std::string cmd = boost::str(boost::format("md5sum '%s' | awk '{print $1}'") % file);
     std::string out, err;
     int         retval = sysCmd(cmd, &out, &err);
+
     if (!err.empty()) {
         std::cerr << boost::format("Get md5 of file `%s` error: %s") % file % err << std::endl;
     }
+
     return retval == 0 ? out : "";
 }
 
@@ -250,6 +267,8 @@ int ModelWrapper::sysCmd(const std::string &cmd, std::string *out, std::string *
         *out = ss.str();
         boost::trim(*out);
     }
+
+    ps.clear();
 
     if (err) {
         std::stringstream ss;

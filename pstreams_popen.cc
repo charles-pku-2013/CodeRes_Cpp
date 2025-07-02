@@ -14,19 +14,14 @@ int main(int argc, char **argv) {
 
     std::cout << "IS_EXITED: " << ps.rdbuf()->exited() << std::endl;
 
-    // std::string str;
-    // while (std::getline(ps.out(), str)) {
-        // std::cout << "OUT: " << str << std::endl;
-    // }
     {
         std::stringstream ss;
         ss << ps.out().rdbuf();
         std::cout << "OUT: " << ss.str() << std::endl;
     }
+
     ps.clear();
-    // while (std::getline(ps.err(), str)) {
-        // std::cout << "ERR: " << str << std::endl;
-    // }
+
     {
         std::stringstream ss;
         ss << ps.err().rdbuf();
