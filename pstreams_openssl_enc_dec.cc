@@ -12,6 +12,7 @@ std::string encrypt(const std::string& plain, const std::string& key) {
         redi::pstreams::pstdin | redi::pstreams::pstdout | redi::pstreams::pstderr;
 
     redi::pstream ps(cmd, all3streams);
+
     ps << plain << redi::peof;
 
     std::string result;
@@ -54,6 +55,8 @@ std::string decrypt(const std::string& encrypted, const std::string& key) {
         ss << ps.out().rdbuf();
         result = ss.str();
     }
+
+    ps.clear();
 
     std::string err;
     {

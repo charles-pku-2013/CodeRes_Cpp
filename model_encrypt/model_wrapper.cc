@@ -3,15 +3,16 @@ apt install -y libpstreams-dev libboost-all-dev libgflags-dev
 c++ -o model_wrapper model_wrapper.cc model_header.pb.cc -std=c++17 -lprotobuf -lgflags -g
 Example:
 encrypt:
-./model_wrapper -e -i /tmp/model.gguf -o /tmp/enc_model.gguf -start 256 -expire_date 20250801 -model_concurrency 32
+./model_wrapper -e -i /tmp/model.gguf -o /tmp/enc_model.gguf -key id_rsa.pub.pem -start 256 -model_id "16:76:03:59:9e:ce" -expire_date 20250801 -model_concurrency 32
 decrypt:
-./model_wrapper -d -i /tmp/enc_model.gguf -o /tmp/model1.gguf -start 256
+./model_wrapper -d -i /tmp/enc_model.gguf -o /tmp/model1.gguf -key id_rsa.pem -start 256
+print header:
+./model_wrapper -print_header -i /tmp/enc_model.gguf -start 256 -key id_rsa.pem
  */
 #include <gflags/gflags.h>
 #include <pstreams/pstream.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/beast/core/detail/base64.hpp>
 #include <boost/format.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -20,13 +21,13 @@ decrypt:
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <sstream>
 #include <string_view>
 
 #include "model_header.pb.h"
 
 using UUID = boost::uuids::uuid;
-namespace base64 = boost::beast::detail::base64;
 namespace fs = std::filesystem;
 
 using newtranx::ai_server::ModelHeader;
@@ -35,30 +36,71 @@ DEFINE_string(i, "", "input file path");
 DEFINE_string(o, "", "output file path");
 DEFINE_bool(e, false, "wrap (encrypt) the model");
 DEFINE_bool(d, false, "unwrap (decrypt) the model");
+DEFINE_bool(print_header, false, "just print the header content of an encrypted model file");
 DEFINE_string(model_id, "", "set model id, empty for using auto generated uuid");
 DEFINE_string(expire_date, "", "set model expire date");
 DEFINE_uint32(model_concurrency, 0, "set num of model concurrency");
 DEFINE_uint64(start, 0, "set start pos of original model data, i.e. model header length");
 DEFINE_string(key, "", "key file used for encryption or decryption");
-DEFINE_uint64(min_tail_len, 0, "用于混淆的随机数据文件尾最小长度");
-DEFINE_uint64(max_tail_len, 0, "用于混淆的随机数据文件尾最大长度");
+DEFINE_uint64(min_tail_len, 128, "用于混淆的随机数据文件尾最小长度");
+DEFINE_uint64(max_tail_len, 1024, "用于混淆的随机数据文件尾最大长度");
 
 class ModelWrapper final {
  public:
     ModelWrapper();
 
+    /**
+     * @brief 对原始模型进行封装和加密
+     *        从in_file_读入原始模型,封装后模型存放在out_file_
+     *        封装后模型文件格式如下:
+     *            header: 长度由`-start`参数指定, 存储的数据是ModelHeader类序列化后先进行加密再做base64编码
+     *            body: 原始模型数据
+     *            tail: 随机混淆数据,长度由`-min_tail_len`和`-max_tail_len`参数指定
+     */
     void encode();
+
+    /**
+     * @brief 对加密模型进行解密
+     *        从in_file_读入加密模型文件, 解密出原始模型存放于out_file_
+     */
     void decode();
 
- private:
-    static int         sysCmd(const std::string &cmd, std::string *out = nullptr,
-                              std::string *err = nullptr);
-    static std::string getMD5(const std::string &file);
+    /**
+     * @brief 解析加密模型文件头部并打印出来
+     */
+    void parse_header();
 
-    // base64 from boost libs/beast/test/beast/core/_detail_base64.cpp
-    static std::string base64_encode(std::uint8_t const *data, std::size_t len);
-    static std::string base64_encode(std::string_view s);
-    static std::string base64_decode(std::string_view data);
+ private:
+    /**
+     * @brief              Run system command
+     *
+     * @param[in]  cmd     command string like "ls -l"
+     * @param[out] out     content of stdout of the command
+     * @param[out] err     content of stderr of the command
+     * @param[in]  input   content of stdin of the command
+     *
+     * @return             exit code of the command
+     */
+    static int sys_cmd(const std::string &cmd, std::string *out = nullptr,
+                               std::string *err = nullptr, const std::string &input = "");
+
+    // get md5sum of a file
+    static std::string get_md5sum(const std::string &file);
+
+    /**
+     * @brief  encrypt / decrypt a string with openssl and provided rsa key
+     *
+     * @param plain / encrypted    text to be encrypted
+     * @param key_file             rsa key file for encryption / decryption
+     *
+     * @return            encrypted / decrypted data
+     */
+    static std::string encrypt(const std::string &plain, const std::string &key_file);
+    static std::string decrypt(const std::string &encrypted, const std::string &key_file);
+
+    // base64 encode / decode
+    static std::string base64_encode(const std::string &plain);
+    static std::string base64_decode(const std::string &encoded);
 
     std::string                  in_file_, out_file_, key_file_;
     std::unique_ptr<ModelHeader> model_header_;
@@ -81,12 +123,17 @@ ModelWrapper::ModelWrapper() {
         throw std::runtime_error("input file `-i` must be specified!");
     }
 
-    if (out_file_.empty()) {
-        throw std::runtime_error("output file `-o` must be specified!");
-    }
+    // if (out_file_.empty()) {
+        // throw std::runtime_error("output file `-o` must be specified!");
+    // }
 
     if (key_file_.empty()) {
         throw std::runtime_error("key file `-key` must be specified!");
+    }
+
+    if (!fs::exists(key_file_)) {
+        throw std::runtime_error(
+            boost::str(boost::format("Specified key file `%s` does not exist!") % key_file_));
     }
 
     // parse model header args
@@ -141,20 +188,21 @@ void ModelWrapper::encode() {
                                             model_header_->start_pos() % model_header_->end_pos()));
     }
 
-    std::string cksum = getMD5(in_file_);
+    std::string cksum = get_md5sum(in_file_);
     if (cksum.empty()) {
         throw std::runtime_error(
             boost::str(boost::format("Failed to get checksum of input file `%s`") % in_file_));
     }
     model_header_->set_checksum(cksum);
 
-    // encode header with base64
+    // encrypt header with ssl and then encode with base64
     std::ostringstream oss;
     if (!model_header_->SerializeToOstream(&oss)) {
         throw std::runtime_error("Failed to serialize model header!");
     }
     std::string header_data = oss.str();
-    std::string encoded_header = base64_encode(header_data);
+    std::string encrypted_header = encrypt(header_data, key_file_);
+    std::string encoded_header = base64_encode(encrypted_header);
 
     if (encoded_header.length() >= model_start_) {
         throw std::runtime_error(
@@ -171,14 +219,30 @@ void ModelWrapper::encode() {
     }
     ofs.close();
 
-    std::cerr << "Copying original model to output file ..." << std::endl;
+    std::cerr << "Embedding original model to output file ..." << std::endl;
     std::string cmd = boost::str(boost::format("cat '%s' >> '%s'") % in_file_ % out_file_);
     std::string err;
-    int         retval = sysCmd(cmd, nullptr, &err);
+    int         retval = sys_cmd(cmd, nullptr, &err);
 
     if (retval) {
         throw std::runtime_error(
             boost::str(boost::format("Failed to copy original model to output file: %s") % err));
+    }
+
+    // 在文件末尾添加混淆随机数据
+    std::random_device            rd;         // obtain a random number from hardware
+    std::mt19937                  gen(rd());  // seed the generator
+    std::uniform_int_distribution distr(min_tail_len_, max_tail_len_);  // define the range
+    int                           tail_len = distr(gen);
+
+    cmd = boost::str(boost::format("head -c %d /dev/random >> '%s'") % tail_len % out_file_);
+    retval = sys_cmd(cmd, nullptr, &err);
+
+    if (retval) {
+        std::cerr << "WARNING! Failed to add tail data to output file, err: " << err << std::endl;
+    } else {
+        std::cerr << boost::format("Added %d bytes random tail block to output file.") % tail_len
+                  << std::endl;
     }
 
     std::cerr << boost::format("Successfully encoded model from `%s` to `%s`") % in_file_ %
@@ -188,31 +252,8 @@ void ModelWrapper::encode() {
 }
 
 void ModelWrapper::decode() {
-    std::ifstream ifs(in_file_, std::ios::in | std::ios::binary);
-    if (!ifs) {
-        throw std::runtime_error(
-            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
-    }
-
-    // read and decode model header
-    std::vector<char> raw_header(model_start_, 0);
-    ifs.read(raw_header.data(), model_start_);
-    if (!ifs) {
-        throw std::runtime_error("Failed to read model header from input file!");
-    }
-    ifs.close();
-
-    std::string        encoded_header(raw_header.data());
-    std::string        decoded_header = base64_decode(encoded_header);
-    std::istringstream iss(decoded_header);
-
-    model_header_.reset(new ModelHeader);
-    if (!model_header_->ParseFromIstream(&iss)) {
-        throw std::runtime_error("Failed to parse model header!");
-    }
-
-    std::cerr << "Successfully read model header:" << std::endl;
-    std::cerr << model_header_->DebugString() << std::endl;
+    // get model header
+    parse_header();
 
     if (model_header_->start_pos() >= model_header_->end_pos()) {
         throw std::runtime_error(
@@ -226,7 +267,7 @@ void ModelWrapper::decode() {
                                  (model_header_->start_pos() + 1) % in_file_ % sz % out_file_);
 
     std::string err;
-    int         retval = sysCmd(cmd, nullptr, &err);
+    int         retval = sys_cmd(cmd, nullptr, &err);
 
     if (retval) {
         throw std::runtime_error(
@@ -234,7 +275,7 @@ void ModelWrapper::decode() {
     }
 
     std::cerr << "Checking extracted file ..." << std::endl;
-    std::string cksum = getMD5(out_file_);
+    std::string cksum = get_md5sum(out_file_);
 
     if (cksum != model_header_->checksum()) {
         throw std::runtime_error(
@@ -246,10 +287,40 @@ void ModelWrapper::decode() {
               << std::endl;
 }
 
-std::string ModelWrapper::getMD5(const std::string &file) {
+void ModelWrapper::parse_header() {
+    std::ifstream ifs(in_file_, std::ios::in | std::ios::binary);
+    if (!ifs) {
+        throw std::runtime_error(
+            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
+    }
+
+    // read and decrypt decode model header
+    std::cerr << "Parsing model header..." << std::endl;
+    std::vector<char> raw_header(model_start_, 0);
+    ifs.read(raw_header.data(), model_start_);
+    if (!ifs) {
+        throw std::runtime_error("Failed to read model header from input file!");
+    }
+    ifs.close();
+
+    std::string        encoded_header(raw_header.data());
+    std::string        encrypted_header = base64_decode(encoded_header);
+    std::string        plain_header = decrypt(encrypted_header, key_file_);
+    std::istringstream iss(plain_header);
+
+    model_header_.reset(new ModelHeader);
+    if (!model_header_->ParseFromIstream(&iss)) {
+        throw std::runtime_error("Failed to parse model header!");
+    }
+
+    std::cerr << "Successfully read model header:" << std::endl;
+    std::cerr << model_header_->DebugString() << std::endl;
+}
+
+std::string ModelWrapper::get_md5sum(const std::string &file) {
     std::string cmd = boost::str(boost::format("md5sum '%s' | awk '{print $1}'") % file);
     std::string out, err;
-    int         retval = sysCmd(cmd, &out, &err);
+    int         retval = sys_cmd(cmd, &out, &err);
 
     if (!err.empty()) {
         std::cerr << boost::format("Get md5 of file `%s` error: %s") % file % err << std::endl;
@@ -258,8 +329,16 @@ std::string ModelWrapper::getMD5(const std::string &file) {
     return retval == 0 ? out : "";
 }
 
-int ModelWrapper::sysCmd(const std::string &cmd, std::string *out, std::string *err) {
-    redi::pstream ps(cmd, redi::pstreams::pstdout | redi::pstreams::pstderr);
+int ModelWrapper::sys_cmd(const std::string &cmd, std::string *out, std::string *err,
+                          const std::string &input) {
+    const redi::pstreams::pmode all3streams =
+        redi::pstreams::pstdin | redi::pstreams::pstdout | redi::pstreams::pstderr;
+
+    redi::pstream ps(cmd, all3streams);
+
+    if (!input.empty()) {
+        ps << input << redi::peof;
+    }
 
     if (out) {
         std::stringstream ss;
@@ -280,23 +359,61 @@ int ModelWrapper::sysCmd(const std::string &cmd, std::string *out, std::string *
     return ps.close();
 }
 
-std::string ModelWrapper::base64_encode(std::uint8_t const *data, std::size_t len) {
-    std::string dest;
-    dest.resize(base64::encoded_size(len));
-    dest.resize(base64::encode(&dest[0], data, len));
-    return dest;
+std::string ModelWrapper::encrypt(const std::string &plain, const std::string &key_file) {
+    std::string cmd =
+        boost::str(boost::format("openssl pkeyutl -encrypt -inkey %s -pubin") % key_file);
+
+    std::string encrypted, err;
+
+    int status = sys_cmd(cmd, &encrypted, &err, plain);
+
+    if (status) {
+        throw std::runtime_error(boost::str(
+            boost::format("OpenSSL encryption fail, cmd: `%s`, err_msg: %s") % cmd % err));
+    }
+
+    return encrypted;
 }
 
-std::string ModelWrapper::base64_encode(std::string_view s) {
-    return base64_encode(reinterpret_cast<std::uint8_t const *>(s.data()), s.size());
+std::string ModelWrapper::decrypt(const std::string &encrypted, const std::string &key_file) {
+    std::string cmd = boost::str(boost::format("openssl pkeyutl -decrypt -inkey %s") % key_file);
+
+    std::string plain, err;
+
+    int status = sys_cmd(cmd, &plain, &err, encrypted);
+
+    if (status) {
+        throw std::runtime_error(boost::str(
+            boost::format("OpenSSL decryption fail, cmd: `%s`, err_msg: %s") % cmd % err));
+    }
+
+    return plain;
 }
 
-std::string ModelWrapper::base64_decode(std::string_view data) {
-    std::string dest;
-    dest.resize(base64::decoded_size(data.size()));
-    auto const result = base64::decode(&dest[0], data.data(), data.size());
-    dest.resize(result.first);
-    return dest;
+std::string ModelWrapper::base64_encode(const std::string &plain) {
+    std::string encoded, err;
+
+    int status = sys_cmd("base64", &encoded, &err, plain);
+
+    if (status) {
+        throw std::runtime_error(
+            boost::str(boost::format("base64 encode fail, err_msg: %s") % err));
+    }
+
+    return encoded;
+}
+
+std::string ModelWrapper::base64_decode(const std::string &encoded) {
+    std::string plain, err;
+
+    int status = sys_cmd("base64 -d", &plain, &err, encoded);
+
+    if (status) {
+        throw std::runtime_error(
+            boost::str(boost::format("base64 decode fail, err_msg: %s") % err));
+    }
+
+    return plain;
 }
 
 int main(int argc, char **argv) {
@@ -309,8 +426,10 @@ int main(int argc, char **argv) {
             model_wrapper.encode();
         } else if (FLAGS_d) {
             model_wrapper.decode();
+        } else if (FLAGS_print_header) {
+            model_wrapper.parse_header();
         } else {
-            std::cerr << "Task type `-e` or `-d` must be specified!" << std::endl;
+            std::cerr << "Task type `-e` or `-d` or `-print_header` must be specified!" << std::endl;
             return -1;
         }
 
