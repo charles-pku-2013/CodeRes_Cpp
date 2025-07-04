@@ -185,6 +185,7 @@ class ModelHeader PROTOBUF_FINAL :
     kModelIdFieldNumber = 10,
     kExpireDateFieldNumber = 20,
     kChecksumFieldNumber = 60,
+    kOriginalFilenameFieldNumber = 70,
     kNConcurrencyFieldNumber = 30,
     kStartPosFieldNumber = 40,
     kEndPosFieldNumber = 50,
@@ -264,6 +265,31 @@ class ModelHeader PROTOBUF_FINAL :
   std::string* _internal_mutable_checksum();
   public:
 
+  // string original_filename = 70;
+  void clear_original_filename();
+  const std::string& original_filename() const;
+  void set_original_filename(const std::string& value);
+  void set_original_filename(std::string&& value);
+  void set_original_filename(const char* value);
+  void set_original_filename(const char* value, size_t size);
+  std::string* mutable_original_filename();
+  std::string* release_original_filename();
+  void set_allocated_original_filename(std::string* original_filename);
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  std::string* unsafe_arena_release_original_filename();
+  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
+  "    string fields are deprecated and will be removed in a"
+  "    future release.")
+  void unsafe_arena_set_allocated_original_filename(
+      std::string* original_filename);
+  private:
+  const std::string& _internal_original_filename() const;
+  void _internal_set_original_filename(const std::string& value);
+  std::string* _internal_mutable_original_filename();
+  public:
+
   // uint32 n_concurrency = 30;
   void clear_n_concurrency();
   ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency() const;
@@ -301,6 +327,7 @@ class ModelHeader PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr model_id_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr expire_date_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr checksum_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr original_filename_;
   ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency_;
   ::PROTOBUF_NAMESPACE_ID::uint64 start_pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 end_pos_;
@@ -619,6 +646,87 @@ inline void ModelHeader::unsafe_arena_set_allocated_checksum(
   checksum_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       checksum, GetArena());
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:newtranx.ai_server.ModelHeader.checksum)
+}
+
+// string original_filename = 70;
+inline void ModelHeader::clear_original_filename() {
+  original_filename_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline const std::string& ModelHeader::original_filename() const {
+  // @@protoc_insertion_point(field_get:newtranx.ai_server.ModelHeader.original_filename)
+  return _internal_original_filename();
+}
+inline void ModelHeader::set_original_filename(const std::string& value) {
+  _internal_set_original_filename(value);
+  // @@protoc_insertion_point(field_set:newtranx.ai_server.ModelHeader.original_filename)
+}
+inline std::string* ModelHeader::mutable_original_filename() {
+  // @@protoc_insertion_point(field_mutable:newtranx.ai_server.ModelHeader.original_filename)
+  return _internal_mutable_original_filename();
+}
+inline const std::string& ModelHeader::_internal_original_filename() const {
+  return original_filename_.Get();
+}
+inline void ModelHeader::_internal_set_original_filename(const std::string& value) {
+  
+  original_filename_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+}
+inline void ModelHeader::set_original_filename(std::string&& value) {
+  
+  original_filename_.Set(
+    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
+  // @@protoc_insertion_point(field_set_rvalue:newtranx.ai_server.ModelHeader.original_filename)
+}
+inline void ModelHeader::set_original_filename(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  original_filename_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
+              GetArena());
+  // @@protoc_insertion_point(field_set_char:newtranx.ai_server.ModelHeader.original_filename)
+}
+inline void ModelHeader::set_original_filename(const char* value,
+    size_t size) {
+  
+  original_filename_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size), GetArena());
+  // @@protoc_insertion_point(field_set_pointer:newtranx.ai_server.ModelHeader.original_filename)
+}
+inline std::string* ModelHeader::_internal_mutable_original_filename() {
+  
+  return original_filename_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline std::string* ModelHeader::release_original_filename() {
+  // @@protoc_insertion_point(field_release:newtranx.ai_server.ModelHeader.original_filename)
+  return original_filename_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+}
+inline void ModelHeader::set_allocated_original_filename(std::string* original_filename) {
+  if (original_filename != nullptr) {
+    
+  } else {
+    
+  }
+  original_filename_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), original_filename,
+      GetArena());
+  // @@protoc_insertion_point(field_set_allocated:newtranx.ai_server.ModelHeader.original_filename)
+}
+inline std::string* ModelHeader::unsafe_arena_release_original_filename() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:newtranx.ai_server.ModelHeader.original_filename)
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  
+  return original_filename_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      GetArena());
+}
+inline void ModelHeader::unsafe_arena_set_allocated_original_filename(
+    std::string* original_filename) {
+  GOOGLE_DCHECK(GetArena() != nullptr);
+  if (original_filename != nullptr) {
+    
+  } else {
+    
+  }
+  original_filename_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
+      original_filename, GetArena());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:newtranx.ai_server.ModelHeader.original_filename)
 }
 
 #ifdef __GNUC__

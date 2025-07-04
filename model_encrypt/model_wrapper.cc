@@ -53,9 +53,9 @@ class ModelWrapper final {
      * @brief 对原始模型进行封装和加密
      *        从in_file_读入原始模型,封装后模型存放在out_file_
      *        封装后模型文件格式如下:
-     *            header: 长度由`-start`参数指定, 存储的数据是ModelHeader类序列化后先进行加密再做base64编码
+     *            header: 长度由'-start'参数指定, 存储的数据是ModelHeader类序列化后先进行加密再做base64编码
      *            body: 原始模型数据
-     *            tail: 随机混淆数据,长度由`-min_tail_len`和`-max_tail_len`参数指定
+     *            tail: 随机混淆数据,长度由'-min_tail_len'和'-max_tail_len'参数指定
      */
     void encode();
 
@@ -120,20 +120,20 @@ ModelWrapper::ModelWrapper() {
     key_file_ = FLAGS_key;
 
     if (in_file_.empty()) {
-        throw std::runtime_error("input file `-i` must be specified!");
+        throw std::runtime_error("input file '-i' must be specified!");
     }
 
     // if (out_file_.empty()) {
-        // throw std::runtime_error("output file `-o` must be specified!");
+        // throw std::runtime_error("output file '-o' must be specified!");
     // }
 
     if (key_file_.empty()) {
-        throw std::runtime_error("key file `-key` must be specified!");
+        throw std::runtime_error("key file '-key' must be specified!");
     }
 
     if (!fs::exists(key_file_)) {
         throw std::runtime_error(
-            boost::str(boost::format("Specified key file `%s` does not exist!") % key_file_));
+            boost::str(boost::format("Specified key file '%s' does not exist!") % key_file_));
     }
 
     // parse model header args
@@ -143,7 +143,7 @@ ModelWrapper::ModelWrapper() {
     model_start_ = FLAGS_start;
 
     if (model_start_ == 0) {
-        throw std::runtime_error("`-start` must be greater than 0");
+        throw std::runtime_error("'-start' must be greater than 0");
     }
 
     min_tail_len_ = FLAGS_min_tail_len;
@@ -158,16 +158,18 @@ void ModelWrapper::encode() {
 
     if (!ifs) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
+            boost::str(boost::format("Failed to open file '%s' for input") % in_file_));
     }
     if (!ofs) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to open file `%s` for output") % out_file_));
+            boost::str(boost::format("Failed to open file '%s' for output") % out_file_));
     }
     ifs.close();
 
     std::cerr << "Generating model header..." << std::endl;
     model_header_.reset(new ModelHeader);
+
+    model_header_->set_original_filename(fs::path(in_file_).filename());
 
     if (model_id_.empty()) {
         model_header_->set_model_id(boost::uuids::to_string(boost::uuids::random_generator()()));
@@ -184,14 +186,14 @@ void ModelWrapper::encode() {
     model_header_->set_end_pos(model_start_ + in_file_sz);
 
     if (model_header_->start_pos() >= model_header_->end_pos()) {
-        throw std::runtime_error(boost::str(boost::format("Invalid `start_pos=%lu end_pos=%lu`") %
+        throw std::runtime_error(boost::str(boost::format("Invalid 'start_pos=%lu end_pos=%lu'") %
                                             model_header_->start_pos() % model_header_->end_pos()));
     }
 
     std::string cksum = get_md5sum(in_file_);
     if (cksum.empty()) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to get checksum of input file `%s`") % in_file_));
+            boost::str(boost::format("Failed to get checksum of input file '%s'") % in_file_));
     }
     model_header_->set_checksum(cksum);
 
@@ -206,8 +208,8 @@ void ModelWrapper::encode() {
 
     if (encoded_header.length() >= model_start_) {
         throw std::runtime_error(
-            boost::str(boost::format("Encoded header length `%lu` is larger than specified model "
-                                     "start pos `%lu`, please reset the value with `-start`") %
+            boost::str(boost::format("Encoded header length '%lu' is larger than specified model "
+                                     "start pos '%lu', please reset the value with '-start'") %
                        (encoded_header.length() + 1) % model_start_));
     }
     encoded_header.resize(model_start_, 0);
@@ -226,7 +228,7 @@ void ModelWrapper::encode() {
 
     if (retval) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to copy original model to output file: %s") % err));
+            boost::str(boost::format("Failed to embedding original model to output file: %s") % err));
     }
 
     // 在文件末尾添加混淆随机数据
@@ -245,7 +247,7 @@ void ModelWrapper::encode() {
                   << std::endl;
     }
 
-    std::cerr << boost::format("Successfully encoded model from `%s` to `%s`") % in_file_ %
+    std::cerr << boost::format("Successfully encoded model from '%s' to '%s'") % in_file_ %
                      out_file_
               << std::endl;
     std::cerr << model_header_->DebugString() << std::endl;
@@ -257,7 +259,7 @@ void ModelWrapper::decode() {
 
     if (model_header_->start_pos() >= model_header_->end_pos()) {
         throw std::runtime_error(
-            boost::str(boost::format("Invalid model file info `start_pos=%lu end_pos=%lu`") %
+            boost::str(boost::format("Invalid model file info 'start_pos=%lu end_pos=%lu'") %
                        model_header_->start_pos() % model_header_->end_pos()));
     }
 
@@ -291,14 +293,14 @@ void ModelWrapper::parse_header() {
     std::ifstream ifs(in_file_, std::ios::in | std::ios::binary);
     if (!ifs) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to open file `%s` for input") % in_file_));
+            boost::str(boost::format("Failed to open file '%s' for input") % in_file_));
     }
 
     // read and decrypt decode model header
     std::cerr << "Parsing model header..." << std::endl;
     std::vector<char> raw_header(model_start_, 0);
     ifs.read(raw_header.data(), model_start_);
-    if (!ifs) {
+    if (ifs.gcount() == 0) {
         throw std::runtime_error("Failed to read model header from input file!");
     }
     ifs.close();
@@ -323,7 +325,7 @@ std::string ModelWrapper::get_md5sum(const std::string &file) {
     int         retval = sys_cmd(cmd, &out, &err);
 
     if (!err.empty()) {
-        std::cerr << boost::format("Get md5 of file `%s` error: %s") % file % err << std::endl;
+        std::cerr << boost::format("Get md5 of file '%s' error: %s") % file % err << std::endl;
     }
 
     return retval == 0 ? out : "";
@@ -369,7 +371,7 @@ std::string ModelWrapper::encrypt(const std::string &plain, const std::string &k
 
     if (status) {
         throw std::runtime_error(boost::str(
-            boost::format("OpenSSL encryption fail, cmd: `%s`, err_msg: %s") % cmd % err));
+            boost::format("OpenSSL encryption fail, cmd: '%s', err_msg: %s") % cmd % err));
     }
 
     return encrypted;
@@ -384,7 +386,7 @@ std::string ModelWrapper::decrypt(const std::string &encrypted, const std::strin
 
     if (status) {
         throw std::runtime_error(boost::str(
-            boost::format("OpenSSL decryption fail, cmd: `%s`, err_msg: %s") % cmd % err));
+            boost::format("OpenSSL decryption fail, cmd: '%s', err_msg: %s") % cmd % err));
     }
 
     return plain;
@@ -429,7 +431,7 @@ int main(int argc, char **argv) {
         } else if (FLAGS_print_header) {
             model_wrapper.parse_header();
         } else {
-            std::cerr << "Task type `-e` or `-d` or `-print_header` must be specified!" << std::endl;
+            std::cerr << "Task type '-e' or '-d' or '-print_header' must be specified!" << std::endl;
             return -1;
         }
 
