@@ -52,6 +52,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_model_5fheader_2eproto::offset
   PROTOBUF_FIELD_OFFSET(::newtranx::ai_server::ModelHeader, start_pos_),
   PROTOBUF_FIELD_OFFSET(::newtranx::ai_server::ModelHeader, end_pos_),
   PROTOBUF_FIELD_OFFSET(::newtranx::ai_server::ModelHeader, checksum_),
+  PROTOBUF_FIELD_OFFSET(::newtranx::ai_server::ModelHeader, original_filename_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::newtranx::ai_server::ModelHeader)},
@@ -63,10 +64,11 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 
 const char descriptor_table_protodef_model_5fheader_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\022model_header.proto\022\022newtranx.ai_server"
-  "\"\201\001\n\013ModelHeader\022\020\n\010model_id\030\n \001(\t\022\023\n\013ex"
+  "\"\234\001\n\013ModelHeader\022\020\n\010model_id\030\n \001(\t\022\023\n\013ex"
   "pire_date\030\024 \001(\t\022\025\n\rn_concurrency\030\036 \001(\r\022\021"
   "\n\tstart_pos\030( \001(\004\022\017\n\007end_pos\0302 \001(\004\022\020\n\010ch"
-  "ecksum\030< \001(\tB\003\370\001\001b\006proto3"
+  "ecksum\030< \001(\t\022\031\n\021original_filename\030F \001(\tB"
+  "\003\370\001\001b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_model_5fheader_2eproto_deps[1] = {
 };
@@ -75,7 +77,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_mod
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_model_5fheader_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_model_5fheader_2eproto = {
-  false, false, descriptor_table_protodef_model_5fheader_2eproto, "model_header.proto", 185,
+  false, false, descriptor_table_protodef_model_5fheader_2eproto, "model_header.proto", 212,
   &descriptor_table_model_5fheader_2eproto_once, descriptor_table_model_5fheader_2eproto_sccs, descriptor_table_model_5fheader_2eproto_deps, 1, 0,
   schemas, file_default_instances, TableStruct_model_5fheader_2eproto::offsets,
   file_level_metadata_model_5fheader_2eproto, 1, file_level_enum_descriptors_model_5fheader_2eproto, file_level_service_descriptors_model_5fheader_2eproto,
@@ -118,6 +120,11 @@ ModelHeader::ModelHeader(const ModelHeader& from)
     checksum_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_checksum(),
       GetArena());
   }
+  original_filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_original_filename().empty()) {
+    original_filename_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_original_filename(),
+      GetArena());
+  }
   ::memcpy(&n_concurrency_, &from.n_concurrency_,
     static_cast<size_t>(reinterpret_cast<char*>(&end_pos_) -
     reinterpret_cast<char*>(&n_concurrency_)) + sizeof(end_pos_));
@@ -129,6 +136,7 @@ void ModelHeader::SharedCtor() {
   model_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   expire_date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   checksum_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  original_filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&n_concurrency_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&end_pos_) -
       reinterpret_cast<char*>(&n_concurrency_)) + sizeof(end_pos_));
@@ -145,6 +153,7 @@ void ModelHeader::SharedDtor() {
   model_id_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   expire_date_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   checksum_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  original_filename_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void ModelHeader::ArenaDtor(void* object) {
@@ -171,6 +180,7 @@ void ModelHeader::Clear() {
   model_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   expire_date_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   checksum_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  original_filename_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::memset(&n_concurrency_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&end_pos_) -
       reinterpret_cast<char*>(&n_concurrency_)) + sizeof(end_pos_));
@@ -230,6 +240,15 @@ const char* ModelHeader::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID
           auto str = _internal_mutable_checksum();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "newtranx.ai_server.ModelHeader.checksum"));
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // string original_filename = 70;
+      case 70:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
+          auto str = _internal_mutable_original_filename();
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "newtranx.ai_server.ModelHeader.original_filename"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -309,6 +328,16 @@ failure:
         60, this->_internal_checksum(), target);
   }
 
+  // string original_filename = 70;
+  if (this->original_filename().size() > 0) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_original_filename().data(), static_cast<int>(this->_internal_original_filename().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "newtranx.ai_server.ModelHeader.original_filename");
+    target = stream->WriteStringMaybeAliased(
+        70, this->_internal_original_filename(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -344,6 +373,13 @@ size_t ModelHeader::ByteSizeLong() const {
     total_size += 2 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_checksum());
+  }
+
+  // string original_filename = 70;
+  if (this->original_filename().size() > 0) {
+    total_size += 2 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_original_filename());
   }
 
   // uint32 n_concurrency = 30;
@@ -407,6 +443,9 @@ void ModelHeader::MergeFrom(const ModelHeader& from) {
   if (from.checksum().size() > 0) {
     _internal_set_checksum(from._internal_checksum());
   }
+  if (from.original_filename().size() > 0) {
+    _internal_set_original_filename(from._internal_original_filename());
+  }
   if (from.n_concurrency() != 0) {
     _internal_set_n_concurrency(from._internal_n_concurrency());
   }
@@ -442,6 +481,7 @@ void ModelHeader::InternalSwap(ModelHeader* other) {
   model_id_.Swap(&other->model_id_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   expire_date_.Swap(&other->expire_date_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   checksum_.Swap(&other->checksum_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  original_filename_.Swap(&other->original_filename_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(ModelHeader, end_pos_)
       + sizeof(ModelHeader::end_pos_)

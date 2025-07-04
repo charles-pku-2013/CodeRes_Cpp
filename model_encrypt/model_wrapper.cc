@@ -169,6 +169,8 @@ void ModelWrapper::encode() {
     std::cerr << "Generating model header..." << std::endl;
     model_header_.reset(new ModelHeader);
 
+    model_header_->set_original_filename(fs::path(in_file_).filename());
+
     if (model_id_.empty()) {
         model_header_->set_model_id(boost::uuids::to_string(boost::uuids::random_generator()()));
     } else {
@@ -226,7 +228,7 @@ void ModelWrapper::encode() {
 
     if (retval) {
         throw std::runtime_error(
-            boost::str(boost::format("Failed to copy original model to output file: %s") % err));
+            boost::str(boost::format("Failed to embedding original model to output file: %s") % err));
     }
 
     // 在文件末尾添加混淆随机数据
