@@ -39,3 +39,28 @@ UDP 音视频数据
     FTP（文件传输）
     SMTP/POP3（电子邮件）
     DNS（域名解析）。
+
+# c++11 14 17
+. C++11
+auto decltype
+using  typedef
+template 可变模板参数
+lambda
+mutable
+noexcept
+constexpr
+initialization list
+stl: tupe
+std::move
+shared_ptr
+
+. C++14
+auto return type
+lambda auto param
+变量模板
+make_unique
+shared_lock
+std::quoted
+
+C++17
+std::variant optional any filesystem string_view
