@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
     for (const auto& trans : translation) {
         std::copy(trans.output().begin(), trans.output().end(),
-                std::ostream_iterator<std::string>(std::cout , " "));
+                std::ostream_iterator<std::string>(std::cout, " "));
     }
     std::cout << std::endl;
 
