@@ -15,4 +15,5 @@ message ModelHeader {
     uint64 end_pos = 50;        // 模型数据在文件中的结束位置, 在生成加密文件时自动计算
     string checksum = 60;       // 模型数据校验值，默认是原始模型文件的md5校验
     string original_filename = 70;   // 原始模型文件名
+    bool   is_directory = 80;   // 原始模型以目录形式存在
 }

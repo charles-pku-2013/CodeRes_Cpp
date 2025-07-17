@@ -19,7 +19,7 @@ trim_left
 trim_right
 trim_left_copy
 trim_right_copy
-trim_left_if(phone,is_any_of("0"));
+trim_left_if(phone, is_any_of("0"));
 boost::trim_if(key, boost::is_any_of("\"" SPACES));
 nRead = boost::lexical_cast<size_t>(v.value);
 boost::conversion::try_lexical_convert(v.value, nRead)

@@ -186,9 +186,10 @@ class ModelHeader PROTOBUF_FINAL :
     kExpireDateFieldNumber = 20,
     kChecksumFieldNumber = 60,
     kOriginalFilenameFieldNumber = 70,
-    kNConcurrencyFieldNumber = 30,
     kStartPosFieldNumber = 40,
     kEndPosFieldNumber = 50,
+    kNConcurrencyFieldNumber = 30,
+    kIsDirectoryFieldNumber = 80,
   };
   // string model_id = 10;
   void clear_model_id();
@@ -290,15 +291,6 @@ class ModelHeader PROTOBUF_FINAL :
   std::string* _internal_mutable_original_filename();
   public:
 
-  // uint32 n_concurrency = 30;
-  void clear_n_concurrency();
-  ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency() const;
-  void set_n_concurrency(::PROTOBUF_NAMESPACE_ID::uint32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_n_concurrency() const;
-  void _internal_set_n_concurrency(::PROTOBUF_NAMESPACE_ID::uint32 value);
-  public:
-
   // uint64 start_pos = 40;
   void clear_start_pos();
   ::PROTOBUF_NAMESPACE_ID::uint64 start_pos() const;
@@ -317,6 +309,24 @@ class ModelHeader PROTOBUF_FINAL :
   void _internal_set_end_pos(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
+  // uint32 n_concurrency = 30;
+  void clear_n_concurrency();
+  ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency() const;
+  void set_n_concurrency(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_n_concurrency() const;
+  void _internal_set_n_concurrency(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  public:
+
+  // bool is_directory = 80;
+  void clear_is_directory();
+  bool is_directory() const;
+  void set_is_directory(bool value);
+  private:
+  bool _internal_is_directory() const;
+  void _internal_set_is_directory(bool value);
+  public:
+
   // @@protoc_insertion_point(class_scope:newtranx.ai_server.ModelHeader)
  private:
   class _Internal;
@@ -328,9 +338,10 @@ class ModelHeader PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr expire_date_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr checksum_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr original_filename_;
-  ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency_;
   ::PROTOBUF_NAMESPACE_ID::uint64 start_pos_;
   ::PROTOBUF_NAMESPACE_ID::uint64 end_pos_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 n_concurrency_;
+  bool is_directory_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_model_5fheader_2eproto;
 };
@@ -727,6 +738,26 @@ inline void ModelHeader::unsafe_arena_set_allocated_original_filename(
   original_filename_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       original_filename, GetArena());
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:newtranx.ai_server.ModelHeader.original_filename)
+}
+
+// bool is_directory = 80;
+inline void ModelHeader::clear_is_directory() {
+  is_directory_ = false;
+}
+inline bool ModelHeader::_internal_is_directory() const {
+  return is_directory_;
+}
+inline bool ModelHeader::is_directory() const {
+  // @@protoc_insertion_point(field_get:newtranx.ai_server.ModelHeader.is_directory)
+  return _internal_is_directory();
+}
+inline void ModelHeader::_internal_set_is_directory(bool value) {
+  
+  is_directory_ = value;
+}
+inline void ModelHeader::set_is_directory(bool value) {
+  _internal_set_is_directory(value);
+  // @@protoc_insertion_point(field_set:newtranx.ai_server.ModelHeader.is_directory)
 }
 
 #ifdef __GNUC__
