@@ -17,11 +17,8 @@ public:
     vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
         using ResultType = vector<vector<int>>;
         ResultType result;
-        if (!root) { return result; }
 
-        std::vector<TreeNode*> stk;
-        std::vector<bool> flag;
-        TreeNode *p = root;
+        if (!root) { return result; }
 
         auto get_sum_path = [&] {
             std::vector<int> path;
@@ -35,18 +32,25 @@ public:
             }
         };
 
+        std::vector<TreeNode*> stk;
+        std::vector<bool> flag;
+        TreeNode *p = root;
+
         while (p || !stk.empty()) {
             while (p) {
                 stk.emplace_back(p);
                 flag.emplace_back(false);
                 p = p->left;
             }
+
             if (!stk.empty()) {
                 auto* q = stk.back();
                 if (!flag.back()) {
+                    // back from left
                     flag.back() = true;
                     p = q->right;
                 } else {
+                    // back from right, and run the main logic
                     if (!q->left && !q->right) {
                         get_sum_path();
                     }

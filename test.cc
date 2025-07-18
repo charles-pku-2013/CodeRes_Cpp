@@ -1,40 +1,38 @@
-/*
-c++ -o /tmp/test test.cc -std=c++17 -lboost_iostreams
- */
-#include <boost/iostreams/device/mapped_file.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <iostream>
-#include <vector>
+class Solution {
+public:
+    string longestCommonPrefix(vector<string>& strs) {
+        std::string result;
 
-// struct mapped_file_params {
-//     explicit mapped_file_params();
-//     explicit mapped_file_params(const std::string& path);
-//     std::string              path;
-//     mapped_file::mapmode     flags;
-//     std::ios_base::openmode  mode;  // Deprecated
-//     stream_offset            offset;
-//     std::size_t              length;
-//     stream_offset            new_file_size;
-//     const char*              hint;
-// };
+        if (strs.empty()) {
+            return result;
+        }
 
-namespace bio = boost::iostreams;
+        std::size_t i = 0;
 
-int main() {
-    using namespace std;
+        auto is_equal = [&]()->bool {
+            auto& first = strs[0];
 
-    vector<string> strArray(2000000);
+            if (i >= first.length()) {
+                return false;
+            }
 
-    bio::mapped_file_params params("/tmp/test.cc");
-    params.offset        = 10;
-    params.length        = 20;  // map only first 20 chars
-    params.flags         = bio::mapped_file::mapmode::readwrite;
+            char ch = first[i];
+            
+            for (std::size_t j = 1; j < strs.size(); ++j) {
+                auto& s = strs[j];
+                if (i >= s.length() || s[i] != ch) {
+                    return false;
+                }
+            }
 
-    bio::stream<bio::mapped_file_sink> out(params);
+            return true;
+        };
 
-    out.write("hello", 6);
-    // out << "hello";
-    out.close();
+        while (is_equal()) {
+            result.append(1, strs[0][i]);
+            ++i;
+        }
 
-    return 0;
-}
+        return result;
+    }
+};
