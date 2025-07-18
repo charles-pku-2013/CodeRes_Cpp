@@ -1,5 +1,18 @@
 /*
-c++ -o /tmp/server *.cc -DBRPC_WITH_GLOG=0 -DGFLAGS_NS=google -D__const__=__unused__ -std=c++11 -DNDEBUG -O2 -pipe -fPIC -fno-omit-frame-pointer -lprotobuf -lbrpc -lpthread -ldl -lrt
+# build and install brpc-1.8.0
+apt install -y libleveldb-dev libprotoc-dev libssl-dev
+mkdir -p /tmp/build
+cmake -B /tmp/build .  -DCMAKE_INSTALL_PREFIX=/tmp/build/install
+cd /tmp/build
+make -j install
+cd install
+rsync -avi ./ /usr/local/
+ldconfig
+
+c++ -o /tmp/server *.cc -DBRPC_WITH_GLOG=0 -DGFLAGS_NS=google -D__const__=__unused__ -std=c++17 -DNDEBUG -O2 -pipe -fPIC -fno-omit-frame-pointer -lprotobuf -lbrpc -lpthread -ldl -lrt -lleveldb -lgflags -lssl -lcrypto
+
+curl http://127.0.0.1:8000
+curl http://127.0.0.1:8000/api/test -d 'hello'
  */
 
 #include "restful_service_impl.h"
@@ -16,7 +29,7 @@ int main() {
 
     brpc::Server server;
     if (!RestfulServiceImpl::Instance().Build(&server)) {
-        std::cout << "Failed to build server!" << std::endl; 
+        std::cout << "Failed to build server!" << std::endl;
         return -1;
     }
 

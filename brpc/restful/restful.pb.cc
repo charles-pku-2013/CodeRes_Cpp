@@ -5,155 +5,120 @@
 
 #include <algorithm>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/extension_set.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
-// This is a temporary google only hack
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-#include "third_party/protobuf/version.h"
-#endif
 // @@protoc_insertion_point(includes)
-
+#include <google/protobuf/port_def.inc>
 namespace ai_matrix {
 class HttpRequestDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<HttpRequest>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<HttpRequest> _instance;
 } _HttpRequest_default_instance_;
 class HttpResponseDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<HttpResponse>
-      _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<HttpResponse> _instance;
 } _HttpResponse_default_instance_;
 }  // namespace ai_matrix
-namespace protobuf_restful_2eproto {
-static void InitDefaultsHttpRequest() {
+static void InitDefaultsscc_info_HttpRequest_restful_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ai_matrix::_HttpRequest_default_instance_;
     new (ptr) ::ai_matrix::HttpRequest();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ai_matrix::HttpRequest::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_HttpRequest =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHttpRequest}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_HttpRequest_restful_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_HttpRequest_restful_2eproto}, {}};
 
-static void InitDefaultsHttpResponse() {
+static void InitDefaultsscc_info_HttpResponse_restful_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ai_matrix::_HttpResponse_default_instance_;
     new (ptr) ::ai_matrix::HttpResponse();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ai_matrix::HttpResponse::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_HttpResponse =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsHttpResponse}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_HttpResponse_restful_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_HttpResponse_restful_2eproto}, {}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_HttpRequest.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_HttpResponse.base);
-}
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_restful_2eproto[2];
+static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_restful_2eproto = nullptr;
+static const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* file_level_service_descriptors_restful_2eproto[1];
 
-::google::protobuf::Metadata file_level_metadata[2];
-const ::google::protobuf::ServiceDescriptor* file_level_service_descriptors[1];
-
-const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ai_matrix::HttpRequest, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ai_matrix::HttpRequest, _internal_metadata_),
+const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_restful_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::ai_matrix::HttpRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ai_matrix::HttpResponse, _has_bits_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ai_matrix::HttpResponse, _internal_metadata_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::ai_matrix::HttpResponse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 5, sizeof(::ai_matrix::HttpRequest)},
-  { 5, 10, sizeof(::ai_matrix::HttpResponse)},
+static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  { 0, -1, sizeof(::ai_matrix::HttpRequest)},
+  { 5, -1, sizeof(::ai_matrix::HttpResponse)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ai_matrix::_HttpRequest_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ai_matrix::_HttpResponse_default_instance_),
+static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ai_matrix::_HttpRequest_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ai_matrix::_HttpResponse_default_instance_),
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "restful.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, NULL, file_level_service_descriptors);
-}
+const char descriptor_table_protodef_restful_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
+  "\n\rrestful.proto\022\tai_matrix\"\r\n\013HttpReques"
+  "t\"\016\n\014HttpResponse2R\n\016RestfulService\022@\n\rH"
+  "andleRequest\022\026.ai_matrix.HttpRequest\032\027.a"
+  "i_matrix.HttpResponseB\003\200\001\001"
+  ;
+static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_restful_2eproto_deps[1] = {
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_restful_2eproto_sccs[2] = {
+  &scc_info_HttpRequest_restful_2eproto.base,
+  &scc_info_HttpResponse_restful_2eproto.base,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_restful_2eproto_once;
+const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_restful_2eproto = {
+  false, false, descriptor_table_protodef_restful_2eproto, "restful.proto", 146,
+  &descriptor_table_restful_2eproto_once, descriptor_table_restful_2eproto_sccs, descriptor_table_restful_2eproto_deps, 2, 0,
+  schemas, file_default_instances, TableStruct_restful_2eproto::offsets,
+  file_level_metadata_restful_2eproto, 2, file_level_enum_descriptors_restful_2eproto, file_level_service_descriptors_restful_2eproto,
+};
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
-}
-
-void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
-}
-
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\rrestful.proto\022\tai_matrix\"\r\n\013HttpReques"
-      "t\"\016\n\014HttpResponse2R\n\016RestfulService\022@\n\rH"
-      "andleRequest\022\026.ai_matrix.HttpRequest\032\027.a"
-      "i_matrix.HttpResponseB\003\200\001\001"
-  };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 146);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "restful.proto", &protobuf_RegisterTypes);
-}
-
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
-}
-// Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
-} static_descriptor_initializer;
-}  // namespace protobuf_restful_2eproto
+// Force running AddDescriptors() at dynamic initialization time.
+static bool dynamic_init_dummy_restful_2eproto = (static_cast<void>(::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_restful_2eproto)), true);
 namespace ai_matrix {
 
 // ===================================================================
 
 void HttpRequest::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class HttpRequest::_Internal {
+ public:
+};
 
-HttpRequest::HttpRequest()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_restful_2eproto::scc_info_HttpRequest.base);
+HttpRequest::HttpRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:ai_matrix.HttpRequest)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ai_matrix.HttpRequest)
 }
 HttpRequest::HttpRequest(const HttpRequest& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   // @@protoc_insertion_point(copy_constructor:ai_matrix.HttpRequest)
 }
 
@@ -163,83 +128,71 @@ void HttpRequest::SharedCtor() {
 HttpRequest::~HttpRequest() {
   // @@protoc_insertion_point(destructor:ai_matrix.HttpRequest)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void HttpRequest::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void HttpRequest::ArenaDtor(void* object) {
+  HttpRequest* _this = reinterpret_cast< HttpRequest* >(object);
+  (void)_this;
+}
+void HttpRequest::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void HttpRequest::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* HttpRequest::descriptor() {
-  ::protobuf_restful_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_restful_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const HttpRequest& HttpRequest::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_restful_2eproto::scc_info_HttpRequest.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_HttpRequest_restful_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void HttpRequest::Clear() {
 // @@protoc_insertion_point(message_clear_start:ai_matrix.HttpRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool HttpRequest::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:ai_matrix.HttpRequest)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-  handle_unusual:
-    if (tag == 0) {
-      goto success;
-    }
-    DO_(::google::protobuf::internal::WireFormat::SkipField(
-          input, tag, _internal_metadata_.mutable_unknown_fields()));
-  }
+const char* HttpRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:ai_matrix.HttpRequest)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:ai_matrix.HttpRequest)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void HttpRequest::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:ai_matrix.HttpRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        _internal_metadata_.unknown_fields(), output);
-  }
-  // @@protoc_insertion_point(serialize_end:ai_matrix.HttpRequest)
-}
-
-::google::protobuf::uint8* HttpRequest::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* HttpRequest::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:ai_matrix.HttpRequest)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ai_matrix.HttpRequest)
   return target;
@@ -249,25 +202,28 @@ size_t HttpRequest::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ai_matrix.HttpRequest)
   size_t total_size = 0;
 
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        _internal_metadata_.unknown_fields());
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
   }
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void HttpRequest::MergeFrom(const ::google::protobuf::Message& from) {
+void HttpRequest::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ai_matrix.HttpRequest)
   GOOGLE_DCHECK_NE(&from, this);
   const HttpRequest* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const HttpRequest>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<HttpRequest>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ai_matrix.HttpRequest)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ai_matrix.HttpRequest)
     MergeFrom(*source);
@@ -277,13 +233,13 @@ void HttpRequest::MergeFrom(const ::google::protobuf::Message& from) {
 void HttpRequest::MergeFrom(const HttpRequest& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ai_matrix.HttpRequest)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
 }
 
-void HttpRequest::CopyFrom(const ::google::protobuf::Message& from) {
+void HttpRequest::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ai_matrix.HttpRequest)
   if (&from == this) return;
   Clear();
@@ -301,19 +257,13 @@ bool HttpRequest::IsInitialized() const {
   return true;
 }
 
-void HttpRequest::Swap(HttpRequest* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void HttpRequest::InternalSwap(HttpRequest* other) {
   using std::swap;
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
 }
 
-::google::protobuf::Metadata HttpRequest::GetMetadata() const {
-  protobuf_restful_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_restful_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata HttpRequest::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -321,21 +271,19 @@ void HttpRequest::InternalSwap(HttpRequest* other) {
 
 void HttpResponse::InitAsDefaultInstance() {
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+class HttpResponse::_Internal {
+ public:
+};
 
-HttpResponse::HttpResponse()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_restful_2eproto::scc_info_HttpResponse.base);
+HttpResponse::HttpResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:ai_matrix.HttpResponse)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:ai_matrix.HttpResponse)
 }
 HttpResponse::HttpResponse(const HttpResponse& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _has_bits_(from._has_bits_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   // @@protoc_insertion_point(copy_constructor:ai_matrix.HttpResponse)
 }
 
@@ -345,83 +293,71 @@ void HttpResponse::SharedCtor() {
 HttpResponse::~HttpResponse() {
   // @@protoc_insertion_point(destructor:ai_matrix.HttpResponse)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void HttpResponse::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void HttpResponse::ArenaDtor(void* object) {
+  HttpResponse* _this = reinterpret_cast< HttpResponse* >(object);
+  (void)_this;
+}
+void HttpResponse::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void HttpResponse::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* HttpResponse::descriptor() {
-  ::protobuf_restful_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_restful_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const HttpResponse& HttpResponse::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_restful_2eproto::scc_info_HttpResponse.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_HttpResponse_restful_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void HttpResponse::Clear() {
 // @@protoc_insertion_point(message_clear_start:ai_matrix.HttpResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _has_bits_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-bool HttpResponse::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:ai_matrix.HttpResponse)
-  for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-  handle_unusual:
-    if (tag == 0) {
-      goto success;
-    }
-    DO_(::google::protobuf::internal::WireFormat::SkipField(
-          input, tag, _internal_metadata_.mutable_unknown_fields()));
-  }
+const char* HttpResponse::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+  }  // while
 success:
-  // @@protoc_insertion_point(parse_success:ai_matrix.HttpResponse)
-  return true;
+  return ptr;
 failure:
-  // @@protoc_insertion_point(parse_failure:ai_matrix.HttpResponse)
-  return false;
-#undef DO_
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 
-void HttpResponse::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:ai_matrix.HttpResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        _internal_metadata_.unknown_fields(), output);
-  }
-  // @@protoc_insertion_point(serialize_end:ai_matrix.HttpResponse)
-}
-
-::google::protobuf::uint8* HttpResponse::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+::PROTOBUF_NAMESPACE_ID::uint8* HttpResponse::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
   // @@protoc_insertion_point(serialize_to_array_start:ai_matrix.HttpResponse)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target);
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ai_matrix.HttpResponse)
   return target;
@@ -431,25 +367,28 @@ size_t HttpResponse::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:ai_matrix.HttpResponse)
   size_t total_size = 0;
 
-  if (_internal_metadata_.have_unknown_fields()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        _internal_metadata_.unknown_fields());
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
   }
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void HttpResponse::MergeFrom(const ::google::protobuf::Message& from) {
+void HttpResponse::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ai_matrix.HttpResponse)
   GOOGLE_DCHECK_NE(&from, this);
   const HttpResponse* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const HttpResponse>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<HttpResponse>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ai_matrix.HttpResponse)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ai_matrix.HttpResponse)
     MergeFrom(*source);
@@ -459,13 +398,13 @@ void HttpResponse::MergeFrom(const ::google::protobuf::Message& from) {
 void HttpResponse::MergeFrom(const HttpResponse& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ai_matrix.HttpResponse)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
 }
 
-void HttpResponse::CopyFrom(const ::google::protobuf::Message& from) {
+void HttpResponse::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ai_matrix.HttpResponse)
   if (&from == this) return;
   Clear();
@@ -483,19 +422,13 @@ bool HttpResponse::IsInitialized() const {
   return true;
 }
 
-void HttpResponse::Swap(HttpResponse* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void HttpResponse::InternalSwap(HttpResponse* other) {
   using std::swap;
-  swap(_has_bits_[0], other->_has_bits_[0]);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
 }
 
-::google::protobuf::Metadata HttpResponse::GetMetadata() const {
-  protobuf_restful_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_restful_2eproto::file_level_metadata[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata HttpResponse::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -503,16 +436,16 @@ void HttpResponse::InternalSwap(HttpResponse* other) {
 
 RestfulService::~RestfulService() {}
 
-const ::google::protobuf::ServiceDescriptor* RestfulService::descriptor() {
-  protobuf_restful_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_restful_2eproto::file_level_service_descriptors[0];
+const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* RestfulService::descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_restful_2eproto);
+  return file_level_service_descriptors_restful_2eproto[0];
 }
 
-const ::google::protobuf::ServiceDescriptor* RestfulService::GetDescriptor() {
+const ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor* RestfulService::GetDescriptor() {
   return descriptor();
 }
 
-void RestfulService::HandleRequest(::google::protobuf::RpcController* controller,
+void RestfulService::HandleRequest(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                          const ::ai_matrix::HttpRequest*,
                          ::ai_matrix::HttpResponse*,
                          ::google::protobuf::Closure* done) {
@@ -520,17 +453,19 @@ void RestfulService::HandleRequest(::google::protobuf::RpcController* controller
   done->Run();
 }
 
-void RestfulService::CallMethod(const ::google::protobuf::MethodDescriptor* method,
-                             ::google::protobuf::RpcController* controller,
-                             const ::google::protobuf::Message* request,
-                             ::google::protobuf::Message* response,
+void RestfulService::CallMethod(const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method,
+                             ::PROTOBUF_NAMESPACE_ID::RpcController* controller,
+                             const ::PROTOBUF_NAMESPACE_ID::Message* request,
+                             ::PROTOBUF_NAMESPACE_ID::Message* response,
                              ::google::protobuf::Closure* done) {
-  GOOGLE_DCHECK_EQ(method->service(), protobuf_restful_2eproto::file_level_service_descriptors[0]);
+  GOOGLE_DCHECK_EQ(method->service(), file_level_service_descriptors_restful_2eproto[0]);
   switch(method->index()) {
     case 0:
       HandleRequest(controller,
-             ::google::protobuf::down_cast<const ::ai_matrix::HttpRequest*>(request),
-             ::google::protobuf::down_cast< ::ai_matrix::HttpResponse*>(response),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<const ::ai_matrix::HttpRequest*>(
+                 request),
+             ::PROTOBUF_NAMESPACE_ID::internal::DownCast<::ai_matrix::HttpResponse*>(
+                 response),
              done);
       break;
     default:
@@ -539,44 +474,44 @@ void RestfulService::CallMethod(const ::google::protobuf::MethodDescriptor* meth
   }
 }
 
-const ::google::protobuf::Message& RestfulService::GetRequestPrototype(
-    const ::google::protobuf::MethodDescriptor* method) const {
+const ::PROTOBUF_NAMESPACE_ID::Message& RestfulService::GetRequestPrototype(
+    const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
       return ::ai_matrix::HttpRequest::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
-      return *::google::protobuf::MessageFactory::generated_factory()
+      return *::PROTOBUF_NAMESPACE_ID::MessageFactory::generated_factory()
           ->GetPrototype(method->input_type());
   }
 }
 
-const ::google::protobuf::Message& RestfulService::GetResponsePrototype(
-    const ::google::protobuf::MethodDescriptor* method) const {
+const ::PROTOBUF_NAMESPACE_ID::Message& RestfulService::GetResponsePrototype(
+    const ::PROTOBUF_NAMESPACE_ID::MethodDescriptor* method) const {
   GOOGLE_DCHECK_EQ(method->service(), descriptor());
   switch(method->index()) {
     case 0:
       return ::ai_matrix::HttpResponse::default_instance();
     default:
       GOOGLE_LOG(FATAL) << "Bad method index; this should never happen.";
-      return *::google::protobuf::MessageFactory::generated_factory()
+      return *::PROTOBUF_NAMESPACE_ID::MessageFactory::generated_factory()
           ->GetPrototype(method->output_type());
   }
 }
 
-RestfulService_Stub::RestfulService_Stub(::google::protobuf::RpcChannel* channel)
+RestfulService_Stub::RestfulService_Stub(::PROTOBUF_NAMESPACE_ID::RpcChannel* channel)
   : channel_(channel), owns_channel_(false) {}
 RestfulService_Stub::RestfulService_Stub(
-    ::google::protobuf::RpcChannel* channel,
-    ::google::protobuf::Service::ChannelOwnership ownership)
+    ::PROTOBUF_NAMESPACE_ID::RpcChannel* channel,
+    ::PROTOBUF_NAMESPACE_ID::Service::ChannelOwnership ownership)
   : channel_(channel),
-    owns_channel_(ownership == ::google::protobuf::Service::STUB_OWNS_CHANNEL) {}
+    owns_channel_(ownership == ::PROTOBUF_NAMESPACE_ID::Service::STUB_OWNS_CHANNEL) {}
 RestfulService_Stub::~RestfulService_Stub() {
   if (owns_channel_) delete channel_;
 }
 
-void RestfulService_Stub::HandleRequest(::google::protobuf::RpcController* controller,
+void RestfulService_Stub::HandleRequest(::PROTOBUF_NAMESPACE_ID::RpcController* controller,
                               const ::ai_matrix::HttpRequest* request,
                               ::ai_matrix::HttpResponse* response,
                               ::google::protobuf::Closure* done) {
@@ -586,15 +521,14 @@ void RestfulService_Stub::HandleRequest(::google::protobuf::RpcController* contr
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace ai_matrix
-namespace google {
-namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ai_matrix::HttpRequest* Arena::CreateMaybeMessage< ::ai_matrix::HttpRequest >(Arena* arena) {
-  return Arena::CreateInternal< ::ai_matrix::HttpRequest >(arena);
+PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::ai_matrix::HttpRequest* Arena::CreateMaybeMessage< ::ai_matrix::HttpRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::ai_matrix::HttpRequest >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ai_matrix::HttpResponse* Arena::CreateMaybeMessage< ::ai_matrix::HttpResponse >(Arena* arena) {
-  return Arena::CreateInternal< ::ai_matrix::HttpResponse >(arena);
+template<> PROTOBUF_NOINLINE ::ai_matrix::HttpResponse* Arena::CreateMaybeMessage< ::ai_matrix::HttpResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::ai_matrix::HttpResponse >(arena);
 }
-}  // namespace protobuf
-}  // namespace google
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
+#include <google/protobuf/port_undef.inc>
