@@ -13,7 +13,7 @@ check `model.bin` in dir ende_ctranslate2
 4. Run this program (arg 1 is model dir)
 /tmp/test ende_ctranslate2
 
-c++ -o /tmp/test demo.cc -lctranslate2 -std=c++17
+c++ -o /tmp/test ctranslate2_demo.cc -lctranslate2 -std=c++17
  */
 #include <iostream>
 #include <vector>

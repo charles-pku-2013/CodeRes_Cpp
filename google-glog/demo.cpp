@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 {
     // Initialize Google's logging library.
     // google::InitGoogleLogging(argv[0]);
+    // google::LogToStderr();
 
     // ...
     int num_cookies = 25;

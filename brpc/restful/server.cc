@@ -9,7 +9,7 @@ cd install
 rsync -avi ./ /usr/local/
 ldconfig
 
-c++ -o /tmp/server *.cc -DBRPC_WITH_GLOG=0 -DGFLAGS_NS=google -D__const__=__unused__ -std=c++17 -DNDEBUG -O2 -pipe -fPIC -fno-omit-frame-pointer -lprotobuf -lbrpc -lpthread -ldl -lrt -lleveldb -lgflags -lssl -lcrypto
+c++ -o /tmp/server *.cc -DBRPC_WITH_GLOG=0 -DGFLAGS_NS=google -D__const__=__unused__ -std=c++17 -DNDEBUG -O2 -pipe -pthread -fPIC -fno-omit-frame-pointer -lprotobuf -lbrpc -ldl -lrt -lleveldb -lgflags -lssl -lcrypto
 
 curl http://127.0.0.1:8000
 curl http://127.0.0.1:8000/api/test -d 'hello'

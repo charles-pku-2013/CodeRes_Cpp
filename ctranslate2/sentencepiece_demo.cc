@@ -1,6 +1,6 @@
 /*
 See doc/api.md
-c++ -o /tmp/test ctranslate2/sentencepiece_demo.cc -lsentencepiece -std=c++17 -g
+c++ -o /tmp/test sentencepiece_demo.cc -lsentencepiece -std=c++17 -g
 /tmp/test 418M/spm.model
  */
 #include <sentencepiece_processor.h>

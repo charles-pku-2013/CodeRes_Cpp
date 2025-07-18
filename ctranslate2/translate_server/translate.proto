@@ -1,0 +1,18 @@
+/*
+protoc --cpp_out=. --proto_path=. translate.proto
+ */
+
+syntax="proto2";
+package newtranx.ai_server;
+
+option cc_generic_services = true;
+
+// following for restful service
+
+message HttpRequest {};
+message HttpResponse {};
+
+service RestfulService {
+    rpc HandleRequest(HttpRequest) returns (HttpResponse);
+};
+
