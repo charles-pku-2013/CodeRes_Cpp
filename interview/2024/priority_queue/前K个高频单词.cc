@@ -4,6 +4,40 @@ https://leetcode.cn/problems/top-k-frequent-words/description/
 
 class Solution {
 public:
+    // 用指针数组排序提高效率
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        using Table = std::unordered_map<std::string, int>;
+        Table table;
+
+        for (auto& word : words)
+        { table[word]++; }
+
+        std::vector<const Table::value_type*> arr;
+        arr.reserve(table.size());
+
+        std::for_each(table.begin(), table.end(), [&arr](const auto& val){
+            arr.emplace_back(&val);
+        });
+
+        std::partial_sort(arr.begin(), arr.begin() + k, arr.end(),
+                    [](const auto* lhs, const auto* rhs)->bool {
+            int diff = lhs->second - rhs->second;
+            if (diff) {
+                return diff > 0;
+            }
+            return lhs->first.compare(rhs->first) < 0;
+        });
+
+        vector<string> result;
+        result.reserve(k);
+        // NOTE!!! 注意避坑 时刻警惕越界
+        for (int i = 0; i < k && i < arr.size(); ++i) {
+            result.emplace_back(arr[i]->first);
+        }
+
+        return result;
+    }
+
     vector<string> topKFrequent(vector<string>& words, int k) {
         std::unordered_map<std::string, int> table;
         for (auto& word : words)

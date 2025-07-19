@@ -1,40 +1,39 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <iterator>
 
 using namespace std;
 
 void YangTriangle(int n) {
     if (n <= 0) { return; }
+
     using Triangle = std::vector<std::vector<int>>;
     Triangle triangle;
 
     auto print_triangle = [&] {
-        for (auto& row : triangle) {
+        // NOTE use 'auto' instead of 'const Triangle::value_type'
+        std::for_each(triangle.begin(), triangle.end(), [](const auto& row) {
             std::copy(row.begin(), row.end(), std::ostream_iterator<int>(cout, " "));
             cout << endl;
-        }
+        });
     };
 
-    // triangle.resize(n);
-    triangle.emplace_back(1, 1);
-    if (n >=2 ) {
-        triangle.emplace_back(2, 1);
+    for (int i = 0; i < n; ++i) {
+        triangle.emplace_back(i + 1, 1);
     }
 
-    for (int i = 2; i < n; ++i) {
+    for (int i = 1; i < n; ++i) {
+        auto& cur = triangle[i];
         auto& last = triangle[i - 1];
-        triangle.emplace_back(last.size() + 1, 1);
-    }
-
-    for (int i = 2; i < triangle.size(); ++i) {
-        for (int j = 1; j < triangle[i].size()-1; ++j) {
-            triangle[i][j] = triangle[i-1][j-1] + triangle[i-1][j];
+        for (int j = 1; j < cur.size() - 1; ++j) {
+            cur[j] = last[j - 1] + last[j];
         }
     }
 
     print_triangle();
 }
+
 #if 0
 1
 1 1
@@ -50,7 +49,7 @@ void YangTriangle(int n) {
 
 
 int main() {
-    YangTriangle(20);
+    YangTriangle(10);
 
     return 0;
 }

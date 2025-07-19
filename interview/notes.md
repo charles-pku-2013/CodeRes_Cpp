@@ -68,7 +68,13 @@ std::variant optional any filesystem string_view
 # 大文件排序
 . 分治法
 先部分排序，得到N个有序子集，再用小根堆合并
-每 pop 一个元素，就根据它的文件号去对应的文件里，补虫一个元素进入堆中，直到那个文件中的元素被拿完
+每 pop 一个元素，就根据它的文件号去对应的文件里，补充一个元素进入堆中，直到那个文件中的元素被拿完
 https://zhuanlan.zhihu.com/p/484732622
 . 位图法
 . 数据库
+
+# NOTICE
+. lambda capture list
+. 不可以连续初始化变量
+ListNode* result = nullptr, p = nullptr;
+. lambda check capture type &

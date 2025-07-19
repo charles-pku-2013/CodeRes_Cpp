@@ -183,8 +183,8 @@ void test_split_merge_iterator(const std::string &str) {
     // std::vector<fs::path> elems(path.begin(), path.end());  // OK
 
     // split into string vector
-    std::vector<std::string> elems;
-    std::transform(path.begin(), path.end(), std::back_inserter(elems),
+    std::vector<std::string> elems(std::distance(path.begin(), path.end()));
+    std::transform(path.begin(), path.end(), elems.begin(),
             [](const fs::path &p)->std::string { return p.string(); });
     cout << absl::StrJoin(elems, ",") << endl;
 }
