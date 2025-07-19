@@ -8,6 +8,8 @@ RestfulServiceImpl& RestfulServiceImpl::Instance() {
     return inst;
 }
 
+//           HttpHeader 
+// 通过cntl->http_response()->set_status_code() 设置http返回码 src/brpc/http_status_code.h
 void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base,
                                        const HttpRequest*,
                                        HttpResponse*,

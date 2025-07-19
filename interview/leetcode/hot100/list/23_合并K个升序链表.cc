@@ -26,6 +26,35 @@ https://leetcode.cn/problems/merge-k-sorted-lists/description/?envType=problem-l
 
 class Solution {
 public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty()) { return nullptr; }
+
+        ListNode head;
+        ListNode* prev = &head;
+
+        while (true) {
+            // 重新定义最小元素 nullptr永远是最大
+            auto it = std::min_element(lists.begin(), lists.end(),
+                [](ListNode* lhs, ListNode* rhs)->bool {
+                    if (!rhs) { return true; }
+                    if (!lhs) { return false; }
+                    return lhs->val < rhs->val;
+                }
+            );
+
+            if (it == lists.end()) { break; }
+
+            auto& p = *it;  // 这里必须用引用，必须在lists里修改
+            if (!p) { break; }
+
+            prev->next = p;
+            prev = p;
+            p = p->next;
+        }
+
+        return head.next;
+    }
+
     ListNode* mergeTwoLists(ListNode *a, ListNode *b) {
         if ((!a) || (!b)) return a ? a : b;
         ListNode head, *tail = &head, *aPtr = a, *bPtr = b;

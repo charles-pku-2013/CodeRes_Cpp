@@ -14,17 +14,22 @@ public:
         vector<string> segs;
         istringstream iss(ip);
         std::string seg;
+
         while (std::getline(iss, seg, '.')) {
             segs.emplace_back(seg);
         }
+
         if (segs.size() != 4) {
             return false;
         }
+
         for (auto& segment : segs) {
             if (segment.empty() || segment.length() > 3 || segment[0] == '0') {
                 return false;
             }
+
             int ip_num = 0;
+
             try {
                 size_t n = 0;
                 ip_num = std::stoi(segment, &n);
@@ -34,10 +39,12 @@ public:
             } catch (...) {
                 return false;
             }
+
             if (ip_num > 255 || ip_num <= 0) {
                 return false;
             }
         }
+
         return true;
     }
 

@@ -6,16 +6,34 @@ https://leetcode.cn/problems/subsets/description/?envType=problem-list-v2&envId=
 
 #include <iostream>
 #include <string>
-#include <chrono>
 #include <vector>
-#include <map>
-#include <fmt/base.h>
-#include <fmt/format.h>
-#include <fmt/chrono.h>
-#include <fmt/ranges.h>
 
 using namespace std;
 
+void subsets(std::string& s, std::string& result, int idx) {
+    if (idx >= s.length()) {
+        cout << result << endl;
+        return;
+    }
+
+    result.push_back(s[idx]);
+    subsets(s, result, idx + 1);
+    result.pop_back();
+    subsets(s, result, idx + 1);
+}
+
+int main() {
+    // Solution sln;
+    // sln.subsets({1,2,3});
+
+    std::string s("abc");
+    std::string t;
+    subsets(s, t, 0);
+
+    return 0;
+}
+
+#if 0
 class Solution {
 public:
     void subsets(const vector<int>& nums, vector<int>& tmp, int step, vector<vector<int>>& result) {
@@ -38,10 +56,5 @@ public:
         return result;
     }
 };
+#endif
 
-int main() {
-    Solution sln;
-    sln.subsets({1,2,3});
-
-    return 0;
-}
