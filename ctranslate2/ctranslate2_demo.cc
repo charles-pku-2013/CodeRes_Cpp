@@ -28,7 +28,8 @@ int main(int argc, char* argv[]) {
 
     ctranslate2::Translator translator(model_loader);
 
-    const std::vector<std::vector<std::string>> batch = {{"▁Hello", "▁World", "!", "</s>"}};
+    // const std::vector<std::vector<std::string>> batch = {{"▁Hello", "▁World", "!", "</s>"}};
+    const std::vector<std::vector<std::string>> batch = {{"▁Hello", "▁world", "</s>"}};
     const auto                                  translation = translator.translate_batch(batch);
 
     // for (const auto& token : translation[0].output()) {

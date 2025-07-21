@@ -15,7 +15,7 @@ public:
 private:
     std::string s_model_;  // 分词模型
     std::string t_model_;  // 翻译模型
-    
+
     std::unique_ptr<ctranslate2::Translator>                translator_;
     std::unique_ptr<sentencepiece::SentencePieceProcessor>  sentencor_;
 };

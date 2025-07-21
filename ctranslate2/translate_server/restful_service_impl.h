@@ -10,9 +10,10 @@ namespace ai_server {
 
 class RestfulServiceImpl : public RestfulService {
 public:
-    using Handler = std::function<std::error_code(const std::string&,   /* url */
-                                                  const std::string&,   /* body */
-                                                  std::string*)>;       /* resp */
+    using Status = butil::Status;
+    using Handler = std::function<Status(const std::string&,   /* url */
+                                         const std::string&,   /* body */
+                                         std::string*)>;       /* resp */
     using HandlerTable = std::unordered_map<std::string, Handler>;
 
 public:

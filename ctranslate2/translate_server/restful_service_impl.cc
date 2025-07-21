@@ -1,4 +1,8 @@
 #include "restful_service_impl.h"
+#include <system_error>
+#include <fmt/base.h>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <glog/logging.h>
 
 namespace newtranx {
@@ -20,6 +24,7 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
     const std::string& unresolved_path = cntl->http_request().unresolved_path();
     if (unresolved_path.empty()) {
         cntl->response_attachment().append("Empty request!");
+        cntl->http_response().set_status_code(brpc::HTTP_STATUS_BAD_REQUEST);
         return;
     }
 
@@ -28,26 +33,30 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
     std::string query = unresolved_path.substr(0, pos);
     auto it = handlers_.find(query);
     if (it == handlers_.end()) {
-        os << "Requested restful api `" << query << "` does not exist!";
+        os << fmt::format("Requested restful api '{}' does not exist!", query);
         os.move_to(cntl->response_attachment());
+        cntl->http_response().set_status_code(brpc::HTTP_STATUS_SERVICE_UNAVAILABLE);
         return;
     }
 
     try {
         std::string out;
-        auto ec = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
-        if (ec) {
-            os << "Requested restful api `" << query << "` fail, errcode=" << ec << " " << ec.message();
-            os.move_to(cntl->response_attachment());
-        } else {
+        auto status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
+        if (status.ok()) {
             cntl->response_attachment().append(out);
+        } else {
+            os << fmt::format("Requested restful api '{}' fail, error: '{}'",
+                              query, status.error_str());
+            os.move_to(cntl->response_attachment());
+            cntl->http_response().set_status_code(status.error_code());
         }
     } catch (const std::exception& ex) {
-        os << "Requested restful api `" << query << "` fail: " << ex.what();
+        os << fmt::format("Requested restful api '{}' fail: '{}'", query, ex.what());
         os.move_to(cntl->response_attachment());
+        cntl->http_response().set_status_code(brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR);
     } catch (...) {
-        os << "Requested restful api `" << query << "` fail for unknown reason!";
-        os.move_to(cntl->response_attachment());
+        os << fmt::format("Requested restful api '{}' fail unknown exception!", query);
+        cntl->http_response().set_status_code(brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
 }
 

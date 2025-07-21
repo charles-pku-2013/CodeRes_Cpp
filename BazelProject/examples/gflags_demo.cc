@@ -67,13 +67,23 @@ bool ValidatePort(const char* flagname, gflags::int32 value)
 }
 // 定义port_dummy为了保证RegisterFlagValidator先于main函数执行
 // const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, &ValidatePort);
-bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, [](const char* flagname, gflags::int32 value)->bool {
+const bool port_dummy = gflags::RegisterFlagValidator(&FLAGS_port, [](const char* flagname, const int32_t value)->bool {
     cout << "ArgValidator() flagname = " << flagname << " value = " << value << endl;
     // if (value > 1024 && value < 32768)   // value is ok
         // return true;
     printf("Invalid value for --%s: %d\n", flagname, (int)value);
     return false;
 });
+
+bool check_empty_string_arg(const char* flagname, const std::string& value) {
+    if (value.empty()) {
+        std::cerr << fmt::format("Argument '{}' must be specified!", flagname) << std::endl;
+        return false;
+    }
+    return true;
+}
+const bool s_model_checker = gflags::RegisterFlagValidator(&FLAGS_s_model, check_empty_string_arg);
+const bool t_model_checker = gflags::RegisterFlagValidator(&FLAGS_t_model, check_empty_string_arg);
 } // namespace
 
 
