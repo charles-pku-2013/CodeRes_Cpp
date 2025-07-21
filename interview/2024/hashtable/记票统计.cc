@@ -31,8 +31,8 @@ int main() {
         string name;
         cin >> name;
         auto it = table.find(name);
-        if (it == table.end()) { 
-            ++invalid_cnt; 
+        if (it == table.end()) {
+            ++invalid_cnt;
         } else {
             it->second.count++;
         }

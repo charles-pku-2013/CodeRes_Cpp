@@ -13,7 +13,7 @@ using namespace std;
 string process(const string &s) {
     if (s.empty()) { return s; }
 
-    std::unordered_multimap<char, int> alpha_index;  // NOTE
+    std::unordered_multimap<char, int> alpha_index;
     std::unordered_multimap<char, int> special_index;
     for (int i = 0; i < s.length(); ++i) {
         char ch = s[i];

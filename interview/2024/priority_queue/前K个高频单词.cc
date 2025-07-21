@@ -15,10 +15,12 @@ public:
         std::vector<const Table::value_type*> arr;
         arr.reserve(table.size());
 
+        // NOTE map按照value排序，指针数组排序
         std::for_each(table.begin(), table.end(), [&arr](const auto& val){
             arr.emplace_back(&val);
         });
 
+        // NOTE partial_sort 三个参数定区间
         std::partial_sort(arr.begin(), arr.begin() + k, arr.end(),
                     [](const auto* lhs, const auto* rhs)->bool {
             int diff = lhs->second - rhs->second;
@@ -91,7 +93,7 @@ public:
             result.emplace_back(que.top().first);
             que.pop();
         }
-        std::reverse(result.begin(), result.end());  // NOTE
+        std::reverse(result.begin(), result.end());
         return result;
     }
 };

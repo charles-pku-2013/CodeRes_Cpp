@@ -15,7 +15,7 @@ void create_list(ListNode *&p) // 🔴
     int data;
     cin >> data;
 
-    // NOTE 🔴🔴 判断输入结束
+    // 🔴🔴 判断输入结束
     if (!cin) {
         p = NULL;
         return;

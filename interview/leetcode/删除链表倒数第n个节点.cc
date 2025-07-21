@@ -28,6 +28,7 @@ public:
         return fake.next;
     }
 
+    // NOTE 回溯法
     void get_reverse_n_node(ListNode *p, int& n, ListNode *&result) {
         if (result || !p) { return; }
 

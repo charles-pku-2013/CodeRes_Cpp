@@ -36,7 +36,6 @@ public:
             dict.insert(p);
         } while (std::next_permutation(p.begin(), p.end()));
 
-        // NOTE i <= sLen
         for (std::size_t i = pLen; i <= sLen; ++i) {
             std::size_t j = i - pLen;
             if (dict.count(s.substr(j, pLen))) {

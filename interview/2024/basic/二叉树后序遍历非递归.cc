@@ -39,7 +39,6 @@ public:
                 p = p->left;
             }
             if (!stk.empty()) {
-                // p = stk.back();   // NOTE!!! 不要轻易改变p的值，会影响后序判断，或者另起变量名
                 auto* q = stk.back();
                 if (flag.back() == false) {
                     p = q->right;

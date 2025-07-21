@@ -10,12 +10,14 @@ https://leetcode.cn/problems/subsets/description/?envType=problem-list-v2&envId=
 
 using namespace std;
 
-void subsets(std::string& s, std::string& result, int idx) {
+// NOTE result是引用类型
+void subsets(const std::string& s, std::string& result, int idx) {
     if (idx >= s.length()) {
         cout << result << endl;
         return;
     }
 
+    // NOTE
     result.push_back(s[idx]);
     subsets(s, result, idx + 1);
     result.pop_back();
@@ -27,7 +29,7 @@ int main() {
     // sln.subsets({1,2,3});
 
     std::string s("abc");
-    std::string t;
+    std::string t;  // helper string just for output
     subsets(s, t, 0);
 
     return 0;

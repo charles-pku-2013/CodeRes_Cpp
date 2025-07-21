@@ -112,7 +112,7 @@ public:
                 prev = prev->next;
             }
 
-            prev->next = l1 ? l1 : l2;
+            prev->next = l1 ? l1 : l2;  // NOTE
 
             return head.next;
         };

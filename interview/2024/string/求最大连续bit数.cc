@@ -13,14 +13,14 @@ int process(int n) {
 
     // auto b_beg = s.find_first_of("1");
     // while (b_beg != string::npos) {
-        // auto b_end = s.find_first_of("0", b_beg);  // NOTE!!! end 可能是npos，不可以通过end - beg这样简单计算长度
+        // auto b_end = s.find_first_of("0", b_beg);
         // string sub = s.substr(b_beg, b_end - b_beg);
         // if (sub.length() > maxlen) {
             // maxlen = sub.length();
         // }
         // b_beg = s.find_first_of("1", b_end);
     // }
-    
+
     int len = 0;
     for (char ch : s) {
         if (ch == '1') {

@@ -7,10 +7,10 @@ using namespace std;
 
 string find_common(string &s1, string &s2) {
     if (s1.length() > s2.length())
-    { s1.swap(s2); }  // s1 is shorter  // NOTE
+    { s1.swap(s2); }  // s1 is shorter
 
     for (int len = s1.length(); len >= 1; --len) {
-        for (int j = 0; j <= s1.length() - len; ++j) {  // !!!NOTE!!! <=
+        for (int j = 0; j <= s1.length() - len; ++j) {
             string substr = s1.substr(j, len);
             if (s2.find(substr) != string::npos)    // NOTE find( const basic_string& str, size_type pos = 0 )
                                                     // find( CharT ch, size_type pos = 0 )

@@ -17,7 +17,7 @@ string process(string s) {
         ++cnt[ch];
     }
     vector<pair<char, int>> arr(cnt.begin(), cnt.end());
-    std::sort(arr.begin(), arr.end(), 
+    std::sort(arr.begin(), arr.end(),
             [](const pair<char, int>& lhs, const pair<char, int> &rhs)->bool {
         return lhs.second < rhs.second;
     });

@@ -54,7 +54,7 @@ int solve(const std::string& expr) {
             { continue; }
             if (oprand.size() < 2)
             { return; }
-            int op2 = oprand.back();  // NOTE!!!
+            int op2 = oprand.back();
             oprand.pop_back();
             int op1 = oprand.back();
             oprand.pop_back();
@@ -91,7 +91,6 @@ int solve(const std::string& expr) {
             }
         } // non digit
     } // for ch
-    // NOTE!!!
     if (digit) { oprand.push_back(num); }
 
     compute_stack([](char)->bool{ return true; });

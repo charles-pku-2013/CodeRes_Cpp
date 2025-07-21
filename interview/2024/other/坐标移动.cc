@@ -13,7 +13,7 @@ void process(string& cmd, int &x, int &y) {
     int offset = 0;
     size_t len = 0;
     cmd = cmd.substr(1);  // remove first
-                          // NOTE substr( size_type pos = 0, size_type count = npos )
+                          // substr( size_type pos = 0, size_type count = npos )
     try {
         offset = std::stoi(cmd, &len);  //  OTE
     } catch (...) {

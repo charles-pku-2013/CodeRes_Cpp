@@ -40,7 +40,7 @@ Derived1 constructor
 Derived2 constructor
 Final constructor
 Processing...
-Final destructor    // NOTE!!! 🔴🔵 析构顺序由派生类到基类
+Final destructor    //  🔴🔵 析构顺序由派生类到基类
 Derived2 destructor
 Derived1 destructor
 Base destructor

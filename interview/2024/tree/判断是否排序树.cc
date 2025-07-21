@@ -23,7 +23,7 @@ public:
         traverse(root, seq);
         if (seq.size() <= 1)
         { return true; }
-        return std::is_sorted(seq.begin(), seq.end());  // NOTE
+        return std::is_sorted(seq.begin(), seq.end());
     }
 
     void traverse(TreeNode *p, std::vector<int>& seq) {

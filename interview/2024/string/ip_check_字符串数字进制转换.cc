@@ -63,7 +63,7 @@ public:
             if (segment.empty()) {
                 return false;
             }
-            if (segment.length() == 1 && segment[0] != '0') {  // NOTE
+            if (segment.length() == 1 && segment[0] != '0') {
                 return false;
             }
             if (segment.length() > 4) {

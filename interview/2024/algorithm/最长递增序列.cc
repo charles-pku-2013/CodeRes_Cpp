@@ -18,7 +18,7 @@ int compute(vector<int>& nums) {
         }
     } // for i
 
-    auto it = std::max_element(dp.begin(), dp.end());  // NOTE 返回迭代器
+    auto it = std::max_element(dp.begin(), dp.end());
     return *it;
 }
 

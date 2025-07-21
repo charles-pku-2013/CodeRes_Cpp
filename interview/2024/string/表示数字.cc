@@ -12,6 +12,7 @@ void process1(string &s) {
             return isdigit(ch);
         }
     );
+
     // NOTE random iterator can compare
     while (s_beg < s.end()) {
         s_beg = s.insert(s_beg, '*');  // NOTE iterator insert( iterator pos, CharT ch );

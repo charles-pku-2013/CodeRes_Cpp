@@ -13,7 +13,7 @@ using namespace std;
  * 2、非构成单词的字符均视为单词间隔符
  */
 void process(string& s) {
-    if (s.empty()) { 
+    if (s.empty()) {
         cout << "" << endl;
         return;
     }

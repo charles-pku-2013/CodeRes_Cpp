@@ -12,7 +12,7 @@ struct ListNode {
     ListNode* m_pNext = nullptr;
 };
 
-// NOTE 回溯法
+// 回溯法
 ListNode* process(ListNode* p, int& k) {
     if (!p) { return nullptr; }
     ListNode *prev = process(p->m_pNext, k);
