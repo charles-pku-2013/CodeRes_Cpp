@@ -1,15 +1,16 @@
 #include "translator.h"
-#include <string>
+
 #include <fmt/base.h>
-#include <fmt/ranges.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <glog/logging.h>
+
+#include <string>
 
 namespace newtranx {
 namespace ai_server {
 
-Translator::Translator(const std::string& s_model, const std::string& t_model)
-                      : s_model_(s_model), t_model_(t_model) {
+Translator::Translator(const std::string& s_model, const std::string& t_model) : s_model_(s_model), t_model_(t_model) {
     // init sentence
     sentencor_.reset(new sentencepiece::SentencePieceProcessor);
     auto status = sentencor_->Load(s_model_);
@@ -43,8 +44,7 @@ std::string Translator::Translate(const std::string& text) {
 
     std::vector<std::string> translate_pieces;
     translate_pieces.reserve(translation[0].output().size());
-    std::copy(translation[0].output().begin(), translation[0].output().end(),
-              std::back_inserter(translate_pieces));
+    std::copy(translation[0].output().begin(), translation[0].output().end(), std::back_inserter(translate_pieces));
 
     DLOG(INFO) << fmt::format("translate_pieces: {}", translate_pieces);
 

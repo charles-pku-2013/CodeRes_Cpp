@@ -1,9 +1,11 @@
 #include "restful_service_impl.h"
-#include <system_error>
+
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <glog/logging.h>
+
+#include <system_error>
 
 namespace newtranx {
 namespace ai_server {
@@ -13,13 +15,11 @@ RestfulServiceImpl& RestfulServiceImpl::Instance() {
     return inst;
 }
 
-void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base,
-                                       const HttpRequest*,
-                                       HttpResponse*,
-                                       google::protobuf::Closure* done) {
+// http status code see: src/brpc/http_status_code.h
+void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base, const HttpRequest*, HttpResponse*,
+                                       google::protobuf::Closure*       done) {
     brpc::ClosureGuard done_guard(done);
-    brpc::Controller* cntl =
-        static_cast<brpc::Controller*>(cntl_base);
+    brpc::Controller*  cntl = static_cast<brpc::Controller*>(cntl_base);
 
     const std::string& unresolved_path = cntl->http_request().unresolved_path();
     if (unresolved_path.empty()) {
@@ -29,9 +29,10 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
     }
 
     butil::IOBufBuilder os;
-    auto pos = unresolved_path.find_first_of('/');
-    std::string query = unresolved_path.substr(0, pos);
-    auto it = handlers_.find(query);
+    auto                pos = unresolved_path.find_first_of('/');
+    std::string         query = unresolved_path.substr(0, pos);
+    auto                it = handlers_.find(query);
+
     if (it == handlers_.end()) {
         os << fmt::format("Requested restful api '{}' does not exist!", query);
         os.move_to(cntl->response_attachment());
@@ -41,15 +42,16 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
 
     try {
         std::string out;
-        auto status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
+        auto        status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
+
         if (status.ok()) {
             cntl->response_attachment().append(out);
         } else {
-            os << fmt::format("Requested restful api '{}' fail, error: '{}'",
-                              query, status.error_str());
+            os << fmt::format("Requested restful api '{}' fail, error: '{}'", query, status.error_str());
             os.move_to(cntl->response_attachment());
             cntl->http_response().set_status_code(status.error_code());
         }
+
     } catch (const std::exception& ex) {
         os << fmt::format("Requested restful api '{}' fail: '{}'", query, ex.what());
         os.move_to(cntl->response_attachment());
@@ -65,9 +67,7 @@ void RestfulServiceImpl::RegisterHandler(const std::string& name, Handler handle
 }
 
 bool RestfulServiceImpl::Build(brpc::Server* server) {
-    if (server->AddService(this,
-                           brpc::SERVER_DOESNT_OWN_SERVICE,
-                           "/api/* => HandleRequest") != 0) {
+    if (server->AddService(this, brpc::SERVER_DOESNT_OWN_SERVICE, "/api/* => HandleRequest") != 0) {
         return false;
     }
     return true;

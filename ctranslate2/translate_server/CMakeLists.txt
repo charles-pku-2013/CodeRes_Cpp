@@ -64,7 +64,7 @@ target_link_libraries(server
     sentencepiece ctranslate2
 )
 
-target_compile_options(server PRIVATE
+target_compile_options(server PUBLIC
     # -DNDEBUG
     -DBRPC_WITH_GLOG=1
     -DGFLAGS_NS=google

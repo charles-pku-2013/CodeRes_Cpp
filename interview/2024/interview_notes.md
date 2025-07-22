@@ -60,7 +60,7 @@ std::replace, replace_if
 std::rotate(first, middle, last)
 
 std::partition stable_partition is_partitioned partition_point
-NOTE nth_element 返回值是void，用 begin() + n 取结果
+NOTE nth_element 返回值是void，用 begin() + n 取结果 参数和partial_sort相同
 sort stable_sort partial_sort is_sorted nth_element
 lower_bound upper_bound equal_range
 binary_search
