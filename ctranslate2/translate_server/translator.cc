@@ -42,6 +42,7 @@ std::string Translator::Translate(const std::string& text) {
     }
 
     std::vector<std::string> translate_pieces;
+    translate_pieces.reserve(translation[0].output().size());
     std::copy(translation[0].output().begin(), translation[0].output().end(),
               std::back_inserter(translate_pieces));
 

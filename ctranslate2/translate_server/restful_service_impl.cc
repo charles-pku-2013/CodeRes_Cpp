@@ -66,8 +66,8 @@ void RestfulServiceImpl::RegisterHandler(const std::string& name, Handler handle
 
 bool RestfulServiceImpl::Build(brpc::Server* server) {
     if (server->AddService(this,
-                          brpc::SERVER_DOESNT_OWN_SERVICE,
-                          "/api/* => HandleRequest") != 0) {
+                           brpc::SERVER_DOESNT_OWN_SERVICE,
+                           "/api/* => HandleRequest") != 0) {
         return false;
     }
     return true;

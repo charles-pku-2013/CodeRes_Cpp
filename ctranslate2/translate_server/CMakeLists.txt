@@ -45,26 +45,30 @@ find_package(Protobuf REQUIRED)
 
 find_library(BRPC_LIB NAMES brpc)
 
+set(BRPC_LIB ${BRPC_LIB} leveldb dl rt)
+
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS translate.proto)
+# include_directories(${Protobuf_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})  # proto 生成的文件放在build目录下
+
 file(GLOB SRC "*.cc")
 
 # add the executable
-add_executable(server ${SRC})
+add_executable(server ${SRC} ${PROTO_SRCS})
 
 target_link_libraries(server
     ${BRPC_LIB}
     ${Protobuf_LIBRARIES}
     OpenSSL::SSL OpenSSL::Crypto
     fmt::fmt glog::glog
-    leveldb dl rt
     sentencepiece ctranslate2
 )
 
 target_compile_options(server PRIVATE
+    # -DNDEBUG
     -DBRPC_WITH_GLOG=1
     -DGFLAGS_NS=google
     -D__const__=__unused__
-    # -DNDEBUG
     -O2 -pipe -pthread -fPIC
     -fno-omit-frame-pointer
 )
-
