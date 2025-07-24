@@ -19,28 +19,21 @@ int main(int argc, char **argv) {
 
     std::thread thr([&]{
         // NOTE 注意工作目录，如果找不到输入文件不会报错
-        ps.open("spm_encode --model 418M/spm.model", all3streams);
-
-        std::string line;
-        while (getline(ps.out(), line)) {
-            cout << line << endl;
-        }
+        ps.open("spm_encode --model 418M/spm.model < /tmp/test.fifo", all3streams);
     });
 
     ::sleep(1);
 
-    if (ps.fail()) {
-        cerr << "Failed to run cmd" << endl;
-        thr.join();
-        return -1;
-    }
+    // if (ps.rdbuf()->exited()) {
+        // cerr << "Failed to open stream" << endl;
+        // return -1;
+    // }
 
     cerr << "Starting reading..." << endl;
     std::string line;
-    while (getline(cin, line)) {
-        ps << line << endl;
+    while (getline(ps.out(), line)) {
+        cout << line << endl;
     }
-    ps << redi::peof;
 
     thr.join();
 
