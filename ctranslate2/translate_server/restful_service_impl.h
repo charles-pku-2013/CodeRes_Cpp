@@ -22,8 +22,8 @@ class RestfulServiceImpl : public RestfulService {
     // singleton
     static RestfulServiceImpl& Instance();
 
-    void HandleRequest(google::protobuf::RpcController* cntl_base, const HttpRequest*, HttpResponse*,
-                       google::protobuf::Closure*       done);
+    void HandleRequest(google::protobuf::RpcController* cntl_base, const HttpRequest*,
+                       HttpResponse*, google::protobuf::Closure* done);
 
     void RegisterHandler(const std::string& name, Handler handler);
 

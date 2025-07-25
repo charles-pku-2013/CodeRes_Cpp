@@ -1,11 +1,11 @@
-#include "restful_service_impl.h"
-
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <glog/logging.h>
 
 #include <system_error>
+
+#include "restful_service_impl.h"
 
 namespace newtranx {
 namespace ai_server {
@@ -16,8 +16,9 @@ RestfulServiceImpl& RestfulServiceImpl::Instance() {
 }
 
 // http status code see: src/brpc/http_status_code.h
-void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base, const HttpRequest*, HttpResponse*,
-                                       google::protobuf::Closure*       done) {
+void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_base,
+                                       const HttpRequest*, HttpResponse*,
+                                       google::protobuf::Closure* done) {
     brpc::ClosureGuard done_guard(done);
     brpc::Controller*  cntl = static_cast<brpc::Controller*>(cntl_base);
 
@@ -42,12 +43,13 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
 
     try {
         std::string out;
-        auto        status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
+        auto status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
 
         if (status.ok()) {
             cntl->response_attachment().append(out);
         } else {
-            os << fmt::format("Requested restful api '{}' fail, error: '{}'", query, status.error_str());
+            os << fmt::format("Requested restful api '{}' fail, error: '{}'", query,
+                              status.error_str());
             os.move_to(cntl->response_attachment());
             cntl->http_response().set_status_code(status.error_code());
         }
@@ -67,10 +69,13 @@ void RestfulServiceImpl::RegisterHandler(const std::string& name, Handler handle
 }
 
 bool RestfulServiceImpl::Build(brpc::Server* server) {
-    if (server->AddService(this, brpc::SERVER_DOESNT_OWN_SERVICE, "/api/* => HandleRequest") != 0) {
+    // clang-format off
+    if (server->AddService(this, brpc::SERVER_DOESNT_OWN_SERVICE,
+                           "/api/* => HandleRequest") != 0) {
         return false;
     }
     return true;
+    // clang-format on
 }
 
 std::string RestfulServiceImpl::DebugString() const {

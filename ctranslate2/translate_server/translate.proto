@@ -10,12 +10,14 @@ option cc_generic_services = true;
 // translate api pb
 
 message TranslateRequest {
-    required string text = 1;
+    repeated string text = 1;
+    required string src = 2;
+    required string dst = 3;
     // other arguments ...
 };
 
 message TranslateResponse {
-    required string result = 1;
+    repeated string results = 1;
     // other arguments ...
 };
 

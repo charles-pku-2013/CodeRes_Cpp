@@ -56,7 +56,10 @@ make -j
 /tmp/build/server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -worker_que_timeout 500
 
 ## send restful request
-curl http://127.0.0.1:8000/api/translate -d '{"text" : "Hello world!"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["Hello world!", "How are you?"], "src" : "en", "dst" : "de"}'; echo
+
+response:
+{"results":["Hallo Welt!","Wie geht es dir?"]}
  */
 
 #include <fmt/base.h>
@@ -97,7 +100,8 @@ const bool smodel_checker = gflags::RegisterFlagValidator(&FLAGS_smodel, check_e
 const bool tmodel_checker = gflags::RegisterFlagValidator(&FLAGS_tmodel, check_empty_string_arg);
 
 const bool port_checker = gflags::RegisterFlagValidator(
-    &FLAGS_port, [](const char* flagname, const int32_t value) -> bool { return value > 0 && value < 65536; });
+    &FLAGS_port,
+    [](const char* flagname, const int32_t value) -> bool { return value > 0 && value < 65536; });
 
 }  // namespace
 
@@ -105,20 +109,20 @@ namespace {
 
 class TranslateTaskItem : public TimeoutTaskItem {
  public:
-    TranslateTaskItem(std::string orig_text, Translator* translator)
+    TranslateTaskItem(StringArray orig_text, Translator* translator)
         : orig_text_(std::move(orig_text)), translator_(translator) {}
 
     void jobRoutine() override {
         try {
-            result_ = translator_->Translate(orig_text_);
+            results_ = translator_->Translate(orig_text_);
         } catch (const std::exception& ex) {
             err_msg_ = ex.what();
             throw;
         }
     }
 
-    std::string& result() {
-        return result_;
+    StringArray& results() {
+        return results_;
     }
 
     std::string& err_msg() {
@@ -126,8 +130,8 @@ class TranslateTaskItem : public TimeoutTaskItem {
     }
 
  private:
-    std::string orig_text_;
-    std::string result_;
+    StringArray orig_text_;
+    StringArray results_;
     std::string err_msg_;
     Translator* translator_ = nullptr;
 };
@@ -166,9 +170,11 @@ int main(int argc, char** argv) {
     // 处理翻译请求逻辑实现
     RestfulServiceImpl::Instance().RegisterHandler(
         "translate",
-        [&translator, &task_queue](const std::string& uri, const std::string& body, std::string* out) -> butil::Status {
+        [&translator, &task_queue](const std::string& uri, const std::string& body,
+                                   std::string* out) -> butil::Status {
             if (body.empty()) {
-                return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST, "Request body cannot be empty!");
+                return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
+                                     "Request body cannot be empty!");
             }
 
             TranslateRequest  req;
@@ -180,31 +186,54 @@ int main(int argc, char** argv) {
                                      fmt::format("Invalid request: '{}', err: '{}'", body, err));
             }
 
-            const auto& text = req.text();
+            if (!translator->IsSupportedLanguage(req.src())) {
+                return butil::Status(
+                    brpc::HTTP_STATUS_NOT_FOUND,
+                    fmt::format("Requested src language '{}' is not supported", req.src()));
+            }
 
-            auto task = std::make_shared<TranslateTaskItem>(text, translator.get());
+            if (!translator->IsSupportedLanguage(req.dst())) {
+                return butil::Status(
+                    brpc::HTTP_STATUS_NOT_FOUND,
+                    fmt::format("Requested dst language '{}' is not supported", req.dst()));
+            }
+
+            if (req.text().empty()) {
+                return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
+                                     "Request 'text' cannot be empty");
+            }
+
+            std::vector<std::string> text_set(req.text().begin(), req.text().end());
+
+            auto task = std::make_shared<TranslateTaskItem>(std::move(text_set), translator.get());
             if (!task_queue.push(task)) {
-                return butil::Status(brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
-                                     fmt::format("Failed to translate '{}' for task queue is full", text));
+                return butil::Status(
+                    brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
+                    fmt::format("Failed to translate '{}' for task queue is full", body));
             }
 
             task->wait();  // wait for task done or timeout
 
             if (task->status() == TimeoutTaskItem::Status::TIMEOUT) {
-                return butil::Status(brpc::HTTP_STATUS_REQUEST_TIMEOUT,
-                                     fmt::format("Failed to translate '{}' for task queue waitting timeout", text));
+                return butil::Status(
+                    brpc::HTTP_STATUS_REQUEST_TIMEOUT,
+                    fmt::format("Failed to translate '{}' for task queue waitting timeout", body));
             }
 
             if (!task->err_msg().empty()) {
-                return butil::Status(brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
-                                     fmt::format("Failed to translate '{}' for error: '{}'", text, task->err_msg()));
+                return butil::Status(
+                    brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
+                    fmt::format("Failed to translate '{}' for error: '{}'", body, task->err_msg()));
             }
 
-            res.set_result(std::move(task->result()));
+            for (auto& str : task->results()) {
+                res.add_results(std::move(str));
+            }
 
             if (!json2pb::ProtoMessageToJson(res, out, json2pb::Pb2JsonOptions(), &err)) {
-                return butil::Status(brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
-                                     fmt::format("Failed to convert TranslateResponse to json format: '{}'", err));
+                return butil::Status(
+                    brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
+                    fmt::format("Failed to convert TranslateResponse to json format: '{}'", err));
             }
 
             return butil::Status::OK();
