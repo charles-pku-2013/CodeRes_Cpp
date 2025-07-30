@@ -7,6 +7,7 @@ c++ -o /tmp/test test.cc -I/opt/homebrew/Cellar/fmt/11.2.0/include -L/opt/homebr
 #include <vector>
 #include <map>
 #include <fmt/base.h>
+#include <fmt/printf.h>
 #include <fmt/format.h>
 #include <fmt/chrono.h>
 #include <fmt/ranges.h>
@@ -19,9 +20,9 @@ using namespace std;
  *                 queue_.size(), queue_.capacity(), timeout_);
  */
 
-int main() {
+int main(int argc, char **argv) {
     fmt::fprintf(stderr, "%s running...\n", argv[0]);
-    fmt::fprintf(std::cerr, "%s running...\n", argv[0]);
+    // fmt::fprintf(std::cerr, "%s running...\n", argv[0]);
     fmt::print("Hello, world!\n");
 
     // strformat
@@ -30,6 +31,13 @@ int main() {
         cout << s1 << endl;
         std::string s2 = fmt::format("I'd rather be {1} than {0}.", "right", "happy");
         cout << s2 << endl;
+    }
+
+    // join container
+    {
+        std::vector<int> arr{1,2,3};
+        std::string s = fmt::to_string(fmt::join(arr, ":"));
+        cout << s << endl;
     }
 
     // date time

@@ -25,7 +25,8 @@ void TimeoutTaskItem::startTimer(IoService& io_service, int32_t timeout_in_ms) {
                 try {
                     onTimeout();
                 } catch (const std::exception& ex) {
-                    LOG(ERROR) << fmt::format("Task {} timeout handler exception: {}", DebugString(), ex.what());
+                    LOG(ERROR) << fmt::format("Task {} timeout handler exception: {}",
+                                              DebugString(), ex.what());
                 }
                 cv_.notify_all();
             }
@@ -53,15 +54,17 @@ void TimeoutTaskItem::doJob() {
 // NOTE duration as argument
 bool TimeoutTaskItem::wait(const std::chrono::milliseconds& duration) {
     std::unique_lock lk(mutex_);
-    return cv_.wait_for(lk, duration,
-                        [this]() -> bool { return status() == Status::DONE || status() == Status::TIMEOUT; });
+    return cv_.wait_for(lk, duration, [this]() -> bool {
+        return status() == Status::DONE || status() == Status::TIMEOUT;
+    });
 }
 
 std::string TimeoutTaskItem::DebugString() const {
     return "TimeoutTaskItem";
 }
 
-TimeoutTaskQueue::TimeoutTaskQueue(std::size_t capacity, int32_t timeout_in_ms, int32_t n_workers, int32_t n_io_threads)
+TimeoutTaskQueue::TimeoutTaskQueue(std::size_t capacity, int32_t timeout_in_ms, int32_t n_workers,
+                                   int32_t n_io_threads)
     : queue_(capacity), timeout_(timeout_in_ms), n_workers_(n_workers) {
     // assert(timeout_ > 0);
     assert(n_workers_ > 0);
@@ -80,8 +83,8 @@ TimeoutTaskQueue::TimeoutTaskQueue(std::size_t capacity, int32_t timeout_in_ms, 
             while (running_) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(cleaner_interval_));
                 std::unique_lock lk(mutex_);
-                auto             new_end =
-                    std::remove_if(queue_.begin(), queue_.end(), [](const TimeoutTaskItem::pointer& item) -> bool {
+                auto             new_end = std::remove_if(
+                    queue_.begin(), queue_.end(), [](const TimeoutTaskItem::pointer& item) -> bool {
                         return item->status() == TimeoutTaskItem::Status::TIMEOUT;
                     });
                 DLOG(INFO) << fmt::format("Cleanning up queue, removed {} timeout tasks.",
@@ -166,8 +169,8 @@ void TimeoutTaskQueue::start() {
                     return;
                 }
                 if (task && task->status() == TimeoutTaskItem::Status::RUNNING) {
-                    DLOG(INFO) << fmt::format("Worker {} running task {}", std::this_thread::get_id(),
-                                              task->DebugString());
+                    DLOG(INFO) << fmt::format("Worker {} running task {}",
+                                              std::this_thread::get_id(), task->DebugString());
                     task->doJob();
                 }
             }
@@ -209,8 +212,9 @@ std::size_t TimeoutTaskQueue::size() const {
 
 std::string TimeoutTaskQueue::DebugString() const {
     std::unique_lock lk(mutex_);
-    return fmt::format("TimeoutTaskQueue: {{size:{}, capacity:{}, timeout:{}, n_workers:{}, cleaner_interval:{}}}",
-                       queue_.size(), queue_.capacity(), timeout_, n_workers_, cleaner_interval_);
+    return fmt::format(
+        "TimeoutTaskQueue: {{size:{}, capacity:{}, timeout:{}, n_workers:{}, cleaner_interval:{}}}",
+        queue_.size(), queue_.capacity(), timeout_, n_workers_, cleaner_interval_);
 }
 
 }  // namespace newtranx

@@ -13,6 +13,8 @@ Widget::Widget()
     : pImpl_(std::make_unique<Impl>())
 {}
 
+// NOTE!!! 构造函数和析构函数必须在源文件里显示定义
+// invalid application of ‘sizeof’ to incomplete type ‘Impl’
 Widget::~Widget() = default;
 
 Widget::Widget(Widget&& rhs) = default;

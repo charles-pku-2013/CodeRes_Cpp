@@ -52,16 +52,21 @@ make -j
 
 # test
 ## start server
-/tmp/server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -port 8000
-/tmp/build/server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -worker_que_timeout 500
+/tmp/server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -split_svr http://127.0.0.1:7003/split -port 8000
+/tmp/build/server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -worker_que_timeout 500 -split_svr http://127.0.0.1:7003/split
+/tmp/build/server -smodel 418M/spm.model -tmodel 418M -worker_que_timeout 500 -split_svr http://127.0.0.1:7003/split
 
 ## send restful request
-curl http://127.0.0.1:8000/api/translate -d '{"text" : ["Hello world!", "How are you?"], "src" : "en", "dst" : "de"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["Hello world!", "How are you?"], "src" : "en", "dst" : "de"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "src" : "en", "dst" : "de"}'; echo
+
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["您吃饭了吗？", "你好吗？"], "src" : "zh", "dst" : "en"}'; echo
 
 response:
 {"results":["Hallo Welt!","Wie geht es dir?"]}
  */
 
+#include <curl/curl.h>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -74,9 +79,10 @@ response:
 #include "task_queue.h"
 #include "translator.h"
 
-DEFINE_string(smodel, "", "input file path");
-DEFINE_string(tmodel, "", "output file path");
-DEFINE_int32(port, 8000, "Server port");
+DEFINE_string(smodel, "", "sentencepiece分词用的模型");
+DEFINE_string(tmodel, "", "ctranslate2翻译用的模型");
+DEFINE_string(split_svr, "", "断句服务器地址");
+DEFINE_int32(port, 8000, "本服务器端口");
 DEFINE_uint32(n_workers, 0, "Num of worker threads. Default 0 for auto determing");
 DEFINE_uint32(worker_que_cap, 100000, "Capacity of worker queue");
 DEFINE_uint32(worker_que_timeout, 600 * 1000, "Timeout of worker queue in ms (default 10min)");
@@ -98,6 +104,8 @@ bool check_empty_string_arg(const char* flagname, const std::string& value) {
 
 const bool smodel_checker = gflags::RegisterFlagValidator(&FLAGS_smodel, check_empty_string_arg);
 const bool tmodel_checker = gflags::RegisterFlagValidator(&FLAGS_tmodel, check_empty_string_arg);
+const bool split_svr_checker =
+    gflags::RegisterFlagValidator(&FLAGS_split_svr, check_empty_string_arg);
 
 const bool port_checker = gflags::RegisterFlagValidator(
     &FLAGS_port,
@@ -109,12 +117,19 @@ namespace {
 
 class TranslateTaskItem : public TimeoutTaskItem {
  public:
-    TranslateTaskItem(StringArray orig_text, Translator* translator)
-        : orig_text_(std::move(orig_text)), translator_(translator) {}
+    TranslateTaskItem(StringArray articles, std::string src_language, std::string dst_language,
+                      Translator* translator)
+        : articles_(std::move(articles)),
+          src_language_(std::move(src_language)),
+          dst_language_(std::move(dst_language)),
+          translator_(translator) {}
 
     void jobRoutine() override {
         try {
-            results_ = translator_->Translate(orig_text_);
+            for (auto& article : articles_) {
+                auto result = translator_->Translate(article, src_language_, dst_language_);
+                results_.emplace_back(std::move(result));
+            }
         } catch (const std::exception& ex) {
             err_msg_ = ex.what();
             throw;
@@ -130,8 +145,9 @@ class TranslateTaskItem : public TimeoutTaskItem {
     }
 
  private:
-    StringArray orig_text_;
+    StringArray articles_;
     StringArray results_;
+    std::string src_language_, dst_language_;
     std::string err_msg_;
     Translator* translator_ = nullptr;
 };
@@ -154,20 +170,33 @@ int main(int argc, char** argv) {
     task_queue.start();
     LOG(INFO) << "Initialized TaskQueue: " << task_queue.DebugString();
 
+    // prepare curl
+    curl_global_init(CURL_GLOBAL_ALL);
+
     // auto cleanup on finish
-    auto                                        cleanup_fn = [&](void*) { task_queue.stop(); };
+    auto cleanup_fn = [&](void*) {
+        task_queue.stop();
+        curl_global_cleanup();
+    };
     std::unique_ptr<void, decltype(cleanup_fn)> cleanup((void*)1, cleanup_fn);
 
     LOG(INFO) << "Initializing translator...";
     std::unique_ptr<Translator> translator;
     try {
-        translator.reset(new Translator(FLAGS_smodel, FLAGS_tmodel));
+        translator.reset(new Translator(FLAGS_smodel, FLAGS_tmodel, FLAGS_split_svr));
     } catch (const std::exception& ex) {
         LOG(ERROR) << "Failed to init translator: " << ex.what();
         return -1;
     }
 
-    // 处理翻译请求逻辑实现
+    /**
+     * @brief 处理翻译请求逻辑实现
+     *
+     * @param uri 请问url中未被解析的部分
+     * @param body  request body text
+     * @param out   response text
+     * @return   http code with error message
+     */
     RestfulServiceImpl::Instance().RegisterHandler(
         "translate",
         [&translator, &task_queue](const std::string& uri, const std::string& body,
@@ -198,14 +227,15 @@ int main(int argc, char** argv) {
                     fmt::format("Requested dst language '{}' is not supported", req.dst()));
             }
 
-            if (req.text().empty()) {
+            if (req.articles().empty()) {
                 return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
-                                     "Request 'text' cannot be empty");
+                                     "Request 'articles' cannot be empty");
             }
 
-            std::vector<std::string> text_set(req.text().begin(), req.text().end());
+            std::vector<std::string> article_set(req.articles().begin(), req.articles().end());
 
-            auto task = std::make_shared<TranslateTaskItem>(std::move(text_set), translator.get());
+            auto task = std::make_shared<TranslateTaskItem>(std::move(article_set), req.src(),
+                                                            req.dst(), translator.get());
             if (!task_queue.push(task)) {
                 return butil::Status(
                     brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,

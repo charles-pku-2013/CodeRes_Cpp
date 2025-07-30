@@ -3,6 +3,7 @@
 本程序目前使用依赖库有
 protobuf-3.14.0
 brpc-1.8.0
+libcurl
 sentencepiece和ctranslate2用最新release版本
 
 ## 编译安装依赖库
@@ -37,10 +38,24 @@ make -j
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
 # 测试
-1. 启动server
-./server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -port 8000 -worker_que_timeout 500
+启动server
+先启动断句服务，见 sentence_split/split.py
+python3 split.py --nobreak_file ./nonbreaking_prefix.en  --host 0.0.0.0 --port 7003
+
+英德翻译
+./server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -split_svr http://127.0.0.1:7003/split -port 8000
+
+指定任务在队列里等待时间500ms
+./server -smodel 418M/spm.model -tmodel opus-mt-en-de-convert -worker_que_timeout 500 -split_svr http://127.0.0.1:7003/split
+
+中英翻译
+./server -smodel 418M/spm.model -tmodel 418M -worker_que_timeout 500 -split_svr http://127.0.0.1:7003/split
+
 (具体参数根据实际情况调整，通过 `./server --help` translate_server/server.cc 部分查看更多参数选项)
+
 2. restful api测试
-curl http://127.0.0.1:8000/api/translate -d '{"text" : "Hello world!"}'; echo
-返回:
-{"result":"Hallo Welt!"}
+英德
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : "Hello world!"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "src" : "en", "dst" : "de"}'; echo
+中英
+curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["您吃饭了吗？", "你好吗？"], "src" : "zh", "dst" : "en"}'; echo

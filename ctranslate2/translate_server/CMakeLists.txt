@@ -60,7 +60,7 @@ target_link_libraries(server
     ${BRPC_LIB}
     ${Protobuf_LIBRARIES}
     OpenSSL::SSL OpenSSL::Crypto
-    fmt::fmt glog::glog
+    fmt::fmt glog::glog curl
     sentencepiece ctranslate2
 )
 

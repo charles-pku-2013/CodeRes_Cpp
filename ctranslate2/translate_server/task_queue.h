@@ -91,7 +91,8 @@ class TimeoutTaskQueue {
       * @param timeout_in_ms   task超时时间，超时后会被删除
       * @param n_io_threads    worker threads for timeout handler
       */
-    TimeoutTaskQueue(std::size_t capacity, int32_t timeout_in_ms, int32_t n_workers, int32_t n_io_threads = 10);
+    TimeoutTaskQueue(std::size_t capacity, int32_t timeout_in_ms, int32_t n_workers,
+                     int32_t n_io_threads = 10);
 
     ~TimeoutTaskQueue();
 

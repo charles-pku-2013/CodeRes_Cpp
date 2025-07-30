@@ -1,67 +1,250 @@
+#include "translator.h"
+
+#include <curl/curl.h>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <glog/logging.h>
+#include <json2pb/json_to_pb.h>
+#include <json2pb/pb_to_json.h>
 
 #include <string>
 
-#include "translator.h"
+#include "translate.pb.h"
 
 namespace newtranx {
 namespace ai_server {
 
-Translator::Translator(const std::string& s_model, const std::string& t_model)
-    : s_model_(s_model), t_model_(t_model) {
-    // init sentence
+/**
+ * @brief  libcurl 封装，CURL对象不是线程安全的，需要进行处理
+ *      you must never use a single handle from more than one thread at any given time.
+ *      https://curl.se/libcurl/c/threadsafe.html
+ */
+class CurlHandle final {
+ public:
+    CurlHandle(const std::string& url, long timeout = 5) {
+        curl_ = curl_easy_init();
+        if (!curl_) {
+            throw std::runtime_error("Failed to init CURL!");
+        }
+
+        curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
+
+        headers_ = curl_slist_append(headers_, "Content-Type: application/json");
+        curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers_);
+
+        curl_easy_setopt(curl_, CURLOPT_POST, 1L);
+        curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout);
+        curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, &CurlHandle::RequestCallback);
+    }
+
+    ~CurlHandle() {
+        if (curl_) {
+            curl_easy_cleanup(curl_);
+        }
+
+        if (headers_) {
+            curl_slist_free_all(headers_);
+        }
+    }
+
+    /**
+     * @brief       发送http post请求并得到返回结果
+     *
+     * @param req   请求文本
+     * @param res   返回文本
+     *
+     * @return      0 on success
+     *              1 this handle is busy (used by other thread)
+     *              -1 other failures
+     */
+    int Request(const std::string& req, std::string* res) {
+        std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
+        if (!lock.try_lock()) {
+            return 1;
+        }
+
+        curl_easy_setopt(curl_, CURLOPT_WRITEDATA, res);
+        curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, req.c_str());
+
+        CURLcode res_code = curl_easy_perform(curl_);
+        if (res_code != CURLE_OK) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    // http post callback
+    static size_t RequestCallback(void* buffer, size_t size, size_t nmemb, void* userp) {
+        std::size_t  len = size * nmemb;
+        std::string* s = (std::string*)userp;
+        s->append((char*)buffer, len);
+        return len;
+    }
+
+ private:
+    CURL*       curl_ = nullptr;
+    curl_slist* headers_ = nullptr;
+    std::mutex  mutex_;
+};
+
+Translator::~Translator() = default;
+
+Translator::Translator(const std::string& s_model, const std::string& t_model,
+                       const std::string& split_svr)
+    : s_model_(s_model), t_model_(t_model), split_svr_(split_svr) {
+    // 初始化分词器
     sentencor_.reset(new sentencepiece::SentencePieceProcessor);
     auto status = sentencor_->Load(s_model_);
 
     if (!status.ok()) {
-        throw std::runtime_error(fmt::format("Load sentence model fail: {}.", status.ToString()));
+        throw std::runtime_error(
+            fmt::format("Load sentencepiece model fail: {}.", status.ToString()));
     }
 
+    // 初始化翻译器
     const ctranslate2::models::ModelLoader model_loader(t_model_);
     translator_ = std::make_unique<ctranslate2::Translator>(model_loader);
+
+    // 初始化断句服务请求队列
+    curl_handle_que_.reserve(CURL_HANDLE_QUE_SZ);
+    for (auto i = 0; i < CURL_HANDLE_QUE_SZ; ++i) {
+        curl_handle_que_.emplace_back(new CurlHandle(split_svr_));
+    }
 }
 
-StringArray Translator::Translate(const StringArray& text_set /* , std::string src_language */) {
+std::string Translator::Translate(const std::string& article, const std::string& src_language,
+                                  const std::string& dst_language) {
+    if (article.empty()) {
+        throw std::runtime_error("Input src article cannot be empty!");
+    }
+
+    StringArray sentences;
+
+    // 请求断句服务器进行断句
+    if (!_SplitSentence(article, src_language, &sentences)) {
+        throw std::runtime_error(fmt::format("Failed to split sentence for '{}'", article));
+    }
+
+    // 删除断句后的空字句子
+    sentences.erase(std::remove_if(sentences.begin(), sentences.end(),
+                                   [](const auto& str) -> bool { return str.empty(); }),
+                    sentences.end());
+
+    if (sentences.empty()) {
+        throw std::runtime_error(
+            fmt::format("Failed to translate '{}' for 0 splitted sentences", article));
+    }
+
+    // 得到翻译后的句子集合
+    auto translated_sentences = Translate(sentences, src_language, dst_language);
+
+    // 将翻译后句子集合合并成article并返回
+    return fmt::to_string(fmt::join(translated_sentences, " "));
+}
+
+StringArray Translator::Translate(const StringArray& sentences, const std::string& src_language,
+                                  const std::string& dst_language) {
     using Batch = std::vector<std::vector<std::string>>;
 
-    Batch batch;
+    DLOG(INFO) << fmt::format("Translating sentences {} ...", sentences);
 
-    for (const auto& text : text_set) {
+    Batch batch;
+    for (const auto& sentence : sentences) {
         std::vector<std::string> pieces;
-        sentencor_->Encode(text, &pieces);
-        pieces.emplace_back("</s>");  // TODO 必须加上
-                                      // TODO src_language
+
+        // 对每个句子进行分词
+        sentencor_->Encode(sentence, &pieces);
+
+        // 分词结果添加前后缀
+        pieces.insert(pieces.begin(), supported_languages_.at(src_language));
+        pieces.emplace_back("</s>");
+
         batch.emplace_back(std::move(pieces));
     }
 
-    DLOG(INFO) << fmt::format("Translating {} ...", batch);
-    auto translations = translator_->translate_batch(batch);
+    std::vector<std::vector<std::string>> target_prefix(batch.size(),
+                                                        {supported_languages_.at(dst_language)});
+
+    DLOG(INFO) << fmt::format("Translating batch {} ...", batch);
+    auto translations = translator_->translate_batch(batch, target_prefix);
 
     if (translations.empty()) {
-        throw std::runtime_error(fmt::format("Failed to translate '{}'.", batch));
+        throw std::runtime_error(
+            fmt::format("Failed to translate '{}' for empty results!", sentences));
     }
 
     StringArray results;
     results.reserve(translations.size());
 
     for (auto& translation : translations) {
+        // 翻译结果以分词形式存在
         std::vector<std::string> translate_pieces;
         translate_pieces.reserve(translation.output().size());
         std::copy(translation.output().begin(), translation.output().end(),
                   std::back_inserter(translate_pieces));
+        // 将翻译结果分词合并成句子
         std::string result;
         sentencor_->Decode(translate_pieces, &result);
         results.emplace_back(std::move(result));
     }
+
+    DLOG(INFO) << fmt::format("Translated results {} ...", results);
 
     return results;
 }
 
 bool Translator::IsSupportedLanguage(const std::string& language) const {
     return supported_languages_.count(language) != 0;
+}
+
+bool Translator::_SplitSentence(const std::string& article, const std::string& src_language,
+                                StringArray* result) {
+    SentenceRequest split_req;
+    split_req.set_lang(src_language);
+    split_req.set_text(article);
+
+    std::string req_str, err;
+    if (!json2pb::ProtoMessageToJson(split_req, &req_str, json2pb::Pb2JsonOptions(), &err)) {
+        LOG(ERROR) << fmt::format("SplitSentence failed to convert proto to json: '{}'", err);
+        return false;
+    }
+
+    std::string res_str;
+    int         status = 0;
+
+    // 从curl handle队列中找一个空闲的handle用来处理请求，遍历5遍，若找不到就返回失败
+    for (int i = 0; i < CURL_HANDLE_QUE_SZ * 5; ++i) {
+        auto* handle = curl_handle_que_[++curl_handle_que_idx_ % CURL_HANDLE_QUE_SZ].get();
+        status = handle->Request(req_str, &res_str);
+        if (status == 0) {
+            break;
+        } else if (status == 1) {
+            continue;  // 当前handle正忙，继续找
+        } else {
+            return false;  // 断句出现错误
+        }
+    }  // for i
+
+    // 找不到空闲handle
+    if (status == 1) {
+        LOG(ERROR) << "SplitSentence no server available";
+        return false;
+    }
+
+    SentenceResponse split_res;
+    if (!json2pb::JsonToProtoMessage(res_str, &split_res, json2pb::Json2PbOptions{}, &err)) {
+        LOG(ERROR) << fmt::format("SplitSentence failed to convert json to proto: '{}'", err);
+        return false;
+    }
+
+    result->reserve(split_res.sentences_size());
+    for (auto i = 0; i < split_res.sentences_size(); ++i) {
+        result->emplace_back(std::move(split_res.sentences(i)));
+    }
+
+    return true;
 }
 
 const std::unordered_map<std::string, std::string> Translator::supported_languages_{

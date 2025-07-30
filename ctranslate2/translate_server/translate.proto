@@ -1,5 +1,8 @@
 /*
+单独编译命令如下, 实际用cmake会自动编译
 protoc --cpp_out=. --proto_path=. translate.proto
+
+目前所有接口都是restful json格式，定义pb是为了转换json方便，也方便将来支持rpc接口
  */
 
 syntax="proto2";
@@ -10,15 +13,26 @@ option cc_generic_services = true;
 // translate api pb
 
 message TranslateRequest {
-    repeated string text = 1;
-    required string src = 2;
-    required string dst = 3;
+    repeated string articles = 1;  // 要翻译的文章集合，可以一次请求翻译多篇文章
+    required string src = 2;       // 源语种
+    required string dst = 3;       // 目标语种
     // other arguments ...
 };
 
 message TranslateResponse {
-    repeated string results = 1;
+    repeated string results = 1;  // 翻译结果集合，对应TranslateRequest里的articles
     // other arguments ...
+};
+
+// 断句服务器json协议
+
+message SentenceRequest {
+    required string lang = 1;  // 语种
+    required string text = 2;  // 文本
+};
+
+message SentenceResponse {
+    repeated string sentences = 1;  // 断句后的结果
 };
 
 // following for restful service

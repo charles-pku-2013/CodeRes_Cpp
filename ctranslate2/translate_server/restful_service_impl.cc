@@ -1,11 +1,11 @@
+#include "restful_service_impl.h"
+
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <glog/logging.h>
 
 #include <system_error>
-
-#include "restful_service_impl.h"
 
 namespace newtranx {
 namespace ai_server {
