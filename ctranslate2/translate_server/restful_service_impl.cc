@@ -43,7 +43,8 @@ void RestfulServiceImpl::HandleRequest(google::protobuf::RpcController* cntl_bas
 
     try {
         std::string out;
-        auto status = (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out);
+        auto        status =
+            (it->second)(unresolved_path, cntl->request_attachment().to_string(), &out, cntl);
 
         if (status.ok()) {
             cntl->response_attachment().append(out);

@@ -13,9 +13,10 @@ namespace ai_server {
 class RestfulServiceImpl : public RestfulService {
  public:
     using Status = butil::Status;
-    using Handler = std::function<Status(const std::string&, /* url */
-                                         const std::string&, /* body */
-                                         std::string*)>;     /* resp */
+    using Handler = std::function<Status(const std::string&,  /* url */
+                                         const std::string&,  /* body */
+                                         std::string*,        /* resp */
+                                         brpc::Controller*)>; /* cntl */
     using HandlerTable = std::unordered_map<std::string, Handler>;
 
  public:

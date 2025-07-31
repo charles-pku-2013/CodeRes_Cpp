@@ -125,6 +125,9 @@ class TranslateTaskItem : public TimeoutTaskItem {
           translator_(translator) {}
 
     void jobRoutine() override {
+        if (canceled_) {
+            return;
+        }
         try {
             for (auto& article : articles_) {
                 auto result = translator_->Translate(article, src_language_, dst_language_);
@@ -144,12 +147,21 @@ class TranslateTaskItem : public TimeoutTaskItem {
         return err_msg_;
     }
 
+    bool isCanceled() const {
+        return canceled_;
+    }
+
+    static void cancelTask(TranslateTaskItem* task) {
+        task->canceled_ = true;
+    }
+
  private:
-    StringArray articles_;
-    StringArray results_;
-    std::string src_language_, dst_language_;
-    std::string err_msg_;
-    Translator* translator_ = nullptr;
+    StringArray      articles_;
+    StringArray      results_;
+    std::string      src_language_, dst_language_;
+    std::string      err_msg_;
+    Translator*      translator_ = nullptr;
+    std::atomic_bool canceled_{false};
 };
 
 }  // namespace
@@ -200,7 +212,7 @@ int main(int argc, char** argv) {
     RestfulServiceImpl::Instance().RegisterHandler(
         "translate",
         [&translator, &task_queue](const std::string& uri, const std::string& body,
-                                   std::string* out) -> butil::Status {
+                                   std::string* out, brpc::Controller* cntl) -> butil::Status {
             if (body.empty()) {
                 return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
                                      "Request body cannot be empty!");
@@ -236,6 +248,9 @@ int main(int argc, char** argv) {
 
             auto task = std::make_shared<TranslateTaskItem>(std::move(article_set), req.src(),
                                                             req.dst(), translator.get());
+
+            cntl->NotifyOnCancel(brpc::NewCallback(&TranslateTaskItem::cancelTask, task.get()));
+
             if (!task_queue.push(task)) {
                 return butil::Status(
                     brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -243,6 +258,10 @@ int main(int argc, char** argv) {
             }
 
             task->wait();  // wait for task done or timeout
+
+            if (task->isCanceled()) {
+                return butil::Status::OK();
+            }
 
             if (task->status() == TimeoutTaskItem::Status::TIMEOUT) {
                 return butil::Status(

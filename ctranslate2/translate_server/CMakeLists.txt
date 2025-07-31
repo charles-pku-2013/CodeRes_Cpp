@@ -38,7 +38,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
     # GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
 # FetchContent_MakeAvailable(fmt)
 
-find_package(fmt REQUIRED)
+# find_package(fmt REQUIRED)
 find_package(glog REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Protobuf REQUIRED)
@@ -60,7 +60,7 @@ target_link_libraries(server
     ${BRPC_LIB}
     ${Protobuf_LIBRARIES}
     OpenSSL::SSL OpenSSL::Crypto
-    fmt::fmt glog::glog curl
+    fmt glog::glog curl
     sentencepiece ctranslate2
 )
 

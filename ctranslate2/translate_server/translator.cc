@@ -164,8 +164,8 @@ StringArray Translator::Translate(const StringArray& sentences, const std::strin
         batch.emplace_back(std::move(pieces));
     }
 
-    std::vector<std::vector<std::string>> target_prefix(batch.size(),
-                                                        {supported_languages_.at(dst_language)});
+    auto&                                 dst_language_tag = supported_languages_.at(dst_language);
+    std::vector<std::vector<std::string>> target_prefix(batch.size(), {dst_language_tag});
 
     DLOG(INFO) << fmt::format("Translating batch {} ...", batch);
     auto translations = translator_->translate_batch(batch, target_prefix);
@@ -182,8 +182,11 @@ StringArray Translator::Translate(const StringArray& sentences, const std::strin
         // 翻译结果以分词形式存在
         std::vector<std::string> translate_pieces;
         translate_pieces.reserve(translation.output().size());
-        std::copy(translation.output().begin(), translation.output().end(),
-                  std::back_inserter(translate_pieces));
+        auto beg = translation.output().begin();
+        if (beg != translation.output().end() && *beg == dst_language_tag) {
+            ++beg;
+        }
+        std::copy(beg, translation.output().end(), std::back_inserter(translate_pieces));
         // 将翻译结果分词合并成句子
         std::string result;
         sentencor_->Decode(translate_pieces, &result);

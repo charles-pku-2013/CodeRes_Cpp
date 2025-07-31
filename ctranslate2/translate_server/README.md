@@ -1,27 +1,30 @@
 # 编译环境准备
 
 本程序目前使用依赖库有
-protobuf-3.14.0
-brpc-1.8.0
+protobuf-3.14.0  (手动编译安装)
+brpc-1.8.0  (手动编译安装)
 libcurl
+fmt-11.2.0  (手动编译安装)
+boost
 sentencepiece和ctranslate2用最新release版本
+
+执行:
+sudo apt update
+sudo apt install -y libleveldb-dev libssl-dev libsnappy-dev libgoogle-glog-dev libgflags-dev libboost-all-dev libcurl4-openssl-dev
 
 ## 编译安装依赖库
 1. 安装protobuf
 a) 先将系统之前安装的protobuf相关包全部卸载
     ubuntu下运行 `apt search proto` 将其中protobuf相关的包用`apt remove`删除
-b) 下载protobuf-3.14.0 运行
-        ./autogen
+b) 下载 protobuf-cpp-3.14.0 运行
+        ./autogen.sh
         ./configure --prefix=/usr
         make -j
         make install
         ldconfig
    完成安装
 
-2. 安装brpc依赖库，执行
-    `apt install -y libleveldb-dev libssl-dev libsnappy-dev libglog-dev -libgflags-dev`
-
-3. 安装brpc库
+2. 安装brpc库
     下载 brpc-1.8.0 后用cmake编译:
         mkdir -p /tmp/build
         cmake -B /tmp/build . -DWITH_GLOG=ON -DWITH_DEBUG_SYMBOLS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local

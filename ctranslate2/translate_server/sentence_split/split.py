@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
+# prepare
+# pip3 install fastapi uvicorn regex
+
 # compile bin executable
 # pyinstaller -F split.py
 
