@@ -8,6 +8,7 @@
 #include <json2pb/json_to_pb.h>
 #include <json2pb/pb_to_json.h>
 
+#include <iterator>
 #include <string>
 
 #include "translate.pb.h"
@@ -186,7 +187,8 @@ StringArray Translator::Translate(const StringArray& sentences, const std::strin
         if (beg != translation.output().end() && *beg == dst_language_tag) {
             ++beg;
         }
-        std::copy(beg, translation.output().end(), std::back_inserter(translate_pieces));
+        std::copy(std::make_move_iterator(beg), std::make_move_iterator(translation.output().end()),
+                  std::back_inserter(translate_pieces));
         // 将翻译结果分词合并成句子
         std::string result;
         sentencor_->Decode(translate_pieces, &result);

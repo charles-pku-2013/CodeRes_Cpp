@@ -70,7 +70,7 @@ class TimeoutTaskItem {
     TimeoutTaskItem& operator=(const TimeoutTaskItem&) = delete;
 
     std::unique_ptr<Timer>  timer_;
-    Status                  status_{Status::WAITTING};
+    std::atomic<Status>     status_{Status::WAITTING};
     mutable std::mutex      mutex_;
     std::condition_variable cv_;
 };
