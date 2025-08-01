@@ -1,5 +1,6 @@
 #pragma once
 #include <ctranslate2/translator.h>
+#include <gflags/gflags.h>
 #include <sentencepiece_processor.h>
 
 #include <memory>
@@ -47,7 +48,9 @@ class Translator final {
     // 是否支持该语种翻译
     bool IsSupportedLanguage(const std::string& language) const;
 
- public:
+    std::string DebugString() const;
+
+ private:
     /**
      * @brief                  文章断句
      *
@@ -71,7 +74,7 @@ class Translator final {
     std::string                              split_svr_;        // 断句服务器url
     std::vector<std::unique_ptr<CurlHandle>> curl_handle_que_;  // curl队列 for thread safety
     std::atomic_size_t                       curl_handle_que_idx_{0};
-    static constexpr std::size_t             CURL_HANDLE_QUE_SZ = 3000;  // curl队列大小
+    static constexpr std::size_t             CURL_HANDLE_QUE_SZ = 5000;  // curl队列大小
 
     static const std::unordered_map<std::string, std::string>
         supported_languages_;  // 目前所支持的语种
@@ -79,3 +82,6 @@ class Translator final {
 
 }  // namespace ai_server
 }  // namespace newtranx
+
+DECLARE_string(device);
+DECLARE_uint64(inter_threads);

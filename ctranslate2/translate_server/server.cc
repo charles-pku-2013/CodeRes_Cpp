@@ -70,7 +70,6 @@ response:
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <json2pb/json_to_pb.h>
 #include <json2pb/pb_to_json.h>
@@ -82,6 +81,8 @@ response:
 DEFINE_string(smodel, "", "sentencepiece分词用的模型");
 DEFINE_string(tmodel, "", "ctranslate2翻译用的模型");
 DEFINE_string(split_svr, "", "断句服务器地址");
+DEFINE_string(device, "cpu", "计算设备 cpu(默认) 或 gpu(cuda)");
+DEFINE_uint64(inter_threads, 1, "Same as 'inter_threads' in ctranslate2");
 DEFINE_int32(port, 8000, "本服务器端口");
 DEFINE_uint32(n_workers, 0, "Num of worker threads. Default 0 for auto determing");
 DEFINE_uint32(worker_que_cap, 100000, "Capacity of worker queue");
@@ -200,6 +201,7 @@ int main(int argc, char** argv) {
         LOG(ERROR) << "Failed to init translator: " << ex.what();
         return -1;
     }
+    LOG(INFO) << "Successfully initialized translator: " << translator->DebugString();
 
     /**
      * @brief 处理翻译请求逻辑实现

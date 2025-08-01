@@ -8,6 +8,7 @@
 #include <json2pb/json_to_pb.h>
 #include <json2pb/pb_to_json.h>
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 
@@ -105,7 +106,11 @@ Translator::Translator(const std::string& s_model, const std::string& t_model,
     }
 
     // 初始化翻译器
-    const ctranslate2::models::ModelLoader model_loader(t_model_);
+    ctranslate2::models::ModelLoader model_loader(t_model_);
+    if (FLAGS_device == "gpu" || FLAGS_device == "cuda") {
+        model_loader.device = ctranslate2::Device::CUDA;
+    }
+    model_loader.num_replicas_per_device = FLAGS_inter_threads;
     translator_ = std::make_unique<ctranslate2::Translator>(model_loader);
 
     // 初始化断句服务请求队列
@@ -153,13 +158,15 @@ StringArray Translator::Translate(const StringArray& sentences, const std::strin
 
     Batch batch;
     for (const auto& sentence : sentences) {
-        std::vector<std::string> pieces;
+        std::vector<std::string> pieces, _pieces;
 
         // 对每个句子进行分词
-        sentencor_->Encode(sentence, &pieces);
+        sentencor_->Encode(sentence, &_pieces);
 
         // 分词结果添加前后缀
-        pieces.insert(pieces.begin(), supported_languages_.at(src_language));
+        pieces.reserve(_pieces.size() + 2);
+        pieces.emplace_back(supported_languages_.at(src_language));
+        std::move(_pieces.begin(), _pieces.end(), std::back_inserter(pieces));
         pieces.emplace_back("</s>");
 
         batch.emplace_back(std::move(pieces));
@@ -250,6 +257,17 @@ bool Translator::_SplitSentence(const std::string& article, const std::string& s
     }
 
     return true;
+}
+
+std::string Translator::DebugString() const {
+    return fmt::format(
+        "{{"
+        "ctranslate2_model: {}, sentencepiece_model: {}, "
+        "sentence_split_server: {}, "
+        "num_curl_handle: {}, "
+        "device: {}, inter_threads: {}, "
+        "}}",
+        t_model_, s_model_, split_svr_, CURL_HANDLE_QUE_SZ, FLAGS_device, FLAGS_inter_threads);
 }
 
 const std::unordered_map<std::string, std::string> Translator::supported_languages_{
