@@ -109,8 +109,13 @@ Translator::Translator(const std::string& s_model, const std::string& t_model,
     ctranslate2::models::ModelLoader model_loader(t_model_);
     if (FLAGS_device == "gpu" || FLAGS_device == "cuda") {
         model_loader.device = ctranslate2::Device::CUDA;
+        model_loader.num_replicas_per_device = FLAGS_inter_threads;
+        if (FLAGS_n_devices > 0) {
+            for (int i = 0; i < FLAGS_n_devices; ++i) {
+                model_loader.device_indices.emplace_back(i);
+            }
+        }
     }
-    model_loader.num_replicas_per_device = FLAGS_inter_threads;
     translator_ = std::make_unique<ctranslate2::Translator>(model_loader);
 
     // 初始化断句服务请求队列
@@ -265,9 +270,10 @@ std::string Translator::DebugString() const {
         "ctranslate2_model: {}, sentencepiece_model: {}, "
         "sentence_split_server: {}, "
         "num_curl_handle: {}, "
-        "device: {}, inter_threads: {}, "
+        "device: {}, n_devices: {}, inter_threads: {}, "
         "}}",
-        t_model_, s_model_, split_svr_, CURL_HANDLE_QUE_SZ, FLAGS_device, FLAGS_inter_threads);
+        t_model_, s_model_, split_svr_, CURL_HANDLE_QUE_SZ, FLAGS_device,
+        FLAGS_n_devices, FLAGS_inter_threads);
 }
 
 const std::unordered_map<std::string, std::string> Translator::supported_languages_{

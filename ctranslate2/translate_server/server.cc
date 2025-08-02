@@ -82,6 +82,7 @@ DEFINE_string(smodel, "", "sentencepiece分词用的模型");
 DEFINE_string(tmodel, "", "ctranslate2翻译用的模型");
 DEFINE_string(split_svr, "", "断句服务器地址");
 DEFINE_string(device, "cpu", "计算设备 cpu(默认) 或 gpu(cuda)");
+DEFINE_int(n_devices, 0, "GPU处理器数量 (默认0自动设置)");
 DEFINE_uint64(inter_threads, 1, "Same as 'inter_threads' in ctranslate2");
 DEFINE_int32(port, 8000, "本服务器端口");
 DEFINE_uint32(n_workers, 0, "Num of worker threads. Default 0 for auto determing");
