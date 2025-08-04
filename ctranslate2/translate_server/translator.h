@@ -84,5 +84,5 @@ class Translator final {
 }  // namespace newtranx
 
 DECLARE_string(device);
-DECLARE_int(n_devices);
+DECLARE_int32(n_devices);
 DECLARE_uint64(inter_threads);

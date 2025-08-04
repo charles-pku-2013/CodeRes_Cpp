@@ -1,6 +1,7 @@
+/*
+c++ -o /tmp/test test.cc -lglog -std=c++17 -DGLOG_USE_GLOG_EXPORT -g
+ */
 #include <glog/logging.h>
-
-
 /*
  * link with -lglog
  *

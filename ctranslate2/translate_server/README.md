@@ -68,5 +68,5 @@ curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["您吃饭了吗？"
 curl http://127.0.0.1:9501/api/translate -d '{"articles" : ["龚六堂长期研究居民收入、劳动力市场及人口 经济等话题，也曾就构建生育友好型社会、降低居民生育成本等议题向政协提交提案。在与腾讯财经的对话中，龚六堂认为，建设生育友好型社会是一 个系统、长期的工程，不可能通过一项政策或单纯的资金补贴就能完成，也不可能通过补贴就能立竿见影的提升生育率水平。", "给三岁以下的婴幼儿 每月补贴300元，是建设生育友好型社会的一个积极信号，特别是对减轻低收入人群的生育压力有很好的帮助。"], "src" : "zh", "dst" : "en"}'; echo
 
 3. benchmark with wrk
-/tmp/build/server -smodel 418M/spm.model -tmodel 418M -split_svr http://127.0.0.1:7003/split -port 9501 -device gpu -n_workers 4 -inter_threads 1
+/tmp/build/server -smodel 418M/spm.model -tmodel 418M -split_svr http://127.0.0.1:7003/split -port 9501 -device gpu -n_devices 8 -n_workers 4 -worker_que_timeout 10000
 ./wrk -c20 -t10 -d20s -s wrk.lua --timeout 10000 http://127.0.0.1:9501/api/translate

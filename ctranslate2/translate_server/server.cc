@@ -82,7 +82,7 @@ DEFINE_string(smodel, "", "sentencepiece分词用的模型");
 DEFINE_string(tmodel, "", "ctranslate2翻译用的模型");
 DEFINE_string(split_svr, "", "断句服务器地址");
 DEFINE_string(device, "cpu", "计算设备 cpu(默认) 或 gpu(cuda)");
-DEFINE_int(n_devices, 0, "GPU处理器数量 (默认0自动设置)");
+DEFINE_int32(n_devices, 0, "GPU处理器数量 (默认0自动设置)");
 DEFINE_uint64(inter_threads, 1, "Same as 'inter_threads' in ctranslate2");
 DEFINE_int32(port, 8000, "本服务器端口");
 DEFINE_uint32(n_workers, 0, "Num of worker threads. Default 0 for auto determing");
@@ -168,6 +168,68 @@ class TranslateTaskItem : public TimeoutTaskItem {
 
 }  // namespace
 
+// TEST
+namespace {
+
+butil::Status translate_without_queue(const std::string& uri, const std::string& body,
+                                      std::string* out, brpc::Controller* cntl,
+                                      TimeoutTaskQueue* _task_queue, Translator* translator) {
+    auto& task_queue = *_task_queue;
+
+    if (body.empty()) {
+        return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST, "Request body cannot be empty!");
+    }
+
+    TranslateRequest  req;
+    TranslateResponse res;
+
+    std::string err;
+    if (!json2pb::JsonToProtoMessage(body, &req, json2pb::Json2PbOptions{}, &err)) {
+        return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
+                             fmt::format("Invalid request: '{}', err: '{}'", body, err));
+    }
+
+    if (!translator->IsSupportedLanguage(req.src())) {
+        return butil::Status(
+            brpc::HTTP_STATUS_NOT_FOUND,
+            fmt::format("Requested src language '{}' is not supported", req.src()));
+    }
+
+    if (!translator->IsSupportedLanguage(req.dst())) {
+        return butil::Status(
+            brpc::HTTP_STATUS_NOT_FOUND,
+            fmt::format("Requested dst language '{}' is not supported", req.dst()));
+    }
+
+    if (req.articles().empty()) {
+        return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST, "Request 'articles' cannot be empty");
+    }
+
+    std::vector<std::string> article_set(std::make_move_iterator(req.articles().begin()),
+                                         std::make_move_iterator(req.articles().end()));
+
+    try {
+        for (auto& article : article_set) {
+            auto result = translator->Translate(article, req.src(), req.dst());
+            res.add_results(std::move(result));
+        }
+    } catch (const std::exception& ex) {
+        return butil::Status(
+            brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
+            fmt::format("Failed to translate '{}' for error: '{}'", body, ex.what()));
+    }
+
+    if (!json2pb::ProtoMessageToJson(res, out, json2pb::Pb2JsonOptions(), &err)) {
+        return butil::Status(
+            brpc::HTTP_STATUS_INTERNAL_SERVER_ERROR,
+            fmt::format("Failed to convert TranslateResponse to json format: '{}'", err));
+    }
+
+    return butil::Status::OK();
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
     google::ParseCommandLineFlags(&argc, &argv, true);
 
@@ -247,7 +309,8 @@ int main(int argc, char** argv) {
                                      "Request 'articles' cannot be empty");
             }
 
-            std::vector<std::string> article_set(req.articles().begin(), req.articles().end());
+            std::vector<std::string> article_set(std::make_move_iterator(req.articles().begin()),
+                                                 std::make_move_iterator(req.articles().end()));
 
             auto task = std::make_shared<TranslateTaskItem>(std::move(article_set), req.src(),
                                                             req.dst(), translator.get());
@@ -290,6 +353,14 @@ int main(int argc, char** argv) {
 
             return butil::Status::OK();
         });
+
+    // for testing performance without TimeoutTaskQueue
+    RestfulServiceImpl::Instance().RegisterHandler(
+        "test",
+        std::bind(translate_without_queue, std::placeholders::_1, std::placeholders::_2,
+                  std::placeholders::_3, std::placeholders::_4, &task_queue, translator.get()));
+
+    // Add other restful api here
 
     brpc::Server server;
     if (!RestfulServiceImpl::Instance().Build(&server)) {
