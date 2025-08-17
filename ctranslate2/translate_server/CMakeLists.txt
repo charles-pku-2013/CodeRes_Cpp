@@ -47,7 +47,7 @@ find_library(BRPC_LIB NAMES brpc)
 
 set(BRPC_LIB ${BRPC_LIB} leveldb dl rt)
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS translate.proto)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS translate.proto model_header.proto)
 # include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})  # proto 生成的文件放在build目录下
 

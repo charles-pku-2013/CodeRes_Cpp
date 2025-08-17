@@ -30,7 +30,6 @@ static void InitDefaultsscc_info_ModelHeader_model_5fheader_2eproto() {
     new (ptr) ::newtranx::ai_server::ModelHeader();
     ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::newtranx::ai_server::ModelHeader::InitAsDefaultInstance();
 }
 
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ModelHeader_model_5fheader_2eproto =
@@ -91,8 +90,6 @@ namespace ai_server {
 
 // ===================================================================
 
-void ModelHeader::InitAsDefaultInstance() {
-}
 class ModelHeader::_Internal {
  public:
 };
@@ -108,22 +105,22 @@ ModelHeader::ModelHeader(const ModelHeader& from)
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   model_id_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_model_id().empty()) {
-    model_id_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_model_id(),
+    model_id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_model_id(), 
       GetArena());
   }
   expire_date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_expire_date().empty()) {
-    expire_date_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_expire_date(),
+    expire_date_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_expire_date(), 
       GetArena());
   }
   checksum_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_checksum().empty()) {
-    checksum_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_checksum(),
+    checksum_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_checksum(), 
       GetArena());
   }
   original_filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (!from._internal_original_filename().empty()) {
-    original_filename_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from._internal_original_filename(),
+    original_filename_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_original_filename(), 
       GetArena());
   }
   ::memcpy(&start_pos_, &from.start_pos_,
@@ -138,8 +135,9 @@ void ModelHeader::SharedCtor() {
   expire_date_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   checksum_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   original_filename_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  ::memset(&start_pos_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&is_directory_) -
+  ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+      reinterpret_cast<char*>(&start_pos_) - reinterpret_cast<char*>(this)),
+      0, static_cast<size_t>(reinterpret_cast<char*>(&is_directory_) -
       reinterpret_cast<char*>(&start_pos_)) + sizeof(is_directory_));
 }
 
@@ -178,10 +176,10 @@ void ModelHeader::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  model_id_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  expire_date_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  checksum_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  original_filename_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  model_id_.ClearToEmpty();
+  expire_date_.ClearToEmpty();
+  checksum_.ClearToEmpty();
+  original_filename_.ClearToEmpty();
   ::memset(&start_pos_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&is_directory_) -
       reinterpret_cast<char*>(&start_pos_)) + sizeof(is_directory_));
@@ -190,7 +188,6 @@ void ModelHeader::Clear() {
 
 const char* ModelHeader::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);

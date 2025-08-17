@@ -77,7 +77,9 @@ response:
 #include "restful_service_impl.h"
 #include "task_queue.h"
 #include "translator.h"
+#include "model_wrapper.h"
 
+DEFINE_string(model, "", "打包后的模型");
 DEFINE_string(smodel, "", "sentencepiece分词用的模型");
 DEFINE_string(tmodel, "", "ctranslate2翻译用的模型");
 DEFINE_string(split_svr, "", "断句服务器地址");
@@ -104,8 +106,8 @@ bool check_empty_string_arg(const char* flagname, const std::string& value) {
     return true;
 }
 
-const bool smodel_checker = gflags::RegisterFlagValidator(&FLAGS_smodel, check_empty_string_arg);
-const bool tmodel_checker = gflags::RegisterFlagValidator(&FLAGS_tmodel, check_empty_string_arg);
+// const bool smodel_checker = gflags::RegisterFlagValidator(&FLAGS_smodel, check_empty_string_arg);
+// const bool tmodel_checker = gflags::RegisterFlagValidator(&FLAGS_tmodel, check_empty_string_arg);
 const bool split_svr_checker =
     gflags::RegisterFlagValidator(&FLAGS_split_svr, check_empty_string_arg);
 
@@ -235,6 +237,14 @@ int main(int argc, char** argv) {
 
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr();
+
+    std::unique_ptr<ModelWrapper> model_wrapper;
+    if (!FLAGS_model.empty()) {
+        model_wrapper.reset(new ModelWrapper);
+        auto models = model_wrapper->decrypt_model(FLAGS_model);
+        FLAGS_tmodel = std::get<0>(models);
+        FLAGS_smodel = std::get<1>(models);
+    }
 
     if (FLAGS_n_workers == 0) {
         FLAGS_n_workers = std::thread::hardware_concurrency();
