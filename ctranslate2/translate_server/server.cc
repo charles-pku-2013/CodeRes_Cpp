@@ -57,13 +57,13 @@ make -j
 /tmp/build/server -smodel 418M/spm.model -tmodel 418M -worker_que_timeout 500 -split_svr http://127.0.0.1:7003/split
 
 ## send restful request
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["Hello world!", "How are you?"], "src" : "en", "dst" : "de"}'; echo
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "src" : "en", "dst" : "de"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["Hello world!", "How are you?"], "srcCode" : "en", "tgtCode" : "de"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "srcCode" : "en", "tgtCode" : "de"}'; echo
 
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["您吃饭了吗？", "你好吗？"], "src" : "zh", "dst" : "en"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["您吃饭了吗？", "你好吗？"], "srcCode" : "zh", "tgtCode" : "en"}'; echo
 
 response:
-{"results":["Hallo Welt!","Wie geht es dir?"]}
+{"text":["Hallo Welt!","Wie geht es dir?"]}
  */
 
 #include <curl/curl.h>
@@ -191,29 +191,29 @@ butil::Status translate_without_queue(const std::string& uri, const std::string&
                              fmt::format("Invalid request: '{}', err: '{}'", body, err));
     }
 
-    if (!translator->IsSupportedLanguage(req.src())) {
+    if (!translator->IsSupportedLanguage(req.srccode())) {
         return butil::Status(
             brpc::HTTP_STATUS_NOT_FOUND,
-            fmt::format("Requested src language '{}' is not supported", req.src()));
+            fmt::format("Requested source language '{}' is not supported", req.srccode()));
     }
 
-    if (!translator->IsSupportedLanguage(req.dst())) {
+    if (!translator->IsSupportedLanguage(req.tgtcode())) {
         return butil::Status(
             brpc::HTTP_STATUS_NOT_FOUND,
-            fmt::format("Requested dst language '{}' is not supported", req.dst()));
+            fmt::format("Requested target language '{}' is not supported", req.tgtcode()));
     }
 
-    if (req.articles().empty()) {
-        return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST, "Request 'articles' cannot be empty");
+    if (req.text().empty()) {
+        return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST, "Request 'text' cannot be empty");
     }
 
-    std::vector<std::string> article_set(std::make_move_iterator(req.articles().begin()),
-                                         std::make_move_iterator(req.articles().end()));
+    std::vector<std::string> article_set(std::make_move_iterator(req.text().begin()),
+                                         std::make_move_iterator(req.text().end()));
 
     try {
         for (auto& article : article_set) {
-            auto result = translator->Translate(article, req.src(), req.dst());
-            res.add_results(std::move(result));
+            auto result = translator->Translate(article, req.srccode(), req.tgtcode());
+            res.add_text(std::move(result));
         }
     } catch (const std::exception& ex) {
         return butil::Status(
@@ -302,28 +302,28 @@ int main(int argc, char** argv) {
                                      fmt::format("Invalid request: '{}', err: '{}'", body, err));
             }
 
-            if (!translator->IsSupportedLanguage(req.src())) {
+            if (!translator->IsSupportedLanguage(req.srccode())) {
                 return butil::Status(
                     brpc::HTTP_STATUS_NOT_FOUND,
-                    fmt::format("Requested src language '{}' is not supported", req.src()));
+                    fmt::format("Requested source language '{}' is not supported", req.srccode()));
             }
 
-            if (!translator->IsSupportedLanguage(req.dst())) {
+            if (!translator->IsSupportedLanguage(req.tgtcode())) {
                 return butil::Status(
                     brpc::HTTP_STATUS_NOT_FOUND,
-                    fmt::format("Requested dst language '{}' is not supported", req.dst()));
+                    fmt::format("Requested target language '{}' is not supported", req.tgtcode()));
             }
 
-            if (req.articles().empty()) {
+            if (req.text().empty()) {
                 return butil::Status(brpc::HTTP_STATUS_BAD_REQUEST,
-                                     "Request 'articles' cannot be empty");
+                                     "Request 'text' cannot be empty");
             }
 
-            std::vector<std::string> article_set(std::make_move_iterator(req.articles().begin()),
-                                                 std::make_move_iterator(req.articles().end()));
+            std::vector<std::string> article_set(std::make_move_iterator(req.text().begin()),
+                                                 std::make_move_iterator(req.text().end()));
 
-            auto task = std::make_shared<TranslateTaskItem>(std::move(article_set), req.src(),
-                                                            req.dst(), translator.get());
+            auto task = std::make_shared<TranslateTaskItem>(std::move(article_set), req.srccode(),
+                                                            req.tgtcode(), translator.get());
 
             cntl->NotifyOnCancel(brpc::NewCallback(&TranslateTaskItem::cancelTask, task.get()));
 
@@ -352,7 +352,7 @@ int main(int argc, char** argv) {
             }
 
             for (auto& str : task->results()) {
-                res.add_results(std::move(str));
+                res.add_text(std::move(str));
             }
 
             if (!json2pb::ProtoMessageToJson(res, out, json2pb::Pb2JsonOptions(), &err)) {

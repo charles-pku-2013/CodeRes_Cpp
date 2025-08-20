@@ -13,14 +13,14 @@ option cc_generic_services = true;
 // translate api pb
 
 message TranslateRequest {
-    repeated string articles = 1;  // 要翻译的文章集合，可以一次请求翻译多篇文章
-    required string src = 2;       // 源语种
-    required string dst = 3;       // 目标语种
+    repeated string text = 1;  // 要翻译的文章集合，可以一次请求翻译多篇文章
+    required string srcCode = 2;       // 源语种
+    required string tgtCode = 3;       // 目标语种
     // other arguments ...
 };
 
 message TranslateResponse {
-    repeated string results = 1;  // 翻译结果集合，对应TranslateRequest里的articles
+    repeated string text = 1;  // 翻译结果集合，对应TranslateRequest里的text
     // other arguments ...
 };
 

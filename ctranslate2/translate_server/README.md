@@ -61,11 +61,11 @@ python3 split.py --nobreak_file ./nonbreaking_prefix.en  --host 0.0.0.0 --port 7
 
 2. restful api测试
 英德
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : "Hello world!"}'; echo
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "src" : "en", "dst" : "de"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : "Hello world!"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["This is a machine translation program running on NPU of Huawei server. Hello. How are you today.", "All formatting is locale-independent by default. Use the format specifier to insert the appropriate number separator characters from the locale."], "srcCode" : "en", "tgtCode" : "de"}'; echo
 中英
-curl http://127.0.0.1:8000/api/translate -d '{"articles" : ["您吃饭了吗？", "你好吗？"], "src" : "zh", "dst" : "en"}'; echo
-curl http://127.0.0.1:9501/api/translate -d '{"articles" : ["龚六堂长期研究居民收入、劳动力市场及人口 经济等话题，也曾就构建生育友好型社会、降低居民生育成本等议题向政协提交提案。在与腾讯财经的对话中，龚六堂认为，建设生育友好型社会是一 个系统、长期的工程，不可能通过一项政策或单纯的资金补贴就能完成，也不可能通过补贴就能立竿见影的提升生育率水平。", "给三岁以下的婴幼儿 每月补贴300元，是建设生育友好型社会的一个积极信号，特别是对减轻低收入人群的生育压力有很好的帮助。"], "src" : "zh", "dst" : "en"}'; echo
+curl http://127.0.0.1:8000/api/translate -d '{"text" : ["您吃饭了吗？", "你好吗？"], "srcCode" : "zh", "tgtCode" : "en"}'; echo
+curl http://127.0.0.1:9501/api/translate -d '{"text" : ["龚六堂长期研究居民收入、劳动力市场及人口 经济等话题，也曾就构建生育友好型社会、降低居民生育成本等议题向政协提交提案。在与腾讯财经的对话中，龚六堂认为，建设生育友好型社会是一 个系统、长期的工程，不可能通过一项政策或单纯的资金补贴就能完成，也不可能通过补贴就能立竿见影的提升生育率水平。", "给三岁以下的婴幼儿 每月补贴300元，是建设生育友好型社会的一个积极信号，特别是对减轻低收入人群的生育压力有很好的帮助。"], "srcCode" : "zh", "tgtCode" : "en"}'; echo
 
 3. benchmark with wrk
 /tmp/build/server -smodel 418M/spm.model -tmodel 418M -split_svr http://127.0.0.1:7003/split -port 9501 -device gpu -n_devices 8 -n_workers 4 -worker_que_timeout 10000
