@@ -30,7 +30,7 @@ void find()
     iterator_range<char*> result=find_last(text,"ll");
 
     transform( result.begin(), result.end(), result.begin(), bind2nd(plus<char>(), 1) );
-    // text = "hello dommy!"            
+    // text = "hello dommy!"
 
     to_upper(result); // text == "hello doMMy!"
 
@@ -93,13 +93,13 @@ void split()
     typedef vector< string > split_vector_type;
 
     split_vector_type SplitVec; // #2: Search for tokens
-    split( SplitVec, str1, is_any_of("-*"), token_compress_on ); 
+    split( SplitVec, str1, is_any_of("-*"), token_compress_on );
     // SplitVec == { "hello abc","ABC","aBc goodbye" }
 }
 
 // boost::split
 //!! NOTE!!! 检查结果中有没有空串
-boost::split(targetStrVec, origStr, boost::is_any_of("," SPACES), boost::token_compress_on);
+boost::split(targetContainer, origStr, boost::is_any_of("," SPACES), boost::token_compress_on);
 // 不加最后的标记会产生空字符串
 // origStr最好先trim一下
 
