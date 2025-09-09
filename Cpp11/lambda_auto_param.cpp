@@ -18,5 +18,14 @@ int main() {
 
     f(10, 3.14, "hello");
 
+    auto print = [](const auto& arr) {
+        for (const auto& item : arr) {
+            cout << item << " ";
+        }
+        cout << endl;
+    };
+
+    print(std::vector<int>{1,2,3});
+
     return 0;
 }
