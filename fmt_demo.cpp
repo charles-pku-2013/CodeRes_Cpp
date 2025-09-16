@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     // join container
     {
         std::vector<int> arr{1,2,3};
-        fmt::println(std::cerr,"arr = {}", arr);
+        fmt::println(std::cerr,"arr = {}", arr);  // 按默认格式输出
         cout << fmt::to_string(arr) << endl;
         std::string s = fmt::to_string(fmt::join(arr, ":"));
         cout << s << endl;
