@@ -20,5 +20,19 @@ int main() {
         std::cout << std::endl;
     }
 
+    std::cout << std::endl;
+
+    // method 2
+    std::size_t n_batches = (data.size() / batch_size) + (data.size() % batch_size ? 1 : 0);
+    for (std::size_t b = 0; b < n_batches; ++b) {
+        std::size_t start = b * batch_size;
+        std::size_t end = std::min(data.size(), start + batch_size);
+        std::cout << "Processing batch from index " << start << " to " << end << ": ";
+        for (std::size_t j = start; j < end; ++j) {
+            std::cout << data[j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
     return 0;
 }

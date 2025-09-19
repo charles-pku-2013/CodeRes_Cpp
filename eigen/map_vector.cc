@@ -5,12 +5,19 @@ c++ -o /tmp/test test.cc -I/opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3 -st
 #include <vector>
 #include <iostream>
 
-template <typename MatrixType>
-std::vector<typename MatrixType::Scalar*> matrix_to_ptr_array(MatrixType& mat) {
-    std::vector<typename MatrixType::Scalar*> result(mat.rows());
-    for (auto i = 0; i < mat.rows(); ++i) {
-        result[i] = mat.row(i).data();
+template <typename MatrixType, typename PtrType = typename MatrixType::Scalar*>
+std::vector<PtrType>
+matrix_to_ptr_array(MatrixType& mat, std::size_t start = 0, std::size_t end = static_cast<std::size_t>(-1)) {
+    end = std::min(static_cast<std::size_t>(mat.rows()), end);
+    assert(start < end);
+
+    std::vector<PtrType> result;
+    result.reserve(end - start);
+
+    for (auto i = start; i < end; ++i) {
+        result.emplace_back(static_cast<PtrType>(mat.row(i).data()));
     }
+
     return result;
 }
 

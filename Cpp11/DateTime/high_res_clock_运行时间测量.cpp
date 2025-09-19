@@ -27,9 +27,9 @@ void test1()
         sink = std::accumulate(v.begin(), v.end(), 0u); // make sure it's a side effect
         // record end time
         auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> diff = end-start;
+        std::chrono::duration<double> elapsed(end - start);
         std::cout << "Time to fill and iterate a vector of "
-                  << size << " ints : " << diff.count() << " s\n";
+                  << size << " ints : " << elapsed.count() << " s\n";  // 用秒计时
     } // for
 }
 

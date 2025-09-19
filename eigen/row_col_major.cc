@@ -16,6 +16,15 @@ int main() {
            3.0, 4.0;
 
     std::cout << mat << std::endl;
+    std::cout << (uint64_t)(mat.data()) << std::endl;
+
+    mat.conservativeResize(1, 2);
+
+    std::cout << "After resize: " << mat << std::endl;
+    std::cout << (uint64_t)(mat.data()) << std::endl;  // addr same
+
+    // Get the first 3 rows
+    Eigen::MatrixXd first_n_rows = mat.topRows(2);
 
     // float* data_ptr_matrix = mat.data();
     std::copy(mat.data(), mat.data() + mat.size(), std::ostream_iterator<float>(std::cout, " "));
@@ -23,3 +32,10 @@ int main() {
 
     return 0;
 }
+
+// submatrix
+// int rows = 2;
+// int cols = 2;
+// int startRow = 1;
+// int startCol = 1;
+// Eigen::MatrixXd subMatrix = originalMatrix.block(startRow, startCol, rows, cols); // 2x2 block starting at (1,1)
