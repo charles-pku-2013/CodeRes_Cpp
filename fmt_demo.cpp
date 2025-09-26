@@ -55,6 +55,20 @@ int main(int argc, char **argv) {
         fmt::print("Date and time: {}\n", now);
         fmt::print("Time: {:%H:%M}\n", now);
     }
+    {
+        // Get the current time point
+        auto now = std::chrono::system_clock::now();
+
+        // Print the local time using fmt::localtime and the "%c" specifier
+        // "%c" produces the locale's date and time representation
+        fmt::print("Local date and time: {:%c}\n", fmt::localtime(now));
+
+        // Or use custom format specifiers for more control
+        fmt::print("Local time (HH:MM:SS): {:%H:%M:%S}\n", fmt::localtime(now));
+
+        // The `%Z` specifier prints the time zone abbreviation
+        fmt::print("Local time with time zone: {:%H:%M:%S %Z}\n", fmt::localtime(now));
+    }
 
     {
         std::map<std::string, int> dict{

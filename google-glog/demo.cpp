@@ -14,6 +14,11 @@ c++ -o /tmp/test test.cc -lglog -std=c++17 -DGLOG_USE_GLOG_EXPORT -g
  * Logging a FATAL message terminates the program (after the message is logged).
  */
 
+/*
+ * #error <glog/flags.h> was not included correctly. See the documentation for how to consume the library.
+ * -DGLOG_USE_GLOG_EXPORT
+ */
+
 namespace {
 /*
  *    glog settings:

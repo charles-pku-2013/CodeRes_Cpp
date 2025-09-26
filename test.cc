@@ -1,26 +1,22 @@
-/*
-c++ -o /tmp/test test.cc -I/opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3 -std=c++17 -g
- */
-#include <Eigen/Dense>
-#include <vector>
 #include <iostream>
+#include <chrono>
+#include <fmt/chrono.h>
 
 int main() {
-    std::vector<double> data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    // Map the std::vector data to an Eigen::MatrixXd
-    // The arguments are: data pointer, number of rows, number of columns
-    using Mat = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-    // Eigen::Map<Eigen::MatrixXd> mat(data.data(), 2, 3);
-    Eigen::Map<Mat> mat(data.data(), 2, 3);
-    std::cout << "Eigen Matrix from std::vector:\n" << mat << std::endl;
+    // Get the current time point
+    auto now = std::chrono::system_clock::now();
+    auto timestamp = std::chrono::system_clock::to_time_t(now);
 
-    data[2] = 10.0;
-    std::cout << "After modify vector:\n" << mat << std::endl;
+    // Print the local time using fmt::localtime and the "%c" specifier
+    // "%c" produces the locale's date and time representation
+    fmt::print("Local date and time: {:%c}\n", fmt::localtime(timestamp));
 
-    mat(1, 1) = 20.0;
-    std::cout << "After modify matrix:\n";
-    std::copy(data.begin(), data.end(), std::ostream_iterator<double>(std::cout, " "));
-    std::cout << std::endl;
+    // Or use custom format specifiers for more control
+    fmt::print("Local time (HH:MM:SS): {:%H:%M:%S}\n", fmt::localtime(timestamp));
+
+    // The `%Z` specifier prints the time zone abbreviation
+    fmt::print("Local time with time zone: {:%H:%M:%S %Z}\n", fmt::localtime(timestamp));
+    fmt::println("The date is {:%Y-%m-%d}.", *std::localtime(&t));
 
     return 0;
 }
