@@ -1,5 +1,5 @@
 /*
-c++ -o /tmp/test test.cc -I/opt/homebrew/Cellar/fmt/11.2.0/include -L/opt/homebrew/Cellar/fmt/11.2.0/lib -lfmt -std=c++17 -g
+c++ -o /tmp/test fmt_demo.cpp -I/opt/homebrew/Cellar/fmt/11.2.0/include -L/opt/homebrew/Cellar/fmt/11.2.0/lib -lfmt -std=c++17 -g
  */
 #include <iostream>
 #include <string>
@@ -20,6 +20,8 @@ using namespace std;
  * fmt::format("TimeoutTaskQueue: {{size:{}, capacity:{}, timeout:{}}}",
  *                 queue_.size(), queue_.capacity(), timeout_);
  */
+
+// print hex {:x}
 
 int main(int argc, char **argv) {
     fmt::fprintf(stderr, "%s running...\n", argv[0]);
@@ -47,6 +49,7 @@ int main(int argc, char **argv) {
         cout << s1 << endl;
         std::string s2 = fmt::to_string(fmt::join(arr.data(), arr.data() + 3, ":"));
         cout << s2 << endl;
+        cout << fmt::sprintf("%lx", (uint64_t)arr.data()) << endl;
     }
 
     // date time
@@ -55,6 +58,7 @@ int main(int argc, char **argv) {
         fmt::print("Date and time: {}\n", now);
         fmt::print("Time: {:%H:%M}\n", now);
     }
+#if 0
     {
         // Get the current time point
         auto now = std::chrono::system_clock::now();
@@ -69,6 +73,7 @@ int main(int argc, char **argv) {
         // The `%Z` specifier prints the time zone abbreviation
         fmt::print("Local time with time zone: {:%H:%M:%S %Z}\n", fmt::localtime(now));
     }
+#endif
 
     {
         std::map<std::string, int> dict{
