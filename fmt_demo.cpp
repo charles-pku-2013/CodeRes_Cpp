@@ -22,6 +22,8 @@ using namespace std;
  */
 
 // print hex {:x}
+// fmt::print("{:#x}\n", value); // for lowercase hex digits (a-f)
+// fmt::print("{:#X}\n", value); // for uppercase hex digits (A-F)
 
 int main(int argc, char **argv) {
     fmt::fprintf(stderr, "%s running...\n", argv[0]);
@@ -49,6 +51,8 @@ int main(int argc, char **argv) {
         cout << s1 << endl;
         std::string s2 = fmt::to_string(fmt::join(arr.data(), arr.data() + 3, ":"));
         cout << s2 << endl;
+        // fmt::join 可直接用于fmt::format
+        cout << fmt::format("{}", fmt::join(arr.data(), arr.data() + 3, ":")) << endl;
         cout << fmt::sprintf("%lx", (uint64_t)arr.data()) << endl;
     }
 
