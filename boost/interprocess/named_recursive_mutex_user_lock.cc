@@ -27,3 +27,38 @@ int main() {
     std::cin.get();
     return 0;
 }
+
+#if 0
+struct Foo {
+    Foo() {
+        mtx = std::make_unique<named_recursive_mutex>(open_or_create, "my_named_recursive_mutex");
+        mtx->lock();
+        std::cout << "Construct lock acquired." << std::endl;
+    }
+
+    ~Foo() {
+        mtx->unlock();
+        std::cout << "Destruct lock released." << std::endl;
+    }
+
+    void greet() {
+        scoped_lock<named_recursive_mutex> lk(*mtx);
+        std::cout << "Doing some work." << std::endl;
+        ::sleep(3);
+        scoped_lock<named_recursive_mutex> lk1(*mtx);
+        std::cout << "Doing some work again." << std::endl;
+        ::sleep(3);
+    }
+
+    std::unique_ptr<named_recursive_mutex> mtx;
+};
+
+int main() {
+    Foo foo1;
+    foo1.greet();
+
+    Foo foo2;
+    foo2.greet();
+    return 0;
+}
+#endif
