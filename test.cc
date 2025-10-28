@@ -1,62 +1,34 @@
-#include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
+
 #include <iostream>
-#include <string>
-#include <thread> // For simulating multiple acquisitions within a process
+#include <vector>
+#include <future>
+#include <thread>
 
-int main(int argc, char* argv[]) {
-    using namespace boost::interprocess;
-    using namespace std;
-
-    // Unique name for the shared memory segment and mutex
-    const char* shm_name = "MySharedMemory";
-    const char* mutex_name = "MyRecursiveMutex";
-
-    // Remove previous shared memory if it exists
-    // shared_memory_object::remove(shm_name);
-
-    if (argc > 1) {
-        shared_memory_object::remove(shm_name);
-        return 1;
+std::vector<int> expensive_computation() {
+    std::cout << "Starting heavy computation..." << std::endl;
+    std::vector<int> large_vector;
+    large_vector.reserve(100000000);
+    for (int i = 0; i < 100000000; ++i) {
+        large_vector.push_back(i);
     }
+    std::cout << "Computation complete " << (uint64_t)(large_vector.data()) << std::endl;
+    return large_vector; // Move semantics applied here
+}
 
-    // Create a managed shared memory segment
-    managed_shared_memory segment(open_or_create, shm_name, 65536);
-    // managed_shared_memory segment(open_only, shm_name);
-    // managed_shared_memory segment;
-    // try {
-        // segment = managed_shared_memory(open_or_create, shm_name, 65536); // 64KB
-    // } catch (const std::exception& ex) {
-        // cerr << ex.what() << endl;
-        // shared_memory_object::remove(shm_name);
-        // return 1;
-    // }
-    // if (argc == 1) {
-        // segment = managed_shared_memory(create_only, shm_name, 65536); // 64KB
-    // } else {
-        // segment = managed_shared_memory(open_only, shm_name);
-    // }
+int main() {
+    std::cout << "Main thread launching async task." << std::endl;
+    std::future<std::vector<int>> future_result = std::async(std::launch::async, expensive_computation);
 
-    // Construct the interprocess_recursive_mutex in shared memory
-    interprocess_recursive_mutex* mutex = segment.construct<interprocess_recursive_mutex>(mutex_name)();
+    std::cout << "Main thread doing other work..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    std::cout << "Acquiring lock (first time)" << std::endl;
-    mutex->lock();
-    std::cout << "Lock acquired (first time)" << std::endl;
+    std::cout << "Main thread waiting for result." << std::endl;
+    auto result_vector = future_result.get(); // Move construction from the future
+    std::cout << "Received vector of size: " << result_vector.size() << " " << (uint64_t)(result_vector.data()) << std::endl;
 
-    cin.get();
-    std::cout << "Acquiring lock (second time - recursive)" << std::endl;
-    mutex->lock();
-    std::cout << "Lock acquired (second time)" << std::endl;
-
-    std::cout << "Lock acquired multiple times. Press enter to end." << std::endl;
-
-    cin.get();
-    mutex->unlock();
-    mutex->unlock();
-
-    std::cout << "Locks released. Cleaning up shared memory." << std::endl;
-    // shared_memory_object::remove(shm_name);
+    // WRONG you can only get once
+    // std::vector<int> result_vector1 = future_result.get(); // Move construction from the future
+    // std::cout << "Received vector of size: " << result_vector1.size() << " " << (uint64_t)(result_vector1.data()) << std::endl;
 
     return 0;
 }

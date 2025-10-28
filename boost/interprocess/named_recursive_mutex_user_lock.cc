@@ -15,6 +15,8 @@ int main() {
     // can check anyone is using it by `lsof $file`
     named_recursive_mutex named_recursive_mtx(open_or_create, "my_named_recursive_mutex");
 
+    // named_recursive_mtx.unlock();
+
     // Acquire the lock
     scoped_lock<named_recursive_mutex> lock1(named_recursive_mtx);
     std::cout << "First lock acquired." << std::endl;
@@ -23,6 +25,10 @@ int main() {
 
     scoped_lock<named_recursive_mutex> lock2(named_recursive_mtx);
     std::cout << "Second lock acquired (recursive)." << std::endl;
+
+    scoped_lock<named_recursive_mutex> lock3 = std::move(lock2);
+    std::cout << lock2.owns() << std::endl;
+    std::cout << lock3.owns() << std::endl;
 
     std::cin.get();
     return 0;

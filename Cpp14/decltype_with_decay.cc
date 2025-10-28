@@ -35,3 +35,7 @@ Result test(const std::vector<uint32_t>& shape) {
 
     return result;
 }
+
+// NOTE decltype后面是圆括号不是尖括号
+std::array<std::remove_reference_t<decltype(t_shape)>::value_type, 4>
+                        shape{1, t_shape[1], t_shape[2], t_shape[3]};

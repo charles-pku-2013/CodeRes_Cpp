@@ -28,11 +28,13 @@ std::vector<std::vector<T>> split_vector(const std::vector<T>& vec, size_t num_p
 }
 
 int main() {
-    // std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    std::vector<int> numbers = {1, 2};
+    std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    // std::vector<int> numbers = {1};
+    // std::vector<int> numbers;
 
     // Split the vector into 3 parts
-    size_t num_parts = 3;
+    // size_t num_parts = 3;
+    size_t num_parts = 1;
     std::vector<std::vector<int>> split_parts = split_vector(numbers, num_parts);
 
     // Print the result
