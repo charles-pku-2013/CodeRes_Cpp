@@ -8,6 +8,7 @@ void process_variadic_args(Args&&... args) {
         std::cout << "Inside lambda: ";
         // Expand the captured pack when calling another function
         // or performing an operation on each element
+        // print variadic args in this way
         ((std::cout << std::forward<Args>(args) << " "), ...);
         std::cout << std::endl;
     };
