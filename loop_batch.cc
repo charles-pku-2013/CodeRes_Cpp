@@ -2,8 +2,26 @@
 #include <vector>
 #include <algorithm> // For std::min
 
+using namespace std;
+
+template<typename C>
+void split_into_batches(const C& arr, std::size_t batch_size) {
+    std::size_t this_batch_size = batch_size;
+
+    for (std::size_t i = 0; i < arr.size(); i += this_batch_size) {
+        this_batch_size = std::min(arr.size() - i, batch_size);
+        for (std::size_t j = 0; j < this_batch_size; ++j) {
+            cout << arr[i + j] << " ";
+        }
+        cout << endl;
+    }
+}
+
 int main() {
     std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+    split_into_batches(data, 0);
+    return 0;
+
     int batch_size = 4;
 
     for (int i = 0; i < data.size(); i += batch_size) {
