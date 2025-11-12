@@ -18,5 +18,10 @@ void process_variadic_args(Args&&... args) {
 int main() {
     process_variadic_args(1, 2.5, "hello");
     process_variadic_args('a', true);
+
+    for (int i = 0; i < 10; i++) {
+        cout << i << endl;
+    }
+
     return 0;
 }
