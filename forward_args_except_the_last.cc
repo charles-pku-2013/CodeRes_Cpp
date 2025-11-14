@@ -14,6 +14,13 @@ void proxy(Args&&... args) {
     f(std::forward<Args>(args)..., "world");  // OK
 }
 
+template<typename T, typename... Ts, typename U>
+void func(T first, Ts... middle, U last) {
+    // ...
+}
+func(10, 20, 30, "hello"); // Error: Ts cannot be deduced
+func<int, double, float>(10, 20.0, 30.f, "hello"); // Valid
+
 // WRONG
 // template<typename... Args>
 // void proxy2(Args&&... args, const std::string& s) {
