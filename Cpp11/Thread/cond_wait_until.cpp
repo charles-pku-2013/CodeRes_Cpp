@@ -13,6 +13,7 @@ void waits(int idx)
 {
     std::unique_lock<std::mutex> lk(cv_m);
     auto now = std::chrono::system_clock::now();
+    // NOTE condition_variable wait lambda 是wait结束的条件
     if(cv.wait_until(lk, now + idx*100ms, [](){return i == 1;}))
         std::cerr << "Thread " << idx << " finished waiting. i == " << i << '\n';
     else
