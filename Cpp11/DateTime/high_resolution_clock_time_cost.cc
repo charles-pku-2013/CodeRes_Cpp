@@ -27,7 +27,11 @@ void test1()
         sink = std::accumulate(v.begin(), v.end(), 0u); // make sure it's a side effect
         // record end time
         auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed(end - start);
+        // std::chrono::duration<double> elapsed(end - start);   // 默认以秒为单位
+        // nano	    std::ratio<1, 1000000000>
+        // micro	std::ratio<1, 1000000>
+        // milli	std::ratio<1, 1000>
+        std::chrono::duration<double, std::milli> elapsed(end - start);
         std::cout << "Time to fill and iterate a vector of "
                   << size << " ints : " << elapsed.count() << " s\n";  // 用秒计时
     } // for
@@ -50,7 +54,7 @@ void test2()
 
 int main()
 {
-    test2();
+    test1();
 
     return 0;
 }
