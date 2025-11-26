@@ -24,7 +24,6 @@ int main() {
 
     // The vector's elements and its internal management are now using 'buffer_resource'
     vec.push_back(4);
-    vec.resize(2 * 1024 * 1024);  // throw bad_alloc
 
     // You can also allocate other types using their respective allocators, all from the same pool
     auto str_ptr = alloc_string.allocate(1); // Allocates memory for one string object
