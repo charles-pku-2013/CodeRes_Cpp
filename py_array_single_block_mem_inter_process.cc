@@ -147,6 +147,115 @@ void initialize_arrays_in_single_block(/* 其他必要的参数，例如 n_image
  * 现在想用共享内存技术如boost::interprocess让其他进程能直接访问这个共享内存块，并且从这个内存块中复原出ResultType，该如何实现？
  */
 
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <functional>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+#include <fmt/core.h> // 假设您使用 fmt 库进行日志记录
+
+namespace py = pybind11;
+namespace bip = boost::interprocess;
+
+// 定义共享内存段的名称
+const char* SHARED_MEMORY_NAME = "MySharedMemorySegment";
+// 定义共享内存的预估大小（需要根据您的实际需求调整）
+const std::size_t SHARED_MEMORY_SIZE = 65536000; // 比如 64MB
+
+using ResultType = std::vector<std::vector<py::array_t<float>>>;
+
+// 假设这些变量在您的原始类作用域内可用
+// extern size_t n_outputs_; 
+// extern SomeStruct* snap_; // 包含 output shape 信息
+
+ResultType init_results_shared_memory(std::size_t n_imgs, std::size_t n_outputs_, SomeStruct* snap_) {
+    
+    // 1. 计算所有 py::array_t 所需的总内存大小 (与原代码相同)
+    auto get_py_array_len = [](const auto& shape) -> std::size_t {
+        return std::accumulate(shape.begin(), shape.end(), std::size_t(1),
+                               std::multiplies<typename std::remove_reference_t<decltype(shape)>::value_type>());
+    };
+
+    std::size_t total_len = 0;
+    std::vector<std::size_t> output_sizes(n_outputs_);
+    for (auto i = 0; i < n_outputs_; ++i) {
+        auto& t_shape = snap_->outputs[i].shape;
+        // 使用一个通用的 shape 结构，假设您的 snap_ 结构体兼容
+        std::array<int, 4> shape{ 1, t_shape[1], t_shape[2], t_shape[3] };
+        std::size_t arr_len = get_py_array_len(shape);
+        total_len += arr_len;
+        output_sizes[i] = arr_len;
+    }
+    total_len *= n_imgs;
+    std::size_t total_bytes = total_len * sizeof(float);
+
+    // --- 跨进程修改开始 ---
+
+    // 2. 创建或打开一个 boost 托管共享内存段
+    // 使用 managed_shared_memory 替换原始的 new[] 分配
+    
+    // 我们在这里创建（或打开已有的）共享内存。 
+    // 注意：在实际的多进程场景中，一个进程需要负责创建，另一个进程负责打开。
+    // 为了简化，我们假设这个函数是在负责创建和写入数据的那个进程中调用的。
+    
+    // 如果需要一个更健壮的创建/打开逻辑，可以使用 try/catch 切换 create_only 或 open_only
+    bip::managed_shared_memory segment(bip::create_only, SHARED_MEMORY_NAME, total_bytes + 1024); // 预留一些额外空间
+
+    // 3. 在共享内存中分配原始数据块
+    float* p_result_data = segment.allocate<float>(total_len);
+    // 初始化内存为 0.0f
+    std::fill_n(p_result_data, total_len, 0.0f); 
+
+    DLOG(INFO) << fmt::format("Allocated {} bytes memory in shared segment '{}', addr={:x}", 
+                              total_bytes, SHARED_MEMORY_NAME, (uint64_t)p_result_data);
+
+    // 4. 创建一个 py::capsule，管理共享内存的生命周期
+    // Pybind11 的 capsule 析构函数必须是通用的 C 风格指针回调。
+    // 释放共享内存的方式与释放堆内存不同，通常我们依赖于创建共享内存的进程退出，或者手动调用 bip::shared_memory_object::remove(SHARED_MEMORY_NAME)。
+    
+    // 当 py::array_t 在 Python 端被垃圾回收时，这个 capsule 会触发，但它不能直接删除共享内存段本身（段通常由进程生命周期管理）。
+    // 这个 capsule 的作用主要是记录日志。
+    auto capsule = py::capsule(p_result_data, [](void* ptr) {
+        // 注意：我们通常不会在这里释放 boost shared memory 的整个 segment，
+        // 我们只是记录这个特定指针的生命周期。
+        DLOG(INFO) << fmt::format("Pybind11 capsule finished for shared data pointer {:x}. "
+                                  "Shared Memory segment is persistent until explicitly removed or process exits.", 
+                                  (uint64_t)ptr);
+        // 如果需要，可以在这里手动 remove 共享内存对象，但这通常在主程序退出时完成
+        // bip::shared_memory_object::remove(SHARED_MEMORY_NAME); 
+    });
+
+    // 5. 使用 build_py_array 助手函数构建 py::array_t 对象 (与原代码相同)
+    auto build_py_array = [](const auto& shape, auto* data_ptr, const py::capsule& capsule) {
+        using T = typename std::remove_pointer_t<decltype(data_ptr)>;
+        // 关键点：将指向共享内存的指针传递给 py::array_t
+        return py::array_t<T>(shape, data_ptr, capsule); 
+    };
+
+    ResultType results(n_imgs);
+    float* current_ptr = p_result_data; // 跟踪当前内存偏移量
+    for (auto& v : results) {
+        v.reserve(n_outputs_);
+        for (auto i = 0; i < n_outputs_; ++i) {
+            auto& t_shape = snap_->outputs[i].shape;
+            std::array<int, 4> shape{ // 确保类型匹配
+                1, t_shape[1], t_shape[2], t_shape[3]};
+            auto py_arr = build_py_array(shape, current_ptr, capsule);
+            v.emplace_back(std::move(py_arr));
+            current_ptr += output_sizes[i];
+        }
+    }
+
+    return results;
+}
+
+// 帮助函数，用于在程序结束时清理共享内存
+void cleanup_shared_memory() {
+    bip::shared_memory_object::remove(SHARED_MEMORY_NAME);
+    std::cout << "Cleaned up shared memory segment: " << SHARED_MEMORY_NAME << std::endl;
+}
 
 /*
  * 1. 定义共享内存友好的数据结构（元数据）
