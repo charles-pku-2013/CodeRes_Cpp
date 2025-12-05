@@ -2,6 +2,8 @@
 c++ -o /tmp/test google-glog/demo.cpp -lglog -lgflags -std=c++17 -DGLOG_USE_GLOG_EXPORT -g
 /tmp/test -v=1
 /tmp/test -v 2
+用环境变量控制verbose
+GLOG_v=2 /tmp/test
  */
 #include <glog/logging.h>
 #include <gflags/gflags.h>
@@ -21,6 +23,16 @@ c++ -o /tmp/test google-glog/demo.cpp -lglog -lgflags -std=c++17 -DGLOG_USE_GLOG
  * #error <glog/flags.h> was not included correctly. See the documentation for how to consume the library.
  * -DGLOG_USE_GLOG_EXPORT
  */
+
+// VLOG only works under debug
+#ifndef NDEBUG
+#define DVLOG(verbose_level) VLOG(verbose_level)
+#define DVLOG_IF(verbose_level, condition) VLOG_IF(verbose_level, condition)
+#else
+// 在发布模式下，将 DVLOG 编译为空操作，以消除性能开销 使用了一个技巧使得语法可以继续使用 <<
+#define DVLOG(verbose_level) while (false) LOG(INFO)
+#define DVLOG_IF(verbose_level, condition) while (false) LOG(INFO)
+#endif
 
 namespace {
 /*
