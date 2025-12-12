@@ -1,19 +1,26 @@
 #include <iostream>
+#include <string>
+#include <type_traits>
 
-struct InferArgs {
-    std::size_t n_imgs_ = 0;
-    bool        is_np_ = false;
-    float       mean_ = 0.0f;
-    float       std_ = 0.0f;
-    bool        skip_resize_ = false;
-    std::size_t result_offset_ = 0;
-    char        shm_name_[64]{0};
-};
+using namespace std;
 
 int main() {
-    using namespace std;
+    auto lambda = [](auto&& arg) {
+        if constexpr (std::is_lvalue_reference_v<decltype(arg)>) {
+            std::cout << "arg 是一个左值引用" << std::endl;
+        }
+        if constexpr (std::is_rvalue_reference_v<decltype(arg)>) {
+            std::cout << "arg 是一个右值引用" << std::endl;
+        }
+    };
 
-    InferArgs arg{0, true, 1.0f, 2.0f, "hello"};
+    std::string s = "hello";
+    lambda(s);
+    cout << endl;
+    lambda("world");
 
     return 0;
 }
+
+
+

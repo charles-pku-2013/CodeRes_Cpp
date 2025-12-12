@@ -13,6 +13,9 @@ int main()
     std::cout << "double\t"
               << std::numeric_limits<double>::lowest() << '\t'
               << std::numeric_limits<double>::max() << '\n';
+    std::cout << "size_t\t"
+              << std::numeric_limits<std::size_t>::lowest() << '\t'
+              << std::numeric_limits<std::size_t>::max() << '\n';
 
     return 0;
 }
