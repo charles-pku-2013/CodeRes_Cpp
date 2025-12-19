@@ -5,22 +5,22 @@
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <iostream>
 
-namespace bip = boost::interprocess;
+namespace ipc = boost::interprocess;
 
 // 类型定义
-typedef bip::allocator<char, bip::managed_shared_memory::segment_manager> CharAllocator;
-typedef bip::basic_string<char, std::char_traits<char>, CharAllocator> ShmString;
-typedef bip::allocator<ShmString, bip::managed_shared_memory::segment_manager> StringAllocator;
-typedef bip::vector<ShmString, StringAllocator> ShmVector;
+using CharAllocator = ipc::allocator<char, ipc::managed_shared_memory::segment_manager>;
+using ShmString = ipc::basic_string<char, std::char_traits<char>, CharAllocator>;
+using StringAllocator =  ipc::allocator<ShmString, ipc::managed_shared_memory::segment_manager>;
+using ShmVector = ipc::vector<ShmString, StringAllocator>;
 
 void write_to_shm() {
     std::cout << "=== Writing to Shared Memory ===" << std::endl;
     
     // 移除之前的内存段
-    bip::shared_memory_object::remove("DemoShm");
+    ipc::shared_memory_object::remove("DemoShm");
     
     // 创建共享内存
-    bip::managed_shared_memory segment(bip::create_only, "DemoShm", 65536);
+    ipc::managed_shared_memory segment(ipc::create_only, "DemoShm", 65536);
     
     // 在共享内存中构造vector
     StringAllocator alloc(segment.get_segment_manager());
@@ -40,7 +40,7 @@ void read_from_shm() {
     
     try {
         // 打开共享内存
-        bip::managed_shared_memory segment(bip::open_only, "DemoShm");
+        ipc::managed_shared_memory segment(ipc::open_only, "DemoShm");
         
         // 查找vector
         std::pair<ShmVector*, std::size_t> result = segment.find<ShmVector>("DataVector");
@@ -59,9 +59,9 @@ void read_from_shm() {
             std::cout << "No data found!" << std::endl;
         }
         
-        bip::shared_memory_object::remove("DemoShm");
+        ipc::shared_memory_object::remove("DemoShm");
     }
-    catch(const bip::interprocess_exception& e) {
+    catch(const ipc::interprocess_exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }

@@ -6,7 +6,7 @@
 using namespace std;
 
 namespace {
-uint32_t checksum(const char *data, std::size_t length) {
+uint32_t checksum(const void *data, std::size_t length) {
     boost::crc_32_type result;
     result.process_bytes(data, length);
     return result.checksum();

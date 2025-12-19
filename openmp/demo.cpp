@@ -56,3 +56,22 @@ int main()
 
     return 0;
 }
+
+#include <stdio.h>
+#include <omp.h>
+
+int main() {
+    #pragma omp parallel for num_threads(8)
+    for (int i = 0; i < 100; i++) {
+        if (i == 0 ) {
+            printf("Out实际线程数: %d\n", omp_get_num_threads());  // 8
+        }
+        #pragma omp parallel for num_threads(8)
+        for (int j = 0; j < 100; j++) {
+                if (i == 0 && j == 0) {
+                    printf("In实际线程数: %d\n", omp_get_num_threads());  // 1  默认禁用嵌套并行
+                }
+        }
+    }
+    return 0;
+}
