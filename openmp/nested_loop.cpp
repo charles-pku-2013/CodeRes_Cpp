@@ -89,11 +89,9 @@ int main()
  * Thread 139652631222208 Done!
  */
 
-    // 都加上 parallel, 可以做到完全并行
-    // Below works OK!
 #pragma omp parallel for
     for (size_t i = 0; i < arr.size()-1; ++i) {
-#pragma omp parallel for
+// #pragma omp parallel for
         for (size_t j = i+1; j < arr.size(); ++j) { 
             process( arr[i], arr[j] );
         } // for j

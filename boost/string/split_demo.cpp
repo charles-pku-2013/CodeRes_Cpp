@@ -24,7 +24,7 @@ int main()
     cout << values.size() << endl;
     for (auto &v : values) {
         if (v.empty())
-            cout << "null" << endl;
+            cout << "null" << endl;  // NOTE 一定要处理空字符串
         else
             cout << v << endl;
     } // for
