@@ -8,6 +8,8 @@ c++ -o /tmp/test google-glog/glog_fmt_color.cpp -lglog -lgflags -lfmt -std=c++17
 
 #define ERR_MSG(msg_format, ...) \
     fmt::format(fmt::fg(fmt::color::red) | fmt::emphasis::bold, msg_format, ##__VA_ARGS__)
+#define WARN_MSG(msg_format, ...) \
+    fmt::format(fmt::fg(fmt::color::yellow) | fmt::emphasis::bold, msg_format, ##__VA_ARGS__)
 
 // simple
 int main() {
@@ -27,6 +29,7 @@ int main() {
     std::cerr << msg << std::endl;
     LOG(INFO) << fmt::format(bg(fmt::color::cyan), "{}", msg);  // fg(fmt::color::cyan) 不会覆盖原来的红色
     LOG(ERROR) << ERR_MSG(msg);
+    LOG(WARNING) << WARN_MSG("Warning, some error happening!");
 
     return 0;
 }
