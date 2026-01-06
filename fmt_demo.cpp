@@ -12,6 +12,7 @@ c++ -o /tmp/test fmt_demo.cpp -I/opt/homebrew/Cellar/fmt/11.2.0/include -L/opt/h
 #include <fmt/std.h>
 #include <fmt/chrono.h>
 #include <fmt/ranges.h>
+#include <fmt/os.h>
 
 using namespace std;
 
@@ -88,5 +89,35 @@ int main(int argc, char **argv) {
         fmt::print("{}\n", dict);
     }
 
+    // print pointer address
+    {
+        int val = 42;
+        // 打印地址
+        fmt::print("Address: {}\n", fmt::ptr(&val));
+        // 以16进制打印数值（类似 gdb 的 x/x）
+        fmt::print("Value in hex: {:#x}\n", val);
+    }
+
+    // memory hex dump
+    {
+        char text[] = "Hello";
+        // 模拟 gdb x/6xb (查看6个字节，16进制)
+        // print to stream
+        fmt::print(std::cerr, "Memory dump: {:02x}\n", fmt::join(text, " "));
+    }
+
+    // file IO
+    {
+        std::vector<int> arr{1,2,3};
+        // 打开文件（如果不存在则创建）
+        auto out = fmt::output_file("/tmp/memory_dump.bin");
+        // 像常规 print 一样使用
+        out.print("User ID: {:d}\n", 1001);
+        // 也可以分段写入大量数据
+        uint8_t* buf = (uint8_t*)(arr.data());
+        out.print("Buffer Data: {:02x}\n", fmt::join(buf, buf + arr.size() * sizeof(decltype(arr)::value_type), " "));
+    }
+
     return 0;
 }
+
