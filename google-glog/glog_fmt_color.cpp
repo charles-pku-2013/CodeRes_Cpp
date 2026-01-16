@@ -1,20 +1,42 @@
 /*
 c++ -o /tmp/test google-glog/glog_fmt_color.cpp -lglog -lgflags -lfmt -std=c++17 -DGLOG_USE_GLOG_EXPORT -g
  */
+/*
+ * NOTE 如果将输出重定向到文件用`less -R`查看
+ * Use 'AnsiEsc' plugin in vim
+ * :%s/\e\[[0-9;]*[mGK]//g
+ *
+ * 用sed命令处理文件
+ * sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" your_log_file.log
+ */
 #include <glog/logging.h>
 #include <fmt/color.h>
 #include <fmt/chrono.h> // 用于处理时间格式化
 #include <iostream>
+#include <unistd.h>
 
 #define ERR_MSG(msg_format, ...) \
     fmt::format(fmt::fg(fmt::color::red) | fmt::emphasis::bold, msg_format, ##__VA_ARGS__)
 #define WARN_MSG(msg_format, ...) \
     fmt::format(fmt::fg(fmt::color::yellow) | fmt::emphasis::bold, msg_format, ##__VA_ARGS__)
 
+// 自动判断是否是输出终端
+inline bool enable_color() {
+    static bool supports_color = isatty(fileno(stderr));
+    return supports_color;
+}
+
+#define SMART_ERR_MSG(msg_format, ...) \
+    (enable_color() ? \
+    fmt::format(fmt::fg(fmt::color::red) | fmt::emphasis::bold, msg_format, ##__VA_ARGS__) : \
+    fmt::format(msg_format, ##__VA_ARGS__))
+
 // simple
 int main() {
     google::InitGoogleLogging("test");
     FLAGS_logtostderr = 1;
+
+    LOG(ERROR) << SMART_ERR_MSG("Hello world {}", "test");
 
     // 使用 fmt::format 生成彩色字符串再交给 glog
     LOG(INFO) << fmt::format(fg(fmt::color::cyan), "这是一条蓝青色的日志消息");
