@@ -1,0 +1,7 @@
+{
+  "name": "folly-event-demo",
+  "version": "1.0.0",
+  "dependencies": [
+    "folly"
+  ]
+}
