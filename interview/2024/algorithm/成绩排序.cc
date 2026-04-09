@@ -1,59 +1,59 @@
 /*
-https://www.nowcoder.com/practice/8e400fd9905747e4acc2aeed7240978b?tpId=37&tqId=21291&rp=1&ru=/exam/oj/ta&qru=/exam/oj/ta&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D1%26tpId%3D37%26type%3D37&difficulty=undefined&judgeStatus=undefined&tags=&title=
+https://www.nowcoder.com/share/jump/71217891775705437857
  */
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <memory>
 #include <vector>
+
 using namespace std;
 
 struct Student {
-    Student(const string& _name, int _score, int _id)
-        : name(_name), score(_score), id(_id) {}
+    using pointer = std::shared_ptr<Student>;
 
-    string name;
-    int score;
-    int id;
+    Student(const std::string& _name, int _score, int _id)
+        : name_(_name), score_(_score), id_(_id) {}
+
+    std::string name_;
+    int score_ = 0;
+    int id_ = 0;
 };
 
-struct StudentCmp {
-    explicit StudentCmp(int sorter)
-            : sorter_(sorter) {}
-
-    bool operator()(const Student& lhs, const Student& rhs) const {
-        int diff = lhs.score - rhs.score;
-        if (diff) {
-            if (sorter_ == 0)
-            { return diff > 0; }
-            else 
-            { return diff < 0; }
-        }
-        return lhs.id < rhs.id;
-    }
-
-    int sorter_;
-};
+using StudentSet = std::vector<Student::pointer>;
 
 int main() {
-    int n, sorter, score;
-    string name;
-    vector<Student> arr;
+    int n = 0, sorter = 0;
+
     cin >> n >> sorter;
-    for (int i = 0; i < n; ++i) {
+
+    StudentSet students;
+    for (auto id = 0; id < n; ++id) {
+        std::string name;
+        int score;
         cin >> name >> score;
-        arr.emplace_back(name, score, i);
+        students.emplace_back(std::make_shared<Student>(name, score, id));
     }
 
-    std::sort(arr.begin(), arr.end(), StudentCmp(sorter));
+    // std::sort(students.begin(), students.end(), StudentCmp(sorter));
+    std::sort(students.begin(), students.end(),
+              [&sorter](const auto& lhs, const auto& rhs) -> bool {
+                  int diff = lhs->score_ - rhs->score_;
 
-    for (auto& item : arr) {
-        cout << item.name << " " << item.score << endl;
+                  if (diff) {
+                      if (sorter) {
+                          return diff < 0;
+                      } else {
+                          return diff > 0;
+                      }
+                  }
+
+                  return lhs->id_ < rhs->id_;
+              });
+
+    for (auto& item : students) {
+        cout << item->name_ << " " << item->score_ << endl;
     }
+
+    return 0;
 }
 
-
-
-
-
-
-
-// 64 位输出请用 printf("%lld")
