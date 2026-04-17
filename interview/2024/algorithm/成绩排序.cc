@@ -34,7 +34,6 @@ int main() {
         students.emplace_back(std::make_shared<Student>(name, score, id));
     }
 
-    // std::sort(students.begin(), students.end(), StudentCmp(sorter));
     std::sort(students.begin(), students.end(),
               [&sorter](const auto& lhs, const auto& rhs) -> bool {
                   int diff = lhs->score_ - rhs->score_;
