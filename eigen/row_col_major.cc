@@ -16,7 +16,7 @@ int main() {
     std::cout << mat.size() << std::endl;
     std::cout << (uint64_t)(mat.data()) << std::endl;
 
-    mat.conservativeResize(2, 2);
+    mat.resize(2, 2);
 
     mat << 1.0, 2.0,
            3.0, 4.0;
@@ -24,12 +24,12 @@ int main() {
     std::cout << mat << std::endl;
     std::cout << (uint64_t)(mat.data()) << std::endl;
 
-    // mat.conservativeResize(1, 1);  // column change will result in addr change
-    mat.conservativeResize(1, 2);
+    // mat.resize(1, 1);  // column change will result in addr change
+    mat.resize(1, 2);
     std::cout << (uint64_t)(mat.data()) << std::endl;
-    mat.conservativeResize(2, 2);
+    mat.resize(2, 2);
     std::cout << (uint64_t)(mat.data()) << std::endl;
-    mat.conservativeResize(3, 2);   // row increase will lead to addr change
+    mat.resize(3, 2);   // row increase will lead to addr change
     std::cout << (uint64_t)(mat.data()) << std::endl;
     std::cout << mat << std::endl << std::endl;;
 
@@ -40,7 +40,7 @@ int main() {
     std::cout << mat << std::endl;
     std::cout << (uint64_t)(mat.data()) << std::endl;
 
-    // mat.conservativeResize(1, 2);
+    // mat.resize(1, 2);
 
     // std::cout << "After resize: " << mat << std::endl;
     // std::cout << (uint64_t)(mat.data()) << std::endl;  // addr same
