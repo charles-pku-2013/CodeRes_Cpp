@@ -8,46 +8,48 @@
 #include <vector>
 
 struct Student {
-    int id;
-    std::string name;
-    int score;
+    int                    id;
+    std::string            name;
+    int                    score;
     std::array<char, 4096> extraInfo;
 };
 
-enum class ViewType {
-    NameAsc = 0,
-    ScoreDesc = 1,
-    ScoreAsc = 2
-};
+enum class ViewType { NameAsc = 0, ScoreDesc = 1, ScoreAsc = 2 };
 
 class StudentDatabase {
 private:
     struct NameAscCmp {
         bool operator()(const Student* a, const Student* b) const {
-            if (a->name != b->name) return a->name < b->name;
+            if (a->name != b->name) {
+                return a->name < b->name;
+            }
             return a->id < b->id;
         }
     };
 
     struct ScoreDescCmp {
         bool operator()(const Student* a, const Student* b) const {
-            if (a->score != b->score) return a->score > b->score;
+            if (a->score != b->score) {
+                return a->score > b->score;
+            }
             return a->id < b->id;
         }
     };
 
     struct ScoreAscCmp {
         bool operator()(const Student* a, const Student* b) const {
-            if (a->score != b->score) return a->score < b->score;
+            if (a->score != b->score) {
+                return a->score < b->score;
+            }
             return a->id < b->id;
         }
     };
 
     std::unordered_map<int, std::unique_ptr<Student>> table_;
 
-    std::set<Student*, NameAscCmp> nameAscView_;
+    std::set<Student*, NameAscCmp>   nameAscView_;
     std::set<Student*, ScoreDescCmp> scoreDescView_;
-    std::set<Student*, ScoreAscCmp> scoreAscView_;
+    std::set<Student*, ScoreAscCmp>  scoreAscView_;
 
 public:
     StudentDatabase() = default;
@@ -59,7 +61,7 @@ public:
             return false;
         }
 
-        auto ptr = std::make_unique<Student>(std::move(student));
+        auto     ptr = std::make_unique<Student>(std::move(student));
         Student* raw = ptr.get();
 
         table_.emplace(id, std::move(ptr));
