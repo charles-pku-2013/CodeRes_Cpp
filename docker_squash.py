@@ -3,8 +3,8 @@
 
 The script streams `docker export` directly into `docker import`, so it does
 not need a second image-sized tar file on disk. Runtime/image configuration is
-read from `docker image inspect`, reapplied, and verified before the requested
-target tag is created.
+read from `docker image inspect`, reapplied in a metadata-only build, and
+verified before the requested target tag is created.
 
 python3 flatten_docker_image.py --sudo --force 原镜像 新镜像
 """
@@ -22,6 +22,8 @@ import uuid
 from pathlib import Path
 from typing import Any, Iterable
 
+
+SCRIPT_VERSION = "1.2.1"
 
 MANAGED_CONFIG_KEYS = {
     "Cmd",
@@ -51,6 +53,13 @@ def dockerfile_word(value: str) -> str:
     # Dockerfile's parser accepts a JSON-style double-quoted word. This keeps
     # spaces, quotes and backslashes in ENV/LABEL values from becoming tokens.
     return json.dumps(value, ensure_ascii=False)
+
+
+def dockerfile_key_value(key: str, value: str) -> str:
+    # Quote key and value separately. Besides matching Dockerfile's documented
+    # LABEL/ENV form, this avoids a compatibility bug in some Docker Engine
+    # versions when an entire "key=value with spaces" pair is one quoted word.
+    return f"{dockerfile_word(key)}={dockerfile_word(value)}"
 
 
 def human_size(size: int) -> str:
@@ -152,14 +161,18 @@ def healthcheck_change(healthcheck: dict[str, Any] | None) -> str | None:
     raise RuntimeError(f"不支持的 Healthcheck.Test 类型：{kind!r}")
 
 
-def metadata_changes(config: dict[str, Any], include_onbuild: bool) -> list[str]:
+def metadata_changes(
+    config: dict[str, Any],
+    include_onbuild: bool,
+    include_workdir: bool = True,
+) -> list[str]:
     changes: list[str] = []
 
     # Apply fields that support Dockerfile variable substitution before ENV.
     # This prevents a literal "$NAME" in a stored path/label from being
     # accidentally expanded using the final image environment.
     for key, value in (config.get("Labels") or {}).items():
-        changes.append("LABEL " + dockerfile_word(f"{key}={value}"))
+        changes.append("LABEL " + dockerfile_key_value(key, value))
 
     for port in (config.get("ExposedPorts") or {}).keys():
         changes.append(f"EXPOSE {port}")
@@ -171,7 +184,7 @@ def metadata_changes(config: dict[str, Any], include_onbuild: bool) -> list[str]
     if volumes:
         changes.append("VOLUME " + dockerfile_json(volumes))
 
-    if config.get("WorkingDir"):
+    if include_workdir and config.get("WorkingDir"):
         changes.append("WORKDIR " + dockerfile_word(config["WorkingDir"]))
 
     if config.get("StopSignal"):
@@ -188,8 +201,14 @@ def metadata_changes(config: dict[str, Any], include_onbuild: bool) -> list[str]
     if config.get("Cmd"):
         changes.append("CMD " + dockerfile_json(config["Cmd"]))
 
+    if config.get("Shell"):
+        changes.append("SHELL " + dockerfile_json(config["Shell"]))
+
     for item in config.get("Env") or []:
-        changes.append("ENV " + dockerfile_word(item))
+        key, separator, value = item.partition("=")
+        if not separator:
+            value = ""
+        changes.append("ENV " + dockerfile_key_value(key, value))
 
     if include_onbuild:
         for trigger in config.get("OnBuild") or []:
@@ -253,18 +272,28 @@ def stream_export_import(
         )
 
 
-def add_shell_metadata(
+def apply_image_metadata(
     docker: Docker,
     source: str,
     destination: str,
     platform: str,
-    shell: list[str],
-    onbuild: list[str],
+    config: dict[str, Any],
+    author: str | None,
 ) -> None:
     with tempfile.TemporaryDirectory(prefix="docker-flatten-") as temp_dir:
         dockerfile = Path(temp_dir) / "Dockerfile"
-        lines = [f"FROM {source}", "SHELL " + dockerfile_json(shell)]
-        lines.extend("ONBUILD " + trigger for trigger in onbuild)
+        lines = [f"FROM {source}"]
+        if author:
+            lines.append("MAINTAINER " + dockerfile_word(author))
+        # WORKDIR is already applied by docker import. Repeating it here can
+        # create the directory and therefore an unwanted second rootfs layer.
+        lines.extend(
+            metadata_changes(
+                config,
+                include_onbuild=True,
+                include_workdir=False,
+            )
+        )
         dockerfile.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
         environment = os.environ.copy()
@@ -296,13 +325,47 @@ def semantically_equal(left: Any, right: Any) -> bool:
     return False
 
 
+def unique_environment(environment: Any) -> dict[str, str] | None:
+    """Return ENV as a mapping, or None when duplicate names need strict order."""
+    if environment is None:
+        return {}
+    if not isinstance(environment, list):
+        return None
+
+    result: dict[str, str] = {}
+    for item in environment:
+        if not isinstance(item, str):
+            return None
+        name, separator, value = item.partition("=")
+        if not separator:
+            value = ""
+        if name in result:
+            return None
+        result[name] = value
+    return result
+
+
+def config_value_equal(key: str, left: Any, right: Any) -> bool:
+    if semantically_equal(left, right):
+        return True
+    if key == "Env":
+        left_environment = unique_environment(left)
+        right_environment = unique_environment(right)
+        return (
+            left_environment is not None
+            and right_environment is not None
+            and left_environment == right_environment
+        )
+    return False
+
+
 def config_differences(
     source: dict[str, Any], destination: dict[str, Any]
 ) -> tuple[list[str], list[str]]:
     managed: list[str] = []
     unmanaged: list[str] = []
     for key in sorted(set(source) | set(destination)):
-        if semantically_equal(source.get(key), destination.get(key)):
+        if config_value_equal(key, source.get(key), destination.get(key)):
             continue
         rendered = (
             f"{key}: 原值={dockerfile_json(source.get(key))}, "
@@ -342,6 +405,11 @@ def parse_args() -> argparse.Namespace:
         metavar="PATH",
         help="Docker CLI 路径，默认 docker",
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {SCRIPT_VERSION}",
+    )
     return parser.parse_args()
 
 
@@ -372,9 +440,6 @@ def main() -> int:
 
         config = source_info.get("Config") or {}
         platform = platform_of(source_info)
-        shell = config.get("Shell") or []
-        needs_shell_wrapper = bool(shell)
-        changes = metadata_changes(config, include_onbuild=not needs_shell_wrapper)
 
         # Supplying a harmless command lets images without a default CMD be
         # created too. The container is never started, so the command need not
@@ -388,29 +453,35 @@ def main() -> int:
         container_id = created
 
         message = source_info.get("Comment") or None
+        # docker import treats --change as configuration-only metadata. Apply
+        # WORKDIR here so a later Dockerfile WORKDIR instruction cannot create
+        # a missing directory as a second filesystem layer.
+        import_changes: list[str] = []
+        if config.get("WorkingDir"):
+            import_changes.append(
+                "WORKDIR " + dockerfile_word(config["WorkingDir"])
+            )
         temporary_images.append(rootfs_image)
         stream_export_import(
             docker,
             container_id,
             rootfs_image,
             platform,
-            changes,
+            import_changes,
             message,
         )
 
-        candidate = rootfs_image
         eprint("[3/5] 正在补充其余镜像元数据……")
-        if needs_shell_wrapper:
-            temporary_images.append(configured_image)
-            add_shell_metadata(
-                docker,
-                rootfs_image,
-                configured_image,
-                platform,
-                shell,
-                config.get("OnBuild") or [],
-            )
-            candidate = configured_image
+        temporary_images.append(configured_image)
+        apply_image_metadata(
+            docker,
+            rootfs_image,
+            configured_image,
+            platform,
+            config,
+            source_info.get("Author") or None,
+        )
+        candidate = configured_image
 
         eprint("[4/5] 正在逐项校验配置和层数……")
         new_info = docker.inspect(candidate)
